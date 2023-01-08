@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TryGuessIt.Game.Domain\TryGuessIt.Game.Domain.csproj" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TryGuessIt.Game.Persistence\TryGuessIt.Game.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

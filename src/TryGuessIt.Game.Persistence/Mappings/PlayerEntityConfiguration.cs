@@ -9,5 +9,10 @@ public sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Player>
     public void Configure(EntityTypeBuilder<Player> builder)
     {
         builder.HasKey(x => x.Id);
+
+        const int maxEmailLength = 320;
+        builder.Property(x => x.Username)
+            .IsRequired()
+            .HasMaxLength(maxEmailLength);
     }
 }

@@ -9,13 +9,18 @@
   <ItemGroup>
     <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.0.10" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TryGuessIt.Game.ExternalMessageHandlers\TryGuessIt.Game.ExternalMessageHandlers.csproj" />
     <ProjectReference Include="..\TryGuessIt.Game.Application\TryGuessIt.Game.Application.csproj" />
+    <ProjectReference Include="..\TryGuessIt.Game.ExternalMessageHandlers\TryGuessIt.Game.ExternalMessageHandlers.csproj" />
+    <ProjectReference Include="..\TryGuessIt.Game.Persistence.Npgsql\TryGuessIt.Game.Persistence.Npgsql.csproj" />
   </ItemGroup>
 
 </Project>
