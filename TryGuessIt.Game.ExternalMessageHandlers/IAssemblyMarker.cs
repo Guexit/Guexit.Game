@@ -1,5 +1,5 @@
 ﻿namespace TryGuessIt.Game.ExternalMessageHandlers;
-public class Class1
-{
 
+public interface IAssemblyMarker
+{
 }

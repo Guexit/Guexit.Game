@@ -1,5 +1,5 @@
 using MassTransit;
-using TryGuessIt.Game.WebApi;
+using TryGuessIt.Game.ExternalMessageHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 

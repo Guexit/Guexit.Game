@@ -4,7 +4,7 @@ namespace TryGuessIt.Game.Application;
 
 public interface IPlayerManagementService
 {
-    Task CreatePlayer(string playerId);
+    Task CreatePlayer(string playerId, string username, CancellationToken cancellationToken = default);
 }
 
 public sealed class PlayerManagementService : IPlayerManagementService
@@ -16,8 +16,8 @@ public sealed class PlayerManagementService : IPlayerManagementService
         _playerRepository = playerRepository;
     }
 
-    public async Task CreatePlayer(string playerId)
+    public async Task CreatePlayer(string playerId, string username, CancellationToken cancellationToken = default)
     {
-        await _playerRepository.Add(new Player(playerId));
+        await _playerRepository.Add(new Player(playerId, username));
     }
 }

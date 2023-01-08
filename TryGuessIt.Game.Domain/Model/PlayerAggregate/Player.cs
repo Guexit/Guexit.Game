@@ -2,7 +2,10 @@
 
 public sealed class Player : Entity<string>
 {
-    public Player(string id) : base(id)
+    public string Username { get; private set; }
+
+    public Player(string id, string username) : base(id)
     {
+        Username = username;
     }
 }

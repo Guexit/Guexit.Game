@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="8.0.10" />
-	<PackageReference Include="TryGuessIt.IdentityProvider.Messages" Version="0.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TryGuessIt.Game.Application\TryGuessIt.Game.Application.csproj" />
   </ItemGroup>
 
 </Project>

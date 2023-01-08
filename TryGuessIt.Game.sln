@@ -9,13 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{793A1A93-00A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88C1F78B-A1EA-4884-83C1-C59E96B9E673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Application", "src\TryGuessIt.Game.Application\TryGuessIt.Game.Application.csproj", "{E2F75977-5482-4D84-80D0-702A6AF97011}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Application", "src\TryGuessIt.Game.Application\TryGuessIt.Game.Application.csproj", "{E2F75977-5482-4D84-80D0-702A6AF97011}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Domain", "TryGuessIt.Game.Domain\TryGuessIt.Game.Domain.csproj", "{7B29CF30-B7C0-4C0E-B20C-13813E7944AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Domain", "TryGuessIt.Game.Domain\TryGuessIt.Game.Domain.csproj", "{7B29CF30-B7C0-4C0E-B20C-13813E7944AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.ExternalMessageHandlers", "TryGuessIt.Game.ExternalMessageHandlers\TryGuessIt.Game.ExternalMessageHandlers.csproj", "{8F929C30-32F7-40B6-B3B7-F2FB787F4708}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.ExternalMessageHandlers", "TryGuessIt.Game.ExternalMessageHandlers\TryGuessIt.Game.ExternalMessageHandlers.csproj", "{8F929C30-32F7-40B6-B3B7-F2FB787F4708}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Application.UnitTests", "tests\TryGuessIt.Game.Application.UnitTests\TryGuessIt.Game.Application.UnitTests.csproj", "{6633934A-9E2F-45A1-9E54-9427F2FCE70D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Application.UnitTests", "tests\TryGuessIt.Game.Application.UnitTests\TryGuessIt.Game.Application.UnitTests.csproj", "{6633934A-9E2F-45A1-9E54-9427F2FCE70D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Persistence", "src\TryGuessIt.Game.Persistence\TryGuessIt.Game.Persistence.csproj", "{B1D70F96-C254-49F6-B448-279687D28668}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Persistence.IntegrationTests", "tests\TryGuessIt.Game.Persistence.IntegrationTests\TryGuessIt.Game.Persistence.IntegrationTests.csproj", "{02E32AD9-1F5B-49F1-BD08-FF18E5A3AACA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +47,14 @@ Global
 		{6633934A-9E2F-45A1-9E54-9427F2FCE70D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6633934A-9E2F-45A1-9E54-9427F2FCE70D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6633934A-9E2F-45A1-9E54-9427F2FCE70D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1D70F96-C254-49F6-B448-279687D28668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1D70F96-C254-49F6-B448-279687D28668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1D70F96-C254-49F6-B448-279687D28668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1D70F96-C254-49F6-B448-279687D28668}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02E32AD9-1F5B-49F1-BD08-FF18E5A3AACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02E32AD9-1F5B-49F1-BD08-FF18E5A3AACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02E32AD9-1F5B-49F1-BD08-FF18E5A3AACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02E32AD9-1F5B-49F1-BD08-FF18E5A3AACA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +65,8 @@ Global
 		{7B29CF30-B7C0-4C0E-B20C-13813E7944AB} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{8F929C30-32F7-40B6-B3B7-F2FB787F4708} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{6633934A-9E2F-45A1-9E54-9427F2FCE70D} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
+		{B1D70F96-C254-49F6-B448-279687D28668} = {793A1A93-00AD-44FD-A22F-EF307E756742}
+		{02E32AD9-1F5B-49F1-BD08-FF18E5A3AACA} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A9CFE4F-FA8B-4163-A8DA-117487BB5948}

@@ -18,11 +18,13 @@ public class WhenCreatingPlayer
     public async Task IsCreated()
     {
         var playerId = Guid.NewGuid().ToString();
+        var username = Guid.NewGuid().ToString();
 
-        await _playerManagementService.CreatePlayer(playerId);
+        await _playerManagementService.CreatePlayer(playerId, username);
 
         var player = await _playerRepository.GetById(playerId);
         player.Should().NotBeNull();
         player!.Id.Should().Be(playerId);
+        player.Username.Should().Be(username);
     }
 }
