@@ -1,5 +1,9 @@
 ﻿namespace TryGuessIt.Game.Domain;
 
+/// <summary>
+/// Entity base class
+/// </summary>
+/// <typeparam name="TId">Type of Id of the entity</typeparam>
 public abstract class Entity<TId> : IEquatable<Entity<TId>>
     where TId : notnull
 {

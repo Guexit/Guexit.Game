@@ -3,22 +3,22 @@ using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Persistence.Repositories;
 
-public class PlayerRepository : IPlayerRepository
+public sealed class PlayerRepository : IPlayerRepository
 {
-    private readonly DbContext _dbContext;
+    private readonly GameDbContext _dbContext;
 
-    public PlayerRepository(DbContext dbContext)
+    public PlayerRepository(GameDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public Task Add(Player player)
+    public async Task Add(Player player)
     {
-        throw new NotImplementedException();
+        await _dbContext.AddAsync(player);
     }
 
-    public Task<Player?> GetById(string playerId)
+    public async Task<Player?> GetById(string playerId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Players.FirstOrDefaultAsync(p => p.Id == playerId);
     }
 }

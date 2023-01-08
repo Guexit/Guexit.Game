@@ -8,7 +8,7 @@ public abstract class ValueObject
         {
             return false;
         }
-        return ReferenceEquals(left, right) || left.Equals(right);
+        return ReferenceEquals(left, right) || left!.Equals(right);
     }
 
     protected static bool NotEqualOperator(ValueObject left, ValueObject right)
@@ -18,7 +18,7 @@ public abstract class ValueObject
 
     protected abstract IEnumerable<object> GetEqualityComponents();
 
-    public override bool Equals(object? obj)
+    public sealed override bool Equals(object? obj)
     {
         if (obj is null || obj.GetType() != GetType())
         {
@@ -29,7 +29,7 @@ public abstract class ValueObject
         return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }
 
-    public override int GetHashCode()
+    public sealed override int GetHashCode()
     {
         return GetEqualityComponents()
             .Select(x => x is not null ? x.GetHashCode() : 0)

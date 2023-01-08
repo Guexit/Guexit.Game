@@ -1,6 +1,6 @@
 ﻿namespace TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
-public sealed class Player : Entity<string>
+public sealed class Player : Entity<string>, IAggregateRoot
 {
     public string Username { get; private set; }
 

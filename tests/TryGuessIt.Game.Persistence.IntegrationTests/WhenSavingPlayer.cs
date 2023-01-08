@@ -1,12 +1,27 @@
+using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+using TryGuessIt.Game.Persistence.Repositories;
+
 namespace TryGuessIt.Game.Persistence.IntegrationTests;
 
-public class WhenSavingPlayer
+public sealed class WhenSavingPlayer : DatabaseMappingIntegrationTest
 {
-
+    public WhenSavingPlayer(IntegrationTestFixture fixture) : base(fixture)
+    {
+    }
 
     [Fact]
-    public void IsPersisted()
+    public async Task IsPersisted()
     {
-        Assert.Fail("WIP");
+        var playerId = Guid.NewGuid().ToString();
+        var username = Guid.NewGuid().ToString();
+        var repository = new PlayerRepository(DbContext);
+
+        await repository.Add(new Player(playerId, username));
+        await SaveChangesAndClearChangeTracking();
+
+        var player = await repository.GetById(playerId);
+        player.Should().NotBeNull();
+        player!.Id.Should().Be(playerId);
+        player.Username.Should().Be(username);
     }
 }
