@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Persistence.Mappings;
+namespace TryGuessIt.Game.Persistence.EntityConfigurations;
 
 public sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Player>
 {
