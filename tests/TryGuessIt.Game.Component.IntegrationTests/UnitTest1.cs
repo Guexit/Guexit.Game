@@ -1,4 +1,4 @@
-namespace TryGuessIt.Game.ExternalMessageHandlers.UnitTests;
+namespace TryGuessIt.Game.Component.IntegrationTests;
 
 public class UnitTest1
 {

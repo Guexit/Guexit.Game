@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TryGuessIt.Game.Application;
+using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 using TryGuessIt.Game.Persistence;
+using TryGuessIt.Game.Persistence.Repositories;
 
 namespace TryGuessIt.Game.WebApi.DependencyInjection;
 
@@ -23,6 +26,10 @@ public static class PersistenceServiceCollectionExtensions
                 b.MigrationsAssembly(typeof(Persistence.Npgsql.IAssemblyMarker).Assembly.FullName);
             });
         });
+
+        services.AddScoped<IPlayerRepository, PlayerRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         return services;
     }
 }

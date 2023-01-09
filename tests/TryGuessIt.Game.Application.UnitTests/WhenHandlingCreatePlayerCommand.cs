@@ -1,17 +1,22 @@
-using FluentAssertions;
+using NSubstitute;
+using TryGuessIt.Game.Application.CommandHandlers;
+using TryGuessIt.Game.Application.Commands;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Application.UnitTests;
 
-public class WhenCreatingPlayer
+public class WhenHandlingCreatePlayerCommand
 {
     private readonly IPlayerRepository _playerRepository;
-    private readonly IPlayerManagementService _playerManagementService;
+    private readonly CreatePlayerCommandHandler _playerManagementService;
 
-    public WhenCreatingPlayer()
+    public WhenHandlingCreatePlayerCommand()
     {
         _playerRepository = new FakeInMemoryPlayerRepository();
-        _playerManagementService = new PlayerManagementService(_playerRepository);
+        _playerManagementService = new CreatePlayerCommandHandler(
+            Substitute.For<IUnitOfWork>(), 
+            new PlayerManagementService(_playerRepository)
+        );
     }
 
     [Fact]
@@ -20,7 +25,7 @@ public class WhenCreatingPlayer
         var playerId = Guid.NewGuid().ToString();
         var username = Guid.NewGuid().ToString();
 
-        await _playerManagementService.CreatePlayer(playerId, username);
+        await _playerManagementService.Handle(new CreatePlayerCommand(playerId, username));
 
         var player = await _playerRepository.GetById(playerId);
         player.Should().NotBeNull();
