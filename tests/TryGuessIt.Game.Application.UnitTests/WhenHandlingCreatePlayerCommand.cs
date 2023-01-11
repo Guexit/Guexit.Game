@@ -24,12 +24,13 @@ public sealed class WhenHandlingCreatePlayerCommand
     {
         var playerId = Guid.NewGuid().ToString();
         var username = Guid.NewGuid().ToString();
+        var command = new CreatePlayerCommand(playerId, username);
 
-        await _commandHandler.Handle(new CreatePlayerCommand(playerId, username));
+        await _commandHandler.Handle(command);
 
-        var player = await _playerRepository.GetById(playerId);
+        var player = await _playerRepository.GetById(command.PlayerId);
         player.Should().NotBeNull();
-        player!.Id.Should().Be(playerId);
-        player.Username.Should().Be(username);
+        player!.Id.Should().Be(command.PlayerId);
+        player.Username.Should().Be(command.Username);
     }
 }

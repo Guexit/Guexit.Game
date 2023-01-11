@@ -12,7 +12,7 @@ public sealed class FakeInMemoryPlayerRepository : IPlayerRepository
         return Task.CompletedTask;
     }
 
-    public Task<Player?> GetById(string playerId)
+    public Task<Player?> GetById(PlayerId playerId)
     {
         return Task.FromResult(_players.FirstOrDefault(x => x.Id == playerId));
     }

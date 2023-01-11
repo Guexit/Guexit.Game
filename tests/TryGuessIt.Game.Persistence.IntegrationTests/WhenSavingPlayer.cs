@@ -12,7 +12,7 @@ public sealed class WhenSavingPlayer : DatabaseMappingIntegrationTest
     [Fact]
     public async Task IsPersisted()
     {
-        var playerId = Guid.NewGuid().ToString();
+        var playerId = new PlayerId(Guid.NewGuid().ToString());
         var username = Guid.NewGuid().ToString();
         var repository = new PlayerRepository(DbContext);
 

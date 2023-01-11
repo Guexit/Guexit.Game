@@ -3,5 +3,5 @@
 public interface IPlayerRepository
 {
     Task Add(Player player);
-    Task<Player?> GetById(string playerId);
+    Task<Player?> GetById(PlayerId playerId);
 }

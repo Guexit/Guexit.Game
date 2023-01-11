@@ -9,7 +9,7 @@ public sealed class WhenHandlingCreateGameRoomCommand
 {
     private readonly IPlayerRepository _playerRepository;
     private readonly IGameRoomRepository _gameRoomRepository;
-    private readonly CreatePlayerCommandHandler _playerManagementService;
+    private readonly CreateGameRoomCommandHandler _playerManagementService;
 
     public WhenHandlingCreateGameRoomCommand()
     {
