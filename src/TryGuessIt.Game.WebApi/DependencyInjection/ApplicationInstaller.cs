@@ -2,7 +2,7 @@
 
 namespace TryGuessIt.Game.WebApi.DependencyInjection;
 
-public static class ApplicationServiceCollectionExtensions
+public static class ApplicationInstaller
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {

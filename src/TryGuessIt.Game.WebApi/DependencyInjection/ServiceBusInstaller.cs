@@ -2,9 +2,9 @@
 
 namespace TryGuessIt.Game.WebApi.DependencyInjection;
 
-public static class MasstransitServiceCollectionExtensions
+public static class ServiceBusInstaller
 {
-    public static IServiceCollection AddMasstransitServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServiceBus(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(config =>
         {

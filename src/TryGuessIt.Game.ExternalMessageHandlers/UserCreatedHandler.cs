@@ -20,11 +20,6 @@ public sealed class UserCreatedHandler : IConsumer<UserCreated>
 
     public async Task Consume(ConsumeContext<UserCreated> context)
     {
-        if (Random.Shared.Next(0, 4) != 3)
-        {
-            throw new Exception("Boom!");
-        }
-
         _logger.LogInformation("Handling UserCreatedIntegrationEvent. Id: '{userId}' Username: {username}", 
             context.Message.Id,
             context.Message.Username);

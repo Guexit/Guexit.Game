@@ -6,7 +6,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
-builder.Services.AddMasstransitServices(builder.Configuration);
+builder.Services.AddServiceBus(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 
 var app = builder.Build();

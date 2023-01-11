@@ -6,7 +6,7 @@ using TryGuessIt.Game.Persistence.Repositories;
 
 namespace TryGuessIt.Game.WebApi.DependencyInjection;
 
-public static class PersistenceServiceCollectionExtensions
+public static class PersistenceInstaller
 {
     public static IServiceCollection AddPersistence(
         this IServiceCollection services, 
