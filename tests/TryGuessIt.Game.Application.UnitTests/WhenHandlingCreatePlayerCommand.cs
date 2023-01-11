@@ -5,15 +5,15 @@ using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Application.UnitTests;
 
-public class WhenHandlingCreatePlayerCommand
+public sealed class WhenHandlingCreatePlayerCommand
 {
     private readonly IPlayerRepository _playerRepository;
-    private readonly CreatePlayerCommandHandler _playerManagementService;
+    private readonly CreatePlayerCommandHandler _commandHandler;
 
     public WhenHandlingCreatePlayerCommand()
     {
         _playerRepository = new FakeInMemoryPlayerRepository();
-        _playerManagementService = new CreatePlayerCommandHandler(
+        _commandHandler = new CreatePlayerCommandHandler(
             Substitute.For<IUnitOfWork>(), 
             new PlayerManagementService(_playerRepository)
         );
@@ -25,7 +25,7 @@ public class WhenHandlingCreatePlayerCommand
         var playerId = Guid.NewGuid().ToString();
         var username = Guid.NewGuid().ToString();
 
-        await _playerManagementService.Handle(new CreatePlayerCommand(playerId, username));
+        await _commandHandler.Handle(new CreatePlayerCommand(playerId, username));
 
         var player = await _playerRepository.GetById(playerId);
         player.Should().NotBeNull();
