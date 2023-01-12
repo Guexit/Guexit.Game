@@ -5,7 +5,23 @@ using TryGuessIt.IdentityProvider.Messages;
 
 namespace TryGuessIt.Game.Component.IntegrationTests;
 
-public class WhenReceivingUserCreated : ComponentTestBase
+public sealed class WhenCreatingGameRoom : ComponentTestBase
+{
+    public WhenCreatingGameRoom(GameWebApplicationFactory factory) 
+        : base(factory)
+    {
+    }
+
+    [Fact]
+    public async Task GameRoomIsCreated()
+    {
+        var client = WebApplicationFactory.CreateClient();
+
+        Assert.Fail("WIP");
+    }
+}
+
+public sealed class WhenReceivingUserCreated : ComponentTestBase
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -15,7 +31,7 @@ public class WhenReceivingUserCreated : ComponentTestBase
     }
 
     [Fact]
-    public async void PlayerIsCreated()
+    public async Task PlayerIsCreated()
     {
         var userCreatedEvent = new UserCreated(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 

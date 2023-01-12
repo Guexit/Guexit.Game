@@ -1,4 +1,5 @@
 using TryGuessIt.Game.WebApi.DependencyInjection;
+using TryGuessIt.Game.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,5 +20,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapGameRoomEndpoints();
 
 app.Run();

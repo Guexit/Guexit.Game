@@ -7,9 +7,9 @@ public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public GameRoom(GameRoomId id) : base(id)
+    public GameRoom() : base()
     {
-
+        // Entity Framework required parameterless ctor
     }
 
     public GameRoom(GameRoomId id, PlayerId creatorId, DateTimeOffset createdAt) 
