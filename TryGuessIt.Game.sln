@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Domain", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.ExternalMessageHandlers", "src\TryGuessIt.Game.ExternalMessageHandlers\TryGuessIt.Game.ExternalMessageHandlers.csproj", "{AD8BFD18-E703-4640-8665-CB486DBC6D2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Component.IntegrationTests", "tests\TryGuessIt.Game.Component.IntegrationTests\TryGuessIt.Game.Component.IntegrationTests.csproj", "{EB40A044-4244-4E6B-B801-30D41F0CDD4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Component.IntegrationTests", "tests\TryGuessIt.Game.Component.IntegrationTests\TryGuessIt.Game.Component.IntegrationTests.csproj", "{EB40A044-4244-4E6B-B801-30D41F0CDD4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Tests.Common", "tests\TryGuessIt.Game.Tests.Common\TryGuessIt.Game.Tests.Common.csproj", "{77E99BEC-A1CA-4411-A81C-D8C0AAD1AD10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +76,10 @@ Global
 		{EB40A044-4244-4E6B-B801-30D41F0CDD4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB40A044-4244-4E6B-B801-30D41F0CDD4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB40A044-4244-4E6B-B801-30D41F0CDD4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77E99BEC-A1CA-4411-A81C-D8C0AAD1AD10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77E99BEC-A1CA-4411-A81C-D8C0AAD1AD10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77E99BEC-A1CA-4411-A81C-D8C0AAD1AD10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77E99BEC-A1CA-4411-A81C-D8C0AAD1AD10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +94,7 @@ Global
 		{4102E583-D410-439F-B363-F1475719442C} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{AD8BFD18-E703-4640-8665-CB486DBC6D2A} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{EB40A044-4244-4E6B-B801-30D41F0CDD4D} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
+		{77E99BEC-A1CA-4411-A81C-D8C0AAD1AD10} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A9CFE4F-FA8B-4163-A8DA-117487BB5948}

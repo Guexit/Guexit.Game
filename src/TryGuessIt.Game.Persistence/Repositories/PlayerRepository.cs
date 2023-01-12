@@ -12,13 +12,13 @@ public sealed class PlayerRepository : IPlayerRepository
         _dbContext = dbContext;
     }
 
-    public async Task Add(Player player)
+    public async Task Add(Player player, CancellationToken ct = default)
     {
-        await _dbContext.AddAsync(player);
+        await _dbContext.Players.AddAsync(player, ct);
     }
 
-    public async Task<Player?> GetById(PlayerId playerId)
+    public async Task<Player?> GetById(PlayerId id, CancellationToken ct = default)
     {
-        return await _dbContext.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+        return await _dbContext.Players.FirstOrDefaultAsync(p => p.Id == id, ct);
     }
 }

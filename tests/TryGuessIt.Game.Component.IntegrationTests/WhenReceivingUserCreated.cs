@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 using TryGuessIt.Game.Persistence;
 using TryGuessIt.IdentityProvider.Messages;
 
@@ -29,7 +30,7 @@ public class WhenReceivingUserCreated : ComponentTestBase
 
         var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
 
-        var player = await dbContext.Players.FindAsync(userCreatedEvent.Id);
+        var player = await dbContext.Players.FindAsync(new PlayerId(userCreatedEvent.Id));
         player.Should().NotBeNull();
         player!.Id.Should().NotBeNull(userCreatedEvent.Id);
         player.Username.Should().NotBeNull(userCreatedEvent.Username);

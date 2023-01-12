@@ -2,9 +2,9 @@
 
 namespace TryGuessIt.Game.Application;
 
-
-public abstract class CommandHandler<TCommand> : IRequestHandler<TCommand>
-    where TCommand : ICommand
+public abstract class CommandHandler<TCommand, TCommandCompletion> : IRequestHandler<TCommand, TCommandCompletion>
+    where TCommand : ICommand<TCommandCompletion>
+    where TCommandCompletion : notnull
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -13,13 +13,13 @@ public abstract class CommandHandler<TCommand> : IRequestHandler<TCommand>
         _unitOfWork = unitOfWork;
     }
 
-    public async ValueTask<Unit> Handle(TCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<TCommandCompletion> Handle(TCommand command, CancellationToken cancellationToken = default)
     {
         try
         {
-            await Process(command, cancellationToken);
+            var result = await Process(command, cancellationToken);
             await _unitOfWork.Commit(cancellationToken);
-            return Unit.Value;
+            return result;
         }
         catch (Exception)
         {
@@ -27,5 +27,5 @@ public abstract class CommandHandler<TCommand> : IRequestHandler<TCommand>
         }
     }
 
-    protected abstract ValueTask Process(TCommand command, CancellationToken cancellationToken);
+    protected abstract ValueTask<TCommandCompletion> Process(TCommand command, CancellationToken cancellationToken);
 }

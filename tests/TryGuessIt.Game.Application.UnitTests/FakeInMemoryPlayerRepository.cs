@@ -6,13 +6,13 @@ public sealed class FakeInMemoryPlayerRepository : IPlayerRepository
 {
     private readonly List<Player> _players = new();
 
-    public Task Add(Player player)
+    public Task Add(Player player, CancellationToken cancellationToken = default)
     {
         _players.Add(player);
         return Task.CompletedTask;
     }
 
-    public Task<Player?> GetById(PlayerId playerId)
+    public Task<Player?> GetById(PlayerId playerId, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(_players.FirstOrDefault(x => x.Id == playerId));
     }

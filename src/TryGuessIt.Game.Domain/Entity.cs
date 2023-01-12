@@ -7,7 +7,13 @@
 public abstract class Entity<TId> : IEquatable<Entity<TId>>
     where TId : notnull
 {
-    public TId Id { get; protected set; }
+    public TId? Id { get; protected set; }
+
+    
+    protected Entity() 
+    {
+        // Entity Framework required parameterless ctor
+    }
 
     protected Entity(TId id) => Id = id;
 

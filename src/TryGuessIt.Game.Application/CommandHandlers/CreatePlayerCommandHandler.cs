@@ -1,8 +1,9 @@
-﻿using TryGuessIt.Game.Application.Commands;
+﻿using Mediator;
+using TryGuessIt.Game.Application.Commands;
 
 namespace TryGuessIt.Game.Application.CommandHandlers;
 
-public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerCommand>
+public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerCommand, Unit>
 {
     private readonly IPlayerManagementService _playerManagementService;
 
@@ -12,8 +13,9 @@ public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerComm
         _playerManagementService = playerManagementService;
     }
 
-    protected override async ValueTask Process(CreatePlayerCommand command, CancellationToken cancellationToken)
+    protected override async ValueTask<Unit> Process(CreatePlayerCommand command, CancellationToken cancellationToken)
     {
         await _playerManagementService.CreatePlayer(command.PlayerId, command.Username, cancellationToken);
+        return Unit.Value;
     }
 }

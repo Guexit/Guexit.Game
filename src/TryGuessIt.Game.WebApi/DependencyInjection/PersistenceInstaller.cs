@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TryGuessIt.Game.Application;
+using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 using TryGuessIt.Game.Persistence;
 using TryGuessIt.Game.Persistence.Repositories;
@@ -27,6 +28,7 @@ public static class PersistenceInstaller
             });
         });
 
+        services.AddScoped<IGameRoomRepository, GameRoomRepository>();
         services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
