@@ -27,4 +27,9 @@
     <ProjectReference Include="..\TryGuessIt.Game.Persistence.Npgsql\TryGuessIt.Game.Persistence.Npgsql.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dtos\Response\" />
+    <Folder Include="Dtos\Request\" />
+  </ItemGroup>
+
 </Project>
