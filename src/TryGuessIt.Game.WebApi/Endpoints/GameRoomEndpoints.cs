@@ -1,4 +1,5 @@
-﻿using Mediator;
+﻿using Asp.Versioning.Builder;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using TryGuessIt.Game.Application.Commands;
 using TryGuessIt.Game.WebApi.Dtos.Request;
@@ -7,11 +8,16 @@ namespace TryGuessIt.Game.WebApi.Endpoints;
 
 public static class GameRoomEndpoints
 {
-    public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app)
+    public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
-        app.MapPost("v1/game-rooms", CreateGameRoom)
-            .Produces<CreateGameRoomResponseDto>(StatusCodes.Status200OK);
-        app.MapPost("v1/game-rooms/{gameRoomId}/join", JoinGameRoom);
+        app.MapPost("game-rooms", CreateGameRoom)
+            .Produces<CreateGameRoomResponseDto>(StatusCodes.Status200OK)
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
+
+        app.MapPost("game-rooms/{gameRoomId}/join", JoinGameRoom)
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
     }
 
     private static async Task<IResult> CreateGameRoom(

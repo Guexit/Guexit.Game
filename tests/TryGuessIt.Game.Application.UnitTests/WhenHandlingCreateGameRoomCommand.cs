@@ -5,7 +5,6 @@ using TryGuessIt.Game.Application.Exceptions;
 using TryGuessIt.Game.Domain;
 using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
-using TryGuessIt.Game.Tests.Common;
 
 namespace TryGuessIt.Game.Application.UnitTests;
 
@@ -41,9 +40,7 @@ public sealed class WhenHandlingCreateGameRoomCommand
         var createdAt = new DateTimeOffset(2022, 1, 1, 2, 3, 4, TimeSpan.Zero);
         _guidProvider.NewGuid().Returns(gameRoomId);
         _systemClock.UtcNow.Returns(createdAt);
-        await _playerRepository.Add(new PlayerBuilder()
-            .WithId(playerId)
-            .Build());
+        await _playerRepository.Add(new Player(new PlayerId(playerId), string.Empty));
 
         var completion = await _commandHandler.Handle(command);
 

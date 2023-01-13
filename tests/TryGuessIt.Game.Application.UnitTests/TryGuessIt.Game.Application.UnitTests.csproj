@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TryGuessIt.Game.Application\TryGuessIt.Game.Application.csproj" />
-    <ProjectReference Include="..\TryGuessIt.Game.Tests.Common\TryGuessIt.Game.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

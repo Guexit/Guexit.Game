@@ -13,7 +13,9 @@ public sealed class PersistenceDataCleaner : ITestDataCleaner
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
 
         var allPlayers = await dbContext.Players.ToArrayAsync();
+        var allGameRooms = await dbContext.GameRooms.ToArrayAsync();
         dbContext.RemoveRange(allPlayers);
+        dbContext.RemoveRange(allGameRooms);
         await dbContext.SaveChangesAsync();
     }
 }
