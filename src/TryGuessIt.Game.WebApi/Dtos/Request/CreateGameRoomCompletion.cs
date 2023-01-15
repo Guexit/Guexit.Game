@@ -2,16 +2,16 @@
 
 namespace TryGuessIt.Game.WebApi.Dtos.Request;
 
-public class CreateGameRoomResponseDto
+public class CreateGameRoomCompletion
 {
 	public Guid GameRoomId { get; }
 
-	private CreateGameRoomResponseDto(Guid gameRoomId)
+	private CreateGameRoomCompletion(Guid gameRoomId)
 	{
         GameRoomId = gameRoomId;
     }
 
-	public static CreateGameRoomResponseDto From(CreateGameRoomCommandCompletion completion)
+	public static CreateGameRoomCompletion From(CreateGameRoomCommandCompletion completion)
 	{
 		return new(completion.GameRoomId.Value);
 	}

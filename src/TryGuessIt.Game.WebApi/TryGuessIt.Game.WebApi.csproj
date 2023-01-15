@@ -27,10 +27,7 @@
     <ProjectReference Include="..\TryGuessIt.Game.Application\TryGuessIt.Game.Application.csproj" />
     <ProjectReference Include="..\TryGuessIt.Game.ExternalMessageHandlers\TryGuessIt.Game.ExternalMessageHandlers.csproj" />
     <ProjectReference Include="..\TryGuessIt.Game.Persistence.Npgsql\TryGuessIt.Game.Persistence.Npgsql.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dtos\Response\" />
+    <ProjectReference Include="..\TryGuessIt.Game.ReadModels\TryGuessIt.Game.ReadModels.csproj" />
   </ItemGroup>
 
 </Project>
