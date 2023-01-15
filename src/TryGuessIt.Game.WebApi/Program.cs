@@ -1,25 +1,10 @@
 using Asp.Versioning;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using TryGuessIt.Game.WebApi.DependencyInjection;
 using TryGuessIt.Game.WebApi.Endpoints;
-using TryGuessIt.Game.WebApi.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
-builder.Services.AddApiVersioning(options =>
-    {
-        options.DefaultApiVersion = new ApiVersion(1);
-        options.AssumeDefaultVersionWhenUnspecified = true;
-    })
-    .AddApiExplorer(options =>
-    {
-        options.GroupNameFormat = "'v'VVV";
-    });
+builder.Services.AddSwagger();
 
 builder.Services.AddDomain();
 builder.Services.AddApplication();

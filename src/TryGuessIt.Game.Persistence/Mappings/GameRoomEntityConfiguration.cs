@@ -14,11 +14,12 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
         builder.Property(x => x.Id).HasConversion<GameRoomIdValueConverter>();
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.PlayerIds)
             .HasConversion<PlayerIdsCollectionValueConverter>()
             .Metadata
             .SetValueComparer(new PlayerIdsCollectionValueComparer());
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.RequiredMinPlayers).HasConversion<RequiredMinPlayersValueConverter>();
     }
     
     private sealed class GameRoomIdValueConverter : ValueConverter<GameRoomId, Guid>
@@ -65,4 +66,23 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
             return playerIdsToReturn;
         }
     }
+    private sealed class RequiredMinPlayersValueConverter : ValueConverter<RequiredMinPlayers, int>
+    {
+        public RequiredMinPlayersValueConverter()
+            : base(v => ToProvider(v), from => From(from))
+        {
+        }
+
+        private static int ToProvider(RequiredMinPlayers requiredMinPlayers)
+        {
+            return requiredMinPlayers.Count;
+        }
+
+        private static RequiredMinPlayers From(int value)
+        {
+            
+            return new RequiredMinPlayers(value);
+        }
+    }
 }
+

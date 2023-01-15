@@ -5,6 +5,7 @@ using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Application.UnitTests;
 
+
 public sealed class WhenHandlingCreatePlayerCommand
 {
     private readonly IPlayerRepository _playerRepository;

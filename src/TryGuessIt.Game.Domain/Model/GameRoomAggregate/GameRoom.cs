@@ -6,6 +6,7 @@ public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
 {
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
+    public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
 
     public GameRoom() : base()
     {

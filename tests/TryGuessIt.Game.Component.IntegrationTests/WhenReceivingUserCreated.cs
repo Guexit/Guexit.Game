@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 using TryGuessIt.Game.Persistence;
 using TryGuessIt.Game.WebApi;
@@ -53,6 +54,7 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
 
         gameRooms.Should().HaveCount(1);
         gameRooms[0].PlayerIds.Single().Should().Be(playerId);
+        gameRooms[0].RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
     }
 }
 
