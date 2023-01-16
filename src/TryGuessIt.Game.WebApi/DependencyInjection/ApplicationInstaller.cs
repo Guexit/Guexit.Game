@@ -1,4 +1,4 @@
-﻿using TryGuessIt.Game.Application;
+﻿using TryGuessIt.Game.Application.Services;
 
 namespace TryGuessIt.Game.WebApi.DependencyInjection;
 

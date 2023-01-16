@@ -18,6 +18,8 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
             .HasConversion<PlayerIdsCollectionValueConverter>()
             .Metadata
             .SetValueComparer(new PlayerIdsCollectionValueComparer());
+
+
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RequiredMinPlayers).HasConversion<RequiredMinPlayersValueConverter>();
     }
@@ -36,7 +38,7 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
             : base(
                 (c1, c2) => c1.SequenceEqual(c2),
                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                c => c)
+                c => c.ToArray())
         {
 
         }

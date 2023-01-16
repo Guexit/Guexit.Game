@@ -19,7 +19,7 @@ public sealed class WhenSavingPlayer : DatabaseMappingIntegrationTest
         await repository.Add(new Player(playerId, username));
         await SaveChangesAndClearChangeTracking();
 
-        var player = await repository.GetById(playerId);
+        var player = await repository.GetBy(playerId);
         player.Should().NotBeNull();
         player!.Id.Should().Be(playerId);
         player.Username.Should().Be(username);

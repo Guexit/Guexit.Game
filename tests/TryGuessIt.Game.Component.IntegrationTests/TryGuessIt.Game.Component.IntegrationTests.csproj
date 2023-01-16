@@ -27,8 +27,4 @@
     <ProjectReference Include="..\..\src\TryGuessIt.Game.WebApi\TryGuessIt.Game.WebApi.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Builders\" />
-  </ItemGroup>
-
 </Project>

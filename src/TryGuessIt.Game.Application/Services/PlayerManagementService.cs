@@ -1,6 +1,6 @@
 ﻿using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application;
+namespace TryGuessIt.Game.Application.Services;
 
 public interface IPlayerManagementService
 {
@@ -18,7 +18,7 @@ public sealed class PlayerManagementService : IPlayerManagementService
 
     public async Task CreatePlayer(PlayerId playerId, string username, CancellationToken cancellationToken = default)
     {
-        if (await _playerRepository.GetById(playerId) is not null)
+        if (await _playerRepository.GetBy(playerId) is not null)
             return;
 
         await _playerRepository.Add(new Player(playerId, username));

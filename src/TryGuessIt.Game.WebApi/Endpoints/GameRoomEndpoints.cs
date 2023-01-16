@@ -14,11 +14,12 @@ public static class GameRoomEndpoints
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
         app.MapPost("game-rooms", CreateGameRoom)
-            .Produces<CreateGameRoomCompletion>(StatusCodes.Status200OK)
+            .Produces<CreateGameRoomResponseDto>(StatusCodes.Status200OK)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
         app.MapPost("game-rooms/{gameRoomId}/join", JoinGameRoom)
+            .Produces(StatusCodes.Status200OK)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
@@ -34,12 +35,17 @@ public static class GameRoomEndpoints
         CancellationToken cancellationToken)
     {
         var completion = await sender.Send(new CreateGameRoomCommand(userId), cancellationToken);
-        return Results.Ok(CreateGameRoomCompletion.From(completion));
+        return Results.Ok(CreateGameRoomResponseDto.From(completion));
     }
 
-    private static IResult JoinGameRoom(string gameRoomId)
+    private static async Task<IResult> JoinGameRoom(
+        [FromHeader(Name = TryGuessItHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId, 
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
     {
-        return Results.BadRequest();
+        await sender.Send(new JoinGameRoomCommand(userId, gameRoomId), cancellationToken);
+        return Results.Ok();
     }
 
     private static async Task<IResult> GetGameRoomLobby(

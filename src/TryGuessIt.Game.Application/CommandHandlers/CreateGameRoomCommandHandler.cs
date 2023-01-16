@@ -28,7 +28,7 @@ public sealed class CreateGameRoomCommandHandler : CommandHandler<CreateGameRoom
 
     protected override async ValueTask<CreateGameRoomCommandCompletion> Process(CreateGameRoomCommand command, CancellationToken ct)
     {
-        var playerCreatingTheGame = await _playerRepository.GetById(command.PlayerId, ct);
+        var playerCreatingTheGame = await _playerRepository.GetBy(command.PlayerId, ct);
         if (playerCreatingTheGame is null)
             throw new PlayerNotFoundException(command.PlayerId);
 

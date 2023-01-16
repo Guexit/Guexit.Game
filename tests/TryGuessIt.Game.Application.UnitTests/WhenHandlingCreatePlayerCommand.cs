@@ -1,6 +1,7 @@
 using NSubstitute;
 using TryGuessIt.Game.Application.CommandHandlers;
 using TryGuessIt.Game.Application.Commands;
+using TryGuessIt.Game.Application.Services;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Application.UnitTests;
@@ -29,7 +30,7 @@ public sealed class WhenHandlingCreatePlayerCommand
 
         await _commandHandler.Handle(command);
 
-        var player = await _playerRepository.GetById(command.PlayerId);
+        var player = await _playerRepository.GetBy(command.PlayerId);
         player.Should().NotBeNull();
         player!.Id.Should().Be(command.PlayerId);
         player.Username.Should().Be(command.Username);

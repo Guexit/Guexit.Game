@@ -3,5 +3,5 @@
 public interface IPlayerRepository
 {
     Task Add(Player player, CancellationToken cancellationToken = default);
-    Task<Player?> GetById(PlayerId playerId, CancellationToken cancellationToken = default);
+    Task<Player?> GetBy(PlayerId playerId, CancellationToken cancellationToken = default);
 }

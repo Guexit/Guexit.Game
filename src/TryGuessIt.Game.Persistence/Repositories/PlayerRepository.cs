@@ -17,7 +17,7 @@ public sealed class PlayerRepository : IPlayerRepository
         await _dbContext.Players.AddAsync(player, ct);
     }
 
-    public async Task<Player?> GetById(PlayerId id, CancellationToken ct = default)
+    public async Task<Player?> GetBy(PlayerId id, CancellationToken ct = default)
     {
         return await _dbContext.Players.FirstOrDefaultAsync(p => p.Id == id, ct);
     }
