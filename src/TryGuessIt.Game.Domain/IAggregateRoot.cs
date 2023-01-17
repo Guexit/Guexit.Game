@@ -2,4 +2,5 @@
 
 public interface IAggregateRoot
 {
+    uint Version { get; }
 }

@@ -11,7 +11,7 @@ internal sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Playe
 
     public void Configure(EntityTypeBuilder<Player> builder)
     {
-        builder.Property<int>("Version").IsRowVersion();
+        builder.Property(x => x.Version).IsRowVersion();
         builder.Property(x => x.Id).HasConversion<PlayerIdValueConverter>();
         builder.HasKey(x => x.Id);
 

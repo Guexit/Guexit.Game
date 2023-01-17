@@ -11,7 +11,7 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
 {
     public void Configure(EntityTypeBuilder<GameRoom> builder)
     {
-        builder.Property<int>("Version").IsRowVersion();
+        builder.Property(x => x.Version).IsRowVersion();
         builder.Property(x => x.Id).HasConversion<GameRoomIdValueConverter>();
         builder.HasKey(x => x.Id);
 

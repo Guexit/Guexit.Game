@@ -37,10 +37,11 @@ namespace TryGuessIt.Game.Persistence.Npgsql.Migrations
                     b.Property<int>("RequiredMinPlayers")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Version")
+                    b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("integer");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -57,10 +58,11 @@ namespace TryGuessIt.Game.Persistence.Npgsql.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("character varying(320)");
 
-                    b.Property<int>("Version")
+                    b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("integer");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 

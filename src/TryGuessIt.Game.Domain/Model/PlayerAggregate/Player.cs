@@ -2,6 +2,8 @@
 
 public sealed class Player : Entity<PlayerId>, IAggregateRoot
 {
+    public uint Version { get; private set; }
+
     public string Username { get; private set; } = default!;
 
     public Player()

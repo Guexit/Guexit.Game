@@ -12,8 +12,8 @@ using TryGuessIt.Game.Persistence;
 namespace TryGuessIt.Game.Persistence.Npgsql.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20230117220027_AddConcurrencyVersionToGameAndPlayer")]
-    partial class AddConcurrencyVersionToGameAndPlayer
+    [Migration("20230117224558_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,10 +40,11 @@ namespace TryGuessIt.Game.Persistence.Npgsql.Migrations
                     b.Property<int>("RequiredMinPlayers")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Version")
+                    b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("integer");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -60,10 +61,11 @@ namespace TryGuessIt.Game.Persistence.Npgsql.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("character varying(320)");
 
-                    b.Property<int>("Version")
+                    b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("integer");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 

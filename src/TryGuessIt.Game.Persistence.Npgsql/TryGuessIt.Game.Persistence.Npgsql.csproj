@@ -14,4 +14,8 @@
     <ProjectReference Include="..\TryGuessIt.Game.Persistence\TryGuessIt.Game.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
