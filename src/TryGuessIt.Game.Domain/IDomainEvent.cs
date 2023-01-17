@@ -1,5 +1,15 @@
-﻿namespace TryGuessIt.Game.Domain;
+﻿using Mediator;
 
-public interface IDomainEvent
+namespace TryGuessIt.Game.Domain;
+
+/// <summary>
+/// Marker interface for domain events
+/// </summary>
+public interface IDomainEvent : INotification
+{
+}
+
+public interface IDomainEventHandler<in TDomainEvent> : INotificationHandler<TDomainEvent>
+    where TDomainEvent : IDomainEvent
 {
 }

@@ -6,7 +6,6 @@ using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Persistence.Mappings;
-
 internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<GameRoom>
 {
     public void Configure(EntityTypeBuilder<GameRoom> builder)

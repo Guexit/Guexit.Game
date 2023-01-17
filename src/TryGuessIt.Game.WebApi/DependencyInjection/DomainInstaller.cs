@@ -8,6 +8,7 @@ public static class DomainInstaller
     {
         services.AddSingleton<IGuidProvider, GuidProvider>();
         services.AddSingleton<ISystemClock, SystemClock>();
+        services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
 
         return services;
     }

@@ -2,6 +2,7 @@
 using TryGuessIt.Game.Application.CommandHandlers;
 using TryGuessIt.Game.Application.Commands;
 using TryGuessIt.Game.Application.Exceptions;
+using TryGuessIt.Game.Domain;
 using TryGuessIt.Game.Domain.Exceptions;
 using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
@@ -21,7 +22,8 @@ public sealed class WhenHandlingJoinGameRoomCommand
         _commandHandler = new JoinGameRoomCommandHandler(
             Substitute.For<IUnitOfWork>(),
             _playerRepository,
-            _gameRoomRepository
+            _gameRoomRepository, 
+            Substitute.For<IDomainEventPublisher>()
         );
     }
 

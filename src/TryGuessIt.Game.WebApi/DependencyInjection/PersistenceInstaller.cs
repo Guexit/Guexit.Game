@@ -3,6 +3,7 @@ using TryGuessIt.Game.Application;
 using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 using TryGuessIt.Game.Persistence;
+using TryGuessIt.Game.Persistence.Outbox;
 using TryGuessIt.Game.Persistence.Repositories;
 
 namespace TryGuessIt.Game.WebApi.DependencyInjection;
@@ -28,6 +29,7 @@ public static class PersistenceInstaller
             });
         });
 
+        services.AddSingleton<OutboxMessageFactory>();
         services.AddScoped<IGameRoomRepository, GameRoomRepository>();
         services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();

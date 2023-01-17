@@ -1,7 +1,6 @@
 ﻿using Mediator;
-using Microsoft.Extensions.Logging;
 
-namespace TryGuessIt.Game.Application.Logging;
+namespace TryGuessIt.Game.WebApi.Logging;
 
 public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
@@ -14,8 +13,8 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBeh
     }
 
     public async ValueTask<TResponse> Handle(
-        TRequest message, 
-        CancellationToken cancellationToken, 
+        TRequest message,
+        CancellationToken cancellationToken,
         MessageHandlerDelegate<TRequest, TResponse> next)
     {
         try

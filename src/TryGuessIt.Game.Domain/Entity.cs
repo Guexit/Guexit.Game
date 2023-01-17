@@ -9,13 +9,20 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>>
 {
     public TId? Id { get; protected set; }
 
-    
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
     protected Entity() 
     {
         // Entity Framework required parameterless ctor
     }
 
     protected Entity(TId id) => Id = id;
+
+    protected void AddDomainEvent(IDomainEvent @event)
+    {
+        _domainEvents.Add(@event);
+    }
 
     public bool Equals(Entity<TId>? other)
     {

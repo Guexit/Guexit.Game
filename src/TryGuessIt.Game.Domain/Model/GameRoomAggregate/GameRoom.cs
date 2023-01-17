@@ -1,4 +1,5 @@
 ﻿using TryGuessIt.Game.Domain.Exceptions;
+using TryGuessIt.Game.Domain.Model.GameRoomAggregate.Events;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Domain.Model.GameRoomAggregate;
@@ -27,5 +28,7 @@ public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
             throw new PlayerIsAlreadyInGameRoomException(playerId);
 
         PlayerIds.Add(playerId);
+
+        AddDomainEvent(new PlayerJoinedGameRoom(Id, playerId));
     }
 }
