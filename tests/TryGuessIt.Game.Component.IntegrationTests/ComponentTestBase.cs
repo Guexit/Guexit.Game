@@ -42,14 +42,13 @@ public abstract class ComponentTestBase : IAsyncLifetime
         }
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync()
+    public async Task InitializeAsync()
     {
-        foreach(var cleaner in _testDataCleaners)
+        foreach (var cleaner in _testDataCleaners)
         {
             await cleaner.Clean(WebApplicationFactory);
         }
     }
 
+    public Task DisposeAsync() => Task.CompletedTask;
 }

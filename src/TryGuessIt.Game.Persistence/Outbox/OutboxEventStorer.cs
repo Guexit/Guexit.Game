@@ -1,5 +1,6 @@
 ﻿using TryGuessIt.Game.Domain;
 using TryGuessIt.Game.Domain.Model.GameRoomAggregate.Events;
+using TryGuessIt.Game.Messages;
 
 namespace TryGuessIt.Game.Persistence.Outbox;
 
@@ -14,10 +15,16 @@ public sealed class OutboxEventStorer : IDomainEventHandler<PlayerJoinedGameRoom
         _outboxMessageFactory = messageFactory;
     }
 
-    public async ValueTask Handle(PlayerJoinedGameRoom @event, CancellationToken ct) => await AddToOutbox(@event, ct);
+    public async ValueTask Handle(PlayerJoinedGameRoom @event, CancellationToken ct)
+    {
+        await AddToOutbox(new PlayerJoinedGameRoomIntegrationEvent
+        {
+            PlayerId = @event.PlayerId,
+            GameRoomId = @event.GameRoomId
+        }, ct);
+    }
 
     private async ValueTask AddToOutbox<TMessage>(TMessage message, CancellationToken cancellationToken)
-        where TMessage : IDomainEvent
     {
         var outboxMessage = _outboxMessageFactory.CreateFrom(message);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);

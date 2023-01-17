@@ -6,10 +6,12 @@ using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 
 namespace TryGuessIt.Game.Persistence.Mappings;
+
 internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<GameRoom>
 {
     public void Configure(EntityTypeBuilder<GameRoom> builder)
     {
+        builder.Property<int>("Version").IsRowVersion();
         builder.Property(x => x.Id).HasConversion<GameRoomIdValueConverter>();
         builder.HasKey(x => x.Id);
 
@@ -17,7 +19,6 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
             .HasConversion<PlayerIdsCollectionValueConverter>()
             .Metadata
             .SetValueComparer(new PlayerIdsCollectionValueComparer());
-
 
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RequiredMinPlayers).HasConversion<RequiredMinPlayersValueConverter>();
