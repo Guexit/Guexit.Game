@@ -39,10 +39,10 @@ jobs:
         dotnet tool install --global dotnet-ef
         dotnet tool restore
         cd /home/runner/work/TryGuessIt.Game/TryGuessIt.Game/
-        dotnet ef migrations bundle -p ./src/TryGuessIt.Game.Persistence.Npgsql/TryGuessIt.Game.Persistence.Npgsql.csproj -s ./src/TryGuessIt.Game.WebApi/TryGuessIt.Game.WebApi.csproj -o 'efbundle_PersistedGrantDbContext.exe' --verbose
+        dotnet ef migrations bundle -p ./src/TryGuessIt.Game.Persistence.Npgsql/TryGuessIt.Game.Persistence.Npgsql.csproj -s ./src/TryGuessIt.Game.WebApi/TryGuessIt.Game.WebApi.csproj -o 'TryGuessId.Game.efbundle.exe' --verbose
     - name: Run EntityFramework migrations
       run: |
-        ./efbundle_TryGuessItIdentityDbContext.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tryguessit_game;'
+        ./TryGuessId.Game.efbundle.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tryguessit_game;'
     - name: Run integration tests
       env: 
          ConnectionStrings__TryGuessIt_Game_GameDb: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tryguessit_game;
