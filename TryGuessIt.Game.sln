@@ -20,8 +20,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97049A6F-B8E1-43C8-9B1D-90303DCAC7D8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		.github\workflows\ci.yml = .github\workflows\ci.yml
 		docker-compose.yml = docker-compose.yml
+		.github\workflows\ci-pipeline.yml = .github\workflows\ci-pipeline.yml
 		utilities\EntityFrameworkScriptsShorthand.txt = utilities\EntityFrameworkScriptsShorthand.txt
 	EndProjectSection
 EndProject
