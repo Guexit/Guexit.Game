@@ -5,7 +5,6 @@ using TryGuessIt.Game.Component.IntegrationTests.Builders;
 using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
 using TryGuessIt.Game.Domain.Model.PlayerAggregate;
 using TryGuessIt.Game.Persistence;
-using TryGuessIt.Game.WebApi;
 
 namespace TryGuessIt.Game.Component.IntegrationTests;
 
@@ -23,12 +22,11 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
     public async Task GameRoomIsCreated()
     {
         var playerId = new PlayerId("player1");
-        await AssumePlayer(playerId);
+        await AssumePlayerWasCreated(playerId);
         
-        using var client = WebApplicationFactory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "game-rooms");
         request.AddPlayerIdHeader(playerId);
-
+        using var client = WebApplicationFactory.CreateClient();
         var response = await client.SendAsync(request);
 
         response.Should().NotBeNull();
@@ -37,7 +35,7 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
         await AssertGameRoomWasCreated(playerId); 
     }
 
-    private async Task AssumePlayer(PlayerId playerId)
+    private async Task AssumePlayerWasCreated(PlayerId playerId)
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();

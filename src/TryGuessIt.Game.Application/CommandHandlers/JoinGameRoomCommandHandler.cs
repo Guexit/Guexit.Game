@@ -34,7 +34,7 @@ public sealed class JoinGameRoomCommandHandler : CommandHandler<JoinGameRoomComm
 
         gameRoom.Join(player.Id);
 
-        await _domainEventPublisher.Publish(gameRoom.DomainEvents);
+        await _domainEventPublisher.Publish(gameRoom.DomainEvents, ct);
 
         return Unit.Value;
     }

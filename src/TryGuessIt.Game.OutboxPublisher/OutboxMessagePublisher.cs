@@ -24,7 +24,7 @@ public sealed class OutboxMessagePublisher : IOutboxMessagePublisher
         _logger = logger;
     }
 
-    public async Task PublishMessages(CancellationToken ct)
+    public async Task PublishMessages(CancellationToken ct = default)
     {
         var anyPendingToPublish = await _dbContext.OutboxMessages.AnyAsync(x => x.PublishedAt == null, ct);
         if (!anyPendingToPublish)
