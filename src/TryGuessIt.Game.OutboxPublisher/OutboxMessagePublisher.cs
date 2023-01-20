@@ -6,7 +6,12 @@ using TryGuessIt.Game.Persistence;
 
 namespace TryGuessIt.Game.OutboxPublisher;
 
-public sealed class OutboxMessagePublisher
+public interface IOutboxMessagePublisher
+{
+    Task PublishMessages(CancellationToken cancellationToken = default);
+}
+
+public sealed class OutboxMessagePublisher : IOutboxMessagePublisher
 {
     private readonly GameDbContext _dbContext;
     private readonly IBus _bus;

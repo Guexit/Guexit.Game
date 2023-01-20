@@ -23,10 +23,9 @@ public sealed class OutboxMessagePublishHeartbeat : BackgroundService
             try
             {
                 await using var scope = _serviceProvider.CreateAsyncScope();
-                var integrationEventsPublisher = scope.ServiceProvider.GetRequiredService<OutboxMessagePublisher>();
 
-                _logger.LogInformation("Starting ", DateTimeOffset.Now);
-                await integrationEventsPublisher.PublishMessages(ct);
+                var eventPublisher = scope.ServiceProvider.GetRequiredService<IOutboxMessagePublisher>();
+                await eventPublisher.PublishMessages(ct);
             }
             catch (Exception ex)
             {

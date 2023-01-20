@@ -20,6 +20,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97049A6F-B8E1-43C8-9B1D-90303DCAC7D8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		docker-compose.yml = docker-compose.yml
 		utilities\EntityFrameworkScriptsShorthand.txt = utilities\EntityFrameworkScriptsShorthand.txt
 	EndProjectSection
@@ -38,9 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.ReadModels.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Tests.Common", "tests\TryGuessIt.Game.Tests.Common\TryGuessIt.Game.Tests.Common.csproj", "{E9AC6344-CD5B-4B53-ABAD-F0F299C93F6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.Messages", "src\TryGuessIt.Game.Messages\TryGuessIt.Game.Messages.csproj", "{3A09D1B1-F6C9-4694-8FF5-337090F29832}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.Messages", "src\TryGuessIt.Game.Messages\TryGuessIt.Game.Messages.csproj", "{3A09D1B1-F6C9-4694-8FF5-337090F29832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryGuessIt.Game.OutboxPublisher", "src\TryGuessIt.Game.OutboxPublisher\TryGuessIt.Game.OutboxPublisher.csproj", "{949B2C7B-C45F-4C68-ABEA-611525B09745}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TryGuessIt.Game.OutboxPublisher", "src\TryGuessIt.Game.OutboxPublisher\TryGuessIt.Game.OutboxPublisher.csproj", "{949B2C7B-C45F-4C68-ABEA-611525B09745}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

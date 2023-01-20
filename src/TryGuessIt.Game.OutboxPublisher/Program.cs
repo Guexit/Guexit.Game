@@ -29,7 +29,7 @@ builder.ConfigureServices((builderContext, services) =>
         });
     });
 
-    services.AddScoped<OutboxMessagePublisher>();
+    services.AddScoped<IOutboxMessagePublisher, OutboxMessagePublisher>();
     services.AddHostedService<OutboxMessagePublishHeartbeat>();
 });
 
