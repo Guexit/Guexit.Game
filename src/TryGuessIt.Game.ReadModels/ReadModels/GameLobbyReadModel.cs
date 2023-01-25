@@ -2,11 +2,13 @@
 
 public sealed class GameLobbyReadModel
 {
+    public Guid GameRoomId { get; }
     public int RequiredMinPlayers { get; }
     public GameLobbyPlayerDto[] Players { get; }
 
-    public GameLobbyReadModel(int requiredMinPlayers, GameLobbyPlayerDto[] players)
+    public GameLobbyReadModel(Guid gameRoomId, int requiredMinPlayers, GameLobbyPlayerDto[] players)
     {
+        GameRoomId = gameRoomId;
         RequiredMinPlayers = requiredMinPlayers;
         Players = players;
     }

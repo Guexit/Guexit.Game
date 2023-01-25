@@ -19,6 +19,7 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLob
         var playersInGame = await DbContext.Players.Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
         var gameLobbyReadModel = new GameLobbyReadModel(
+            gameRoom.Id.Value,
             gameRoom.RequiredMinPlayers.Count, 
             playersInGame.Select(x => new GameLobbyPlayerDto(x.Username)).ToArray()
         );

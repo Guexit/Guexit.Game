@@ -53,7 +53,7 @@ public static class GameRoomEndpoints
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        var readModel = await sender.Send(new GameLobbyQuery(new GameRoomId(gameRoomId)), cancellationToken);
+        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId), cancellationToken);
         return Results.Ok(readModel);
     }
 }

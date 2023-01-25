@@ -16,20 +16,22 @@ public class WhenHandlingGameLobbyQuery : ReadModelsIntegrationTestBase
     }
 
     [Fact]
-    public async Task GameLobbyReadModelIsReturnedAsync()
+    public async Task ReturnsGameLobby()
     {
-        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var gameRoomId = Guid.NewGuid();
         await DbContext.Players.AddAsync(new Player(new PlayerId("3"), "Emiliano"));
         await DbContext.GameRooms.AddAsync(
-            new GameRoom(gameRoomId, new PlayerId("3"), new DateTimeOffset(2022, 1, 2, 3, 4, 5, TimeSpan.Zero)));
+            new GameRoom(new GameRoomId(gameRoomId), new PlayerId("3"), new DateTimeOffset(2022, 1, 2, 3, 4, 5, TimeSpan.Zero))
+        );
         await DbContext.SaveChangesAsync();
         DbContext.ChangeTracker.Clear();
 
-        var handler = new GameLobbyQueryHandler(DbContext, Substitute.For<ILogger<QueryHandler<GameLobbyQuery, GameLobbyReadModel>>>());
-        var readModel = await handler.Handle(new GameLobbyQuery(gameRoomId));
+        var queryHandler = new GameLobbyQueryHandler(DbContext, Substitute.For<ILogger<QueryHandler<GameLobbyQuery, GameLobbyReadModel>>>());
+        var lobbyReadModel = await queryHandler.Handle(new GameLobbyQuery(gameRoomId));
 
-        readModel.Should().NotBeNull();
-        readModel.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default.Count);
-        readModel.Players.Should().BeEquivalentTo(new[] {new GameLobbyPlayerDto("Emiliano")});
+        lobbyReadModel.Should().NotBeNull();
+        lobbyReadModel.GameRoomId.Should().Be(gameRoomId);
+        lobbyReadModel.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default.Count);
+        lobbyReadModel.Players.Should().BeEquivalentTo(new[] {new GameLobbyPlayerDto("Emiliano")});
     }
 }

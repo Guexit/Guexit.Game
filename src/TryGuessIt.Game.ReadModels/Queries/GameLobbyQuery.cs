@@ -7,8 +7,8 @@ public sealed class GameLobbyQuery : IQuery<GameLobbyReadModel>
 {
     public GameRoomId GameRoomId { get; }
 
-    public GameLobbyQuery(GameRoomId gameRoomId)
+    public GameLobbyQuery(Guid gameRoomId)
     {
-        GameRoomId = gameRoomId;
+        GameRoomId = new GameRoomId(gameRoomId);
     }
 }
