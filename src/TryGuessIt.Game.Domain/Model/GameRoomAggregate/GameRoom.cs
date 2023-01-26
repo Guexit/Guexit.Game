@@ -12,7 +12,7 @@ public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
 
-    public GameRoom() : base()
+    public GameRoom()
     {
         // Entity Framework required parameterless ctor
     }
