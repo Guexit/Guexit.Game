@@ -39,7 +39,7 @@ public sealed class WhenPublishingOutboxMessages
 
         await AssertEventWasPublished(event1);
         await AssertEventWasPublished(event2);
-        var messagesPendingToPublish = await _dbContext.OutboxMessages.Where(x => !x.IsPublished).ToArrayAsync();
+        var messagesPendingToPublish = await _dbContext.OutboxMessages.Where(x => x.PublishedAt == null).ToArrayAsync();
         messagesPendingToPublish.Should().BeEmpty();
     }
 
