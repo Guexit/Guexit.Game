@@ -7,7 +7,7 @@ namespace TryGuessIt.Game.Persistence.Mappings;
 
 internal sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Player>
 {
-    private const int _maxEmailLength = 320;
+    private const int MaxEmailLength = 320;
 
     public void Configure(EntityTypeBuilder<Player> builder)
     {
@@ -15,7 +15,7 @@ internal sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Playe
         builder.Property(x => x.Id).HasConversion<PlayerIdValueConverter>();
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Username).IsRequired().HasMaxLength(_maxEmailLength);
+        builder.Property(x => x.Username).IsRequired().HasMaxLength(MaxEmailLength);
     }
 
     private sealed class PlayerIdValueConverter : ValueConverter<PlayerId, string>

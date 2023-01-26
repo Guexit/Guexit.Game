@@ -15,8 +15,8 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLob
 
     protected override async Task<GameLobbyReadModel> Process(GameLobbyQuery query, CancellationToken cancellationToken)
     {
-        var gameRoom = await DbContext.GameRooms.FirstAsync(x => x.Id == query.GameRoomId, cancellationToken: cancellationToken);
-        var playersInGame = await DbContext.Players.Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(cancellationToken);
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().FirstAsync(x => x.Id == query.GameRoomId, cancellationToken: cancellationToken);
+        var playersInGame = await DbContext.Players.AsNoTracking().Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
         var gameLobbyReadModel = new GameLobbyReadModel(
             gameRoom.Id.Value,

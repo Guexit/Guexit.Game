@@ -5,11 +5,11 @@ using TryGuessIt.Game.Persistence;
 
 namespace TryGuessIt.Game.ReadModels.IntegrationTests;
 
-public sealed class IntegrationTestFixture
+public sealed class ReadModelsIntegrationTestFixture
 {
     public IConfigurationRoot Configuration { get; }
 
-    public IntegrationTestFixture()
+    public ReadModelsIntegrationTestFixture()
     {
         var environmentName = Environment.GetEnvironmentVariable("DOTNETCORE_ENVIRONMENT");
         Configuration = new ConfigurationBuilder()
@@ -21,7 +21,7 @@ public sealed class IntegrationTestFixture
 }
 
 [CollectionDefinition(nameof(MappingIntegrationTestCollectionDefinition))]
-public sealed class MappingIntegrationTestCollectionDefinition : ICollectionFixture<IntegrationTestFixture>
+public sealed class MappingIntegrationTestCollectionDefinition : ICollectionFixture<ReadModelsIntegrationTestFixture>
 {
 }
 
@@ -31,7 +31,7 @@ public abstract class ReadModelsIntegrationTestBase : IAsyncLifetime
     private readonly IDbContextTransaction _transactionToDiscardChanges;
     protected readonly GameDbContext DbContext;
 
-    protected ReadModelsIntegrationTestBase(IntegrationTestFixture fixture)
+    protected ReadModelsIntegrationTestBase(ReadModelsIntegrationTestFixture fixture)
     {
         var dbContextOptions = new DbContextOptionsBuilder<GameDbContext>()
             .UseNpgsql(fixture.Configuration.GetConnectionString("TryGuessIt_Game_GameDb"))

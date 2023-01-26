@@ -1,4 +1,3 @@
-using NSubstitute;
 using TryGuessIt.Game.Application.CommandHandlers;
 using TryGuessIt.Game.Application.Commands;
 using TryGuessIt.Game.Application.Services;

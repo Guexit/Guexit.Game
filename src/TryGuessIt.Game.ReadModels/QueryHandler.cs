@@ -1,5 +1,4 @@
 ﻿using Mediator;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TryGuessIt.Game.Persistence;
 
@@ -17,8 +16,6 @@ public abstract class QueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, 
     {
         DbContext = dbContext;
         _logger = logger;
-
-        DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public async ValueTask<TResponse> Handle(TQuery query, CancellationToken cancellationToken = default)

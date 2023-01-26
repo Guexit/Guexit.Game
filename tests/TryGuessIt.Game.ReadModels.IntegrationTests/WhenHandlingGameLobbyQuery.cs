@@ -10,7 +10,7 @@ namespace TryGuessIt.Game.ReadModels.IntegrationTests;
 
 public class WhenHandlingGameLobbyQuery : ReadModelsIntegrationTestBase
 {
-    public WhenHandlingGameLobbyQuery(IntegrationTestFixture fixture) 
+    public WhenHandlingGameLobbyQuery(ReadModelsIntegrationTestFixture fixture) 
         : base(fixture)
     {
     }
@@ -30,7 +30,7 @@ public class WhenHandlingGameLobbyQuery : ReadModelsIntegrationTestBase
         var lobbyReadModel = await queryHandler.Handle(new GameLobbyQuery(gameRoomId));
 
         lobbyReadModel.Should().NotBeNull();
-        lobbyReadModel.GameRoomId.Should().Be(gameRoomId);
+        lobbyReadModel!.GameRoomId.Should().Be(gameRoomId);
         lobbyReadModel.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default.Count);
         lobbyReadModel.Players.Should().BeEquivalentTo(new[] {new GameLobbyPlayerDto("Emiliano")});
     }

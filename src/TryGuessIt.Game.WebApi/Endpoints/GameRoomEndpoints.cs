@@ -14,17 +14,16 @@ public static class GameRoomEndpoints
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
         app.MapPost("game-rooms", CreateGameRoom)
-            .Produces<CreateGameRoomResponseDto>(StatusCodes.Status200OK)
+            .Produces<CreateGameRoomResponseDto>()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
         app.MapPost("game-rooms/{gameRoomId}/join", JoinGameRoom)
-            .Produces(StatusCodes.Status200OK)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
         app.MapGet("game-rooms/{gameRoomId}/lobby", GetGameRoomLobby)
-            .Produces<GameLobbyReadModel>(StatusCodes.Status200OK)
+            .Produces<GameLobbyReadModel>()
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
     }
