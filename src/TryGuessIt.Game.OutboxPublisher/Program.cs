@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TryGuessIt.Game.Domain;
 using TryGuessIt.Game.OutboxPublisher;
 using TryGuessIt.Game.Persistence;
 
@@ -29,8 +30,9 @@ builder.ConfigureServices((builderContext, services) =>
         });
     });
 
+    services.AddSingleton<ISystemClock, SystemClock>();
     services.AddScoped<IOutboxMessagePublisher, OutboxMessagePublisher>();
-    services.AddHostedService<OutboxMessagePublishHeartbeat>();
+    services.AddHostedService<OutboxMessagePublisherHeartbeat>();
 });
 
 var host = builder.Build();

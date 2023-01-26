@@ -17,7 +17,7 @@ public sealed class OutboxMessageFactory
 
     public OutboxMessage CreateFrom<TMessage>(TMessage message)
     {
-        var type = typeof(TMessage).FullName;
+        var type = typeof(TMessage).FullName!;
         var serializedMessage = JsonSerializer.Serialize(message);
 
         return new OutboxMessage(_guidProvider.NewGuid(), type, serializedMessage, _clock.UtcNow);
