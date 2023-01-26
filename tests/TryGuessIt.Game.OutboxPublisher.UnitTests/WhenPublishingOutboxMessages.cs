@@ -60,11 +60,11 @@ public sealed class WhenPublishingOutboxMessages
         _dbContext.ChangeTracker.Clear();
     }
 
-    private async Task AssertEventWasPublished(PlayerJoinedGameRoomIntegrationEvent event1)
+    private async Task AssertEventWasPublished(PlayerJoinedGameRoomIntegrationEvent @event)
     {
         await _bus.Received(1).Publish(
-            Arg.Is<object>(x => ((PlayerJoinedGameRoomIntegrationEvent)x).PlayerId == event1.PlayerId &&
-                                ((PlayerJoinedGameRoomIntegrationEvent)x).GameRoomId == event1.GameRoomId),
+            Arg.Is<object>(x => ((PlayerJoinedGameRoomIntegrationEvent)x).PlayerId == @event.PlayerId &&
+                                ((PlayerJoinedGameRoomIntegrationEvent)x).GameRoomId == @event.GameRoomId),
             Arg.Is<Type>(t => t == typeof(PlayerJoinedGameRoomIntegrationEvent)),
             Arg.Any<CancellationToken>()
         );
