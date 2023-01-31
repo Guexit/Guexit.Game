@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Domain;
+﻿namespace Guexit.Game.Domain;
 
 public interface IGuidProvider
 {

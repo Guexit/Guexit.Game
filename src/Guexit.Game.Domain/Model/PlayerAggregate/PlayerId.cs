@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
 public class PlayerId : ValueObject
 {

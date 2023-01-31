@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace TryGuessIt.Game.WebApi.OpenApi;
+namespace Guexit.Game.WebApi.OpenApi;
 
 public class SwaggerDefaultValues : IOperationFilter
 {

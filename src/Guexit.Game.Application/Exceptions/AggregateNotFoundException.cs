@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Application.Exceptions;
+﻿namespace Guexit.Game.Application.Exceptions;
 
 public class AggregateNotFoundException : Exception
 {

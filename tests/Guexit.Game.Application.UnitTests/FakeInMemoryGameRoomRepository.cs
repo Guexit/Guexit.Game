@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 
-namespace TryGuessIt.Game.Application.UnitTests;
+namespace Guexit.Game.Application.UnitTests;
 
 public sealed class FakeInMemoryGameRoomRepository : IGameRoomRepository
 {

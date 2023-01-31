@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Application;
+﻿namespace Guexit.Game.Application;
 
 public interface IAssemblyMarker
 {

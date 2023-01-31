@@ -1,9 +1,9 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.IdentityProvider.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using TryGuessIt.Game.Persistence;
-using TryGuessIt.IdentityProvider.Messages;
 
-namespace TryGuessIt.Game.Component.IntegrationTests;
+namespace Guexit.Game.Component.IntegrationTests;
 
 public sealed class WhenReceivingUserCreated : ComponentTestBase
 {

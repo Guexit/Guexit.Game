@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Domain.Exceptions;
+﻿namespace Guexit.Game.Domain.Exceptions;
 
 public sealed class InvalidRequiredMinPlayersException : DomainException
 {

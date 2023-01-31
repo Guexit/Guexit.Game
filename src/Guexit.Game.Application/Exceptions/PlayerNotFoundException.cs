@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application.Exceptions;
+namespace Guexit.Game.Application.Exceptions;
 
 public sealed class PlayerNotFoundException : AggregateNotFoundException
 {

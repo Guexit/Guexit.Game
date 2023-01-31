@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Exceptions;
+﻿using Guexit.Game.Domain.Exceptions;
 
-namespace TryGuessIt.Game.Domain.Model.GameRoomAggregate;
+namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class RequiredMinPlayers : ValueObject
 {

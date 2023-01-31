@@ -1,7 +1,7 @@
-﻿using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
-using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application.Commands;
+namespace Guexit.Game.Application.Commands;
 
 public sealed class JoinGameRoomCommand : ICommand
 {

@@ -6,24 +6,15 @@ using TryGuessIt.Game.Persistence;
 using TryGuessIt.Game.Persistence.Outbox;
 using TryGuessIt.Game.Persistence.Repositories;
 
-namespace TryGuessIt.Game.WebApi.DependencyInjection;
+namespace Guexit.Game.WebApi.DependencyInjection;
 
 public static class PersistenceInstaller
 {
-    public static IServiceCollection AddPersistence(
-        this IServiceCollection services, 
-        IConfiguration configuration, 
-        IHostEnvironment environment)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<GameDbContext>(options =>
         {
-            //if (environment.IsDevelopment())
-            //{
-            //    options.EnableSensitiveDataLogging();
-            //    options.EnableDetailedErrors();
-            //}
-
-            options.UseNpgsql(configuration.GetConnectionString("TryGuessIt_Game_GameDb"), b =>
+            options.UseNpgsql(configuration.GetConnectionString("Guexit_Game_GameDb"), b =>
             {
                 b.MigrationsAssembly(typeof(Guexit.Game.Persistence.Npgsql.IAssemblyMarker).Assembly.FullName);
             });

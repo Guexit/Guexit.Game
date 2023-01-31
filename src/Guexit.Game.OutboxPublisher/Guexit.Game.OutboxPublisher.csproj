@@ -5,7 +5,6 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>TryGuessIt.Game.OutboxPublisher</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Guexit.Game.Messages\Guexit.Game.Messages.csproj" />    
-	  <ProjectReference Include="..\TryGuessIt.Game.Persistence.Npgsql\TryGuessIt.Game.Persistence.Npgsql.csproj" />
+	  <ProjectReference Include="..\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

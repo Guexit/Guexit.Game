@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
+﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 
-namespace TryGuessIt.Game.Application.Exceptions;
+namespace Guexit.Game.Application.Exceptions;
 
 public sealed class GameRoomNotFoundException : AggregateNotFoundException
 {

@@ -1,12 +1,12 @@
 ﻿using Asp.Versioning.Builder;
 using Guexit.Game.Application.Commands;
+using Guexit.Game.WebApi.Dtos.Request;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using TryGuessIt.Game.ReadModels.Queries;
 using TryGuessIt.Game.ReadModels.ReadModels;
-using TryGuessIt.Game.WebApi.Dtos.Request;
 
-namespace TryGuessIt.Game.WebApi.Endpoints;
+namespace Guexit.Game.WebApi.Endpoints;
 
 public static class GameRoomEndpoints
 {
@@ -28,7 +28,7 @@ public static class GameRoomEndpoints
     }
 
     private static async Task<IResult> CreateGameRoom(
-        [FromHeader(Name = TryGuessItHttpHeaders.UserId)] string userId, 
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId, 
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
@@ -37,7 +37,7 @@ public static class GameRoomEndpoints
     }
 
     private static async Task<IResult> JoinGameRoom(
-        [FromHeader(Name = TryGuessItHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken cancellationToken)

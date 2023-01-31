@@ -1,8 +1,8 @@
-﻿using TryGuessIt.Game.Domain.Exceptions;
-using TryGuessIt.Game.Domain.Model.GameRoomAggregate.Events;
-using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Exceptions;
+using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Domain.Model.GameRoomAggregate;
+namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
 {

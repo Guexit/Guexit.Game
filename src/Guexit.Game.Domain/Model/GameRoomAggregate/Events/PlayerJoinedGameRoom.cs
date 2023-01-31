@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Domain.Model.GameRoomAggregate.Events;
+namespace Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 
 public sealed class PlayerJoinedGameRoom : IDomainEvent
 {

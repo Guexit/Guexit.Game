@@ -1,11 +1,12 @@
-﻿using MassTransit;
+﻿using Guexit.Game.Domain;
+using Guexit.Game.OutboxPublisher;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TryGuessIt.Game.Domain;
-using TryGuessIt.Game.OutboxPublisher;
 using TryGuessIt.Game.Persistence;
+using IAssemblyMarker = Guexit.Game.Persistence.Npgsql.IAssemblyMarker;
 
 var builder = Host.CreateDefaultBuilder(args);
 
@@ -24,9 +25,9 @@ builder.ConfigureServices((builderContext, services) =>
 
     services.AddDbContext<GameDbContext>(options =>
     {
-        options.UseNpgsql(builderContext.Configuration.GetConnectionString("TryGuessIt_Game_GameDb"), b =>
+        options.UseNpgsql(builderContext.Configuration.GetConnectionString("Guexit_Game_GameDb"), b =>
         {
-            b.MigrationsAssembly(typeof(TryGuessIt.Game.Persistence.Npgsql.IAssemblyMarker).Assembly.FullName);
+            b.MigrationsAssembly(typeof(IAssemblyMarker).Assembly.FullName);
         });
     });
 

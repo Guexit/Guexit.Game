@@ -1,8 +1,8 @@
-﻿using MassTransit.Testing;
+﻿using Guexit.Game.Component.IntegrationTests.DataCleaners;
+using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Component.IntegrationTests.DataCleaners;
 
-namespace TryGuessIt.Game.Component.IntegrationTests;
+namespace Guexit.Game.Component.IntegrationTests;
 
 [CollectionDefinition(nameof(ComponentTestCollectionDefinition))]
 public sealed class ComponentTestCollectionDefinition : ICollectionFixture<GameWebApplicationFactory>

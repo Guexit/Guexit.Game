@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace TryGuessIt.Game.OutboxPublisher;
+namespace Guexit.Game.OutboxPublisher;
 
 public sealed class OutboxMessagePublisherHeartbeat : BackgroundService
 {

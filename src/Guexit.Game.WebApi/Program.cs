@@ -1,6 +1,6 @@
 using Asp.Versioning;
-using TryGuessIt.Game.WebApi.DependencyInjection;
-using TryGuessIt.Game.WebApi.Endpoints;
+using Guexit.Game.WebApi.DependencyInjection;
+using Guexit.Game.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +9,7 @@ builder.Services.AddSwagger();
 builder.Services.AddDomain();
 builder.Services.AddApplication();
 builder.Services.AddServiceBus(builder.Configuration);
-builder.Services.AddPersistence(builder.Configuration, builder.Environment);
+builder.Services.AddPersistence(builder.Configuration);
 
 var app = builder.Build();
 

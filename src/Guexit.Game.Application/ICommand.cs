@@ -1,6 +1,6 @@
 ﻿using Mediator;
 
-namespace TryGuessIt.Game.Application;
+namespace Guexit.Game.Application;
 
 public interface ICommand : ICommand<Unit>
 {

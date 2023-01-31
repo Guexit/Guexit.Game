@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
+using Guexit.Game.Domain;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TryGuessIt.Game.Domain;
 using TryGuessIt.Game.Persistence;
-using IAssemblyMarker = TryGuessIt.Game.Messages.IAssemblyMarker;
+using IAssemblyMarker = Guexit.Game.Messages.IAssemblyMarker;
 
-namespace TryGuessIt.Game.OutboxPublisher;
+namespace Guexit.Game.OutboxPublisher;
 
 public interface IOutboxMessagePublisher
 {

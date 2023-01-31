@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Application.Commands;
 
-namespace TryGuessIt.Game.WebApi.Dtos.Request;
+namespace Guexit.Game.WebApi.Dtos.Request;
 
 public class CreateGameRoomResponseDto
 {

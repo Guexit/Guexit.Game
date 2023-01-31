@@ -2,7 +2,6 @@ using System.Text.Json;
 using FluentAssertions;
 using Guexit.Game.Domain;
 using Guexit.Game.Messages;
-using Guexit.Game.OutboxPublisher;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,7 +9,7 @@ using NSubstitute;
 using TryGuessIt.Game.Persistence;
 using TryGuessIt.Game.Persistence.Outbox;
 
-namespace TryGuessIt.Game.OutboxPublisher.UnitTests;
+namespace Guexit.Game.OutboxPublisher.UnitTests;
 
 public sealed class WhenPublishingOutboxMessages
 {

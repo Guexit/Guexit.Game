@@ -1,8 +1,8 @@
 ﻿using Guexit.Game.Application.Services;
+using Guexit.Game.WebApi.Logging;
 using Mediator;
-using TryGuessIt.Game.WebApi.Logging;
 
-namespace TryGuessIt.Game.WebApi.DependencyInjection;
+namespace Guexit.Game.WebApi.DependencyInjection;
 
 public static class ApplicationInstaller
 {

@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.WebApi;
+﻿namespace Guexit.Game.WebApi;
 
 public interface IAssemblyMarker
 {

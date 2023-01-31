@@ -1,7 +1,7 @@
 ﻿using Guexit.Game.Domain;
 using Mediator;
 
-namespace TryGuessIt.Game.WebApi;
+namespace Guexit.Game.WebApi;
 
 public sealed class DomainEventPublisher : IDomainEventPublisher
 {

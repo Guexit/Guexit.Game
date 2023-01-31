@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Component.IntegrationTests.DataCleaners;
+﻿namespace Guexit.Game.Component.IntegrationTests.DataCleaners;
 
 public interface ITestDataCleaner
 {

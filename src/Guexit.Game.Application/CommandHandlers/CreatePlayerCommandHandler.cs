@@ -1,8 +1,8 @@
-﻿using Mediator;
-using TryGuessIt.Game.Application.Commands;
-using TryGuessIt.Game.Application.Services;
+﻿using Guexit.Game.Application.Commands;
+using Guexit.Game.Application.Services;
+using Mediator;
 
-namespace TryGuessIt.Game.Application.CommandHandlers;
+namespace Guexit.Game.Application.CommandHandlers;
 public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerCommand, Unit>
 {
     private readonly IPlayerManagementService _playerManagementService;

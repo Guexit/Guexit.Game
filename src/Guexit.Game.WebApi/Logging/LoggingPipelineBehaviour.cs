@@ -1,6 +1,6 @@
 ﻿using Mediator;
 
-namespace TryGuessIt.Game.WebApi.Logging;
+namespace Guexit.Game.WebApi.Logging;
 
 public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

@@ -1,10 +1,9 @@
-using Guexit.Game.Application;
 using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Services;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application.UnitTests;
+namespace Guexit.Game.Application.UnitTests;
 
 
 public sealed class WhenHandlingCreatePlayerCommand

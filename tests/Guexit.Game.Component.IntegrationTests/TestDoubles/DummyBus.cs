@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 
-namespace TryGuessIt.Game.Component.IntegrationTests.TestDoubles;
+namespace Guexit.Game.Component.IntegrationTests.TestDoubles;
 
 public sealed class DummyBus : IBus
 {

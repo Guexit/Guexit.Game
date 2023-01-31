@@ -16,7 +16,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: tryguessit_game
+          POSTGRES_DB: guexit_game
           
         ports:
           - 5432:5432
@@ -38,12 +38,12 @@ jobs:
       run: |
         dotnet tool install --global dotnet-ef
         dotnet tool restore
-        cd /home/runner/work/TryGuessIt.Game/TryGuessIt.Game/
-        dotnet ef migrations bundle -p ./src/TryGuessIt.Game.Persistence.Npgsql/TryGuessIt.Game.Persistence.Npgsql.csproj -s ./src/TryGuessIt.Game.WebApi/TryGuessIt.Game.WebApi.csproj -o 'TryGuessId.Game.efbundle.exe' --verbose
+        cd /home/runner/work/Guexit.Game/Guexit.Game/
+        dotnet ef migrations bundle -p ./src/Guexit.Game.Persistence.Npgsql/Guexit.Game.Persistence.Npgsql.csproj -s ./src/Guexit.Game.WebApi/Guexit.Game.WebApi.csproj -o 'TryGuessId.Game.efbundle.exe' --verbose
     - name: Run EntityFramework migrations
       run: |
-        ./TryGuessId.Game.efbundle.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tryguessit_game;'
+        ./TryGuessId.Game.efbundle.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;'
     - name: Run integration tests
       env: 
-         ConnectionStrings__TryGuessIt_Game_GameDb: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tryguessit_game;
+         ConnectionStrings__Guexit_Game_GameDb: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;
       run: dotnet test --filter FullyQualifiedName~.IntegrationTests --no-restore

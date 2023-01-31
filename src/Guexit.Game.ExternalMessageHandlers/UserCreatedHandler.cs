@@ -1,8 +1,8 @@
 ﻿using Guexit.Game.Application.Commands;
+using Guexit.IdentityProvider.Messages;
 using MassTransit;
 using Mediator;
 using Microsoft.Extensions.Logging;
-using TryGuessIt.IdentityProvider.Messages;
 
 namespace Guexit.Game.ExternalMessageHandlers;
 

@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Tests.Common;
+namespace Guexit.Game.Tests.Common;
 
 
 public sealed class PlayerBuilder

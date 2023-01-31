@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application.Commands;
+namespace Guexit.Game.Application.Commands;
 
 public sealed class CreatePlayerCommand : ICommand
 {

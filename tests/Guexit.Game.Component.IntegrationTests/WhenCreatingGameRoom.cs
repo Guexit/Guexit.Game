@@ -1,12 +1,12 @@
 ﻿using System.Net;
+using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Component.IntegrationTests.Builders;
 using TryGuessIt.Game.Persistence;
 
-namespace TryGuessIt.Game.Component.IntegrationTests;
+namespace Guexit.Game.Component.IntegrationTests;
 
 public sealed class WhenCreatingGameRoom : ComponentTestBase
 {

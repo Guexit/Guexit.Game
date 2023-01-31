@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application.Services;
+namespace Guexit.Game.Application.Services;
 
 public interface IPlayerManagementService
 {

@@ -1,9 +1,9 @@
 ﻿using Asp.Versioning;
+using Guexit.Game.WebApi.OpenApi;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using TryGuessIt.Game.WebApi.OpenApi;
 
-namespace TryGuessIt.Game.WebApi.DependencyInjection;
+namespace Guexit.Game.WebApi.DependencyInjection;
 
 public static class SwaggerInstaller
 {

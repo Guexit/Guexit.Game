@@ -1,6 +1,6 @@
 ﻿namespace Guexit.Game.WebApi;
 
-public static class TryGuessItHttpHeaders
+public static class GuexitHttpHeaders
 {
-    public const string UserId = "Tgi-User-Id";
+    public const string UserId = "Gxt-User-Id";
 }

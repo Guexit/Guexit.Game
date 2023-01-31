@@ -1,6 +1,6 @@
-﻿using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Domain.Exceptions;
+namespace Guexit.Game.Domain.Exceptions;
 
 public sealed class PlayerIsAlreadyInGameRoomException : DomainException
 {

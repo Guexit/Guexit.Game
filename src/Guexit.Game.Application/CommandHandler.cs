@@ -1,6 +1,6 @@
 ﻿using Mediator;
 
-namespace TryGuessIt.Game.Application;
+namespace Guexit.Game.Application;
 
 public abstract class CommandHandler<TCommand, TCommandCompletion> : IRequestHandler<TCommand, TCommandCompletion>
     where TCommand : ICommand<TCommandCompletion>

@@ -1,6 +1,6 @@
 ﻿using Mediator;
 
-namespace TryGuessIt.Game.Domain;
+namespace Guexit.Game.Domain;
 
 /// <summary>
 /// Marker interface for domain events

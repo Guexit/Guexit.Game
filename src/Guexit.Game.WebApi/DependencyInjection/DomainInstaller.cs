@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Domain;
 
-namespace TryGuessIt.Game.WebApi.DependencyInjection;
+namespace Guexit.Game.WebApi.DependencyInjection;
 
 public static class DomainInstaller
 {

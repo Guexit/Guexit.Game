@@ -1,11 +1,11 @@
-﻿using Mediator;
-using TryGuessIt.Game.Application.Commands;
-using TryGuessIt.Game.Application.Exceptions;
-using TryGuessIt.Game.Domain;
-using TryGuessIt.Game.Domain.Model.GameRoomAggregate;
-using TryGuessIt.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Application.Commands;
+using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Domain;
+using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.PlayerAggregate;
+using Mediator;
 
-namespace TryGuessIt.Game.Application.CommandHandlers;
+namespace Guexit.Game.Application.CommandHandlers;
 
 public sealed class JoinGameRoomCommandHandler : CommandHandler<JoinGameRoomCommand, Unit>
 {

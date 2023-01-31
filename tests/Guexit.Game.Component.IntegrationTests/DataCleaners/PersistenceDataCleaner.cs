@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TryGuessIt.Game.Persistence;
 
-namespace TryGuessIt.Game.Component.IntegrationTests.DataCleaners;
+namespace Guexit.Game.Component.IntegrationTests.DataCleaners;
 
 public sealed class PersistenceDataCleaner : ITestDataCleaner
 {

@@ -33,7 +33,7 @@ public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
     protected DatabaseMappingIntegrationTest(IntegrationTestFixture fixture)
     {
         var dbContextOptions = new DbContextOptionsBuilder<GameDbContext>()
-            .UseNpgsql(fixture.Configuration.GetConnectionString("TryGuessIt_Game_GameDb"))
+            .UseNpgsql(fixture.Configuration.GetConnectionString("Guexit_Game_GameDb"))
             .EnableSensitiveDataLogging()
             .Options;
 

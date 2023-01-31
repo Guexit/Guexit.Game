@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Domain.Model.GameRoomAggregate;
+﻿namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public interface IGameRoomRepository
 {

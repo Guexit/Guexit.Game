@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace TryGuessIt.Game.Application.UnitTests;
+namespace Guexit.Game.Application.UnitTests;
 
 public sealed class FakeInMemoryPlayerRepository : IPlayerRepository
 {
