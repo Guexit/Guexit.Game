@@ -39,10 +39,10 @@ jobs:
         dotnet tool install --global dotnet-ef
         dotnet tool restore
         cd /home/runner/work/Guexit.Game/Guexit.Game/
-        dotnet ef migrations bundle -p ./src/Guexit.Game.Persistence.Npgsql/Guexit.Game.Persistence.Npgsql.csproj -s ./src/Guexit.Game.WebApi/Guexit.Game.WebApi.csproj -o 'TryGuessId.Game.efbundle.exe' --verbose
+        dotnet ef migrations bundle -p ./src/Guexit.Game.Persistence.Npgsql/Guexit.Game.Persistence.Npgsql.csproj -s ./src/Guexit.Game.WebApi/Guexit.Game.WebApi.csproj -o 'Guexit.Game.efbundle.exe' --verbose
     - name: Run EntityFramework migrations
       run: |
-        ./TryGuessId.Game.efbundle.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;'
+        ./Guexit.Game.efbundle.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;'
     - name: Run integration tests
       env: 
          ConnectionStrings__Guexit_Game_GameDb: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;
