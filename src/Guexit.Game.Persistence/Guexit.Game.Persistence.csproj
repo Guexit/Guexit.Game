@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TryGuessIt.Game.Persistence</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Mediator.Abstractions" Version="2.0.29" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Guexit.Game.Application\Guexit.Game.Application.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Messages\Guexit.Game.Messages.csproj" />
+  </ItemGroup>
+
+</Project>
