@@ -14,10 +14,8 @@ public sealed class PersistenceDataCleaner : ITestDataCleaner
 
         var allPlayers = await dbContext.Players.ToArrayAsync();
         var allGameRooms = await dbContext.GameRooms.ToArrayAsync();
-        var allOutboxMessages = await dbContext.OutboxMessages.ToArrayAsync();
         dbContext.Players.RemoveRange(allPlayers);
         dbContext.GameRooms.RemoveRange(allGameRooms);
-        dbContext.OutboxMessages.RemoveRange(allOutboxMessages);
         await dbContext.SaveChangesAsync();
     }
 }
