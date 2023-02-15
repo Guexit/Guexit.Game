@@ -11,7 +11,6 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
 {
     public void Configure(EntityTypeBuilder<GameRoom> builder)
     {
-        builder.Property(x => x.Version).IsRowVersion();
         builder.Property(x => x.Id).HasConversion<GameRoomIdValueConverter>();
         builder.HasKey(x => x.Id);
 
@@ -22,8 +21,10 @@ internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<Gam
 
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RequiredMinPlayers).HasConversion<RequiredMinPlayersValueConverter>();
+        
+        builder.Property<uint>("Version").IsRowVersion();
     }
-    
+
     private sealed class GameRoomIdValueConverter : ValueConverter<GameRoomId, Guid>
     {
         public GameRoomIdValueConverter()

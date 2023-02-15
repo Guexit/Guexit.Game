@@ -1,9 +1,7 @@
 ﻿namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
-public sealed class Player : Entity<PlayerId>, IAggregateRoot
+public sealed class Player : AggregateRoot<PlayerId>
 {
-    public uint Version { get; private set; }
-
     public string Username { get; private set; } = default!;
 
     public Player()
@@ -11,8 +9,9 @@ public sealed class Player : Entity<PlayerId>, IAggregateRoot
         // Entity Framework required parameterless ctor
     }
 
-    public Player(PlayerId id, string username) : base(id)
+    public Player(PlayerId id, string username)
     {
+        Id = id;
         Username = username;
     }
 }

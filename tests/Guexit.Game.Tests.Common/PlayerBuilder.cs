@@ -3,6 +3,8 @@
 namespace Guexit.Game.Tests.Common;
 
 
+
+
 public sealed class PlayerBuilder
 {
     private PlayerId _id = new PlayerId(Guid.Empty.ToString());
