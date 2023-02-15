@@ -4,11 +4,11 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
-public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
+public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
     public uint Version { get; private set; }
 
-    public ICollection<PlayerId> PlayerIds { get; private set; } = default!;
+    public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
 
@@ -17,11 +17,11 @@ public sealed class GameRoom : Entity<GameRoomId>, IAggregateRoot
         // Entity Framework required parameterless ctor
     }
 
-    public GameRoom(GameRoomId id, PlayerId creatorId, DateTimeOffset createdAt) 
-        : base(id)
+    public GameRoom(GameRoomId id, PlayerId creatorId, DateTimeOffset createdAt)
     {
+        Id = id;
         CreatedAt = createdAt;
-        PlayerIds = new List<PlayerId>() { creatorId };
+        PlayerIds.Add(creatorId);
     }
 
     public void Join(PlayerId playerId)

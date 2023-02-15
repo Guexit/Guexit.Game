@@ -1,33 +1,15 @@
 ﻿namespace Guexit.Game.Domain;
 
-/// <summary>
-/// Entity base class
-/// </summary>
-/// <typeparam name="TId">Type of Id of the entity</typeparam>
 public abstract class Entity<TId> : IEquatable<Entity<TId>>
     where TId : notnull
 {
-    public TId Id { get; protected set; } = default!;
-
-    private readonly List<IDomainEvent> _domainEvents = new();
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-
-    protected Entity()
-    {
-        // Entity Framework required parameterless ctor
-    }
-
-    protected Entity(TId id) => Id = id;
-
-    protected void AddDomainEvent(IDomainEvent @event)
-    {
-        _domainEvents.Add(@event);
-    }
+    public TId Id { get; protected init; } = default!;
 
     public bool Equals(Entity<TId>? other)
     {
         if (other is null)
             return false;
+
         if (ReferenceEquals(this, other))
             return true;
 
@@ -46,8 +28,5 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>>
         return Equals((Entity<TId>)other);
     }
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 }
