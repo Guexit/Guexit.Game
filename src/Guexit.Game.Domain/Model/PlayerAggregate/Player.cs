@@ -2,8 +2,6 @@
 
 public sealed class Player : AggregateRoot<PlayerId>
 {
-    public uint Version { get; private set; }
-
     public string Username { get; private set; } = default!;
 
     public Player()

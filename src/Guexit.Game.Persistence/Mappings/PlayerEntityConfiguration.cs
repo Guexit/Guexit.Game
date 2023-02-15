@@ -11,11 +11,12 @@ internal sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Playe
 
     public void Configure(EntityTypeBuilder<Player> builder)
     {
-        builder.Property(x => x.Version).IsRowVersion();
         builder.Property(x => x.Id).HasConversion<PlayerIdValueConverter>();
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Username).IsRequired().HasMaxLength(MaxEmailLength);
+        
+        builder.Property<uint>("Version").IsRowVersion();
     }
 
     private sealed class PlayerIdValueConverter : ValueConverter<PlayerId, string>

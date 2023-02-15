@@ -17,8 +17,6 @@ public sealed class GameDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
         modelBuilder.ApplyConfiguration(new PlayerEntityConfiguration());
         modelBuilder.ApplyConfiguration(new GameRoomEntityConfiguration());
         

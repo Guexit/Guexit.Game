@@ -6,8 +6,6 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
-    public uint Version { get; private set; }
-
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
