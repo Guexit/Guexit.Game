@@ -2,12 +2,9 @@
 
 namespace Guexit.Game.Tests.Common;
 
-
-
-
 public sealed class PlayerBuilder
 {
-    private PlayerId _id = new PlayerId(Guid.Empty.ToString());
+    private PlayerId _id = new(Guid.Empty.ToString());
     private string _username = string.Empty;
 
     public Player Build()

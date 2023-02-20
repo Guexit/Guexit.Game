@@ -9,8 +9,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
-
-    public GameRoom()
+    
+    private GameRoom()
     {
         // Entity Framework required parameterless ctor
     }

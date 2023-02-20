@@ -1,31 +1,23 @@
-﻿using Guexit.Game.Application.Commands;
+﻿using Guexit.Game.Application;
+using Guexit.Game.Application.Services;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.IdentityProvider.Messages;
-using MassTransit;
-using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace Guexit.Game.ExternalMessageHandlers;
 
-public sealed class UserCreatedHandler : IConsumer<UserCreated>
+public sealed class UserCreatedHandler : ExternalMessageHandler<UserCreated>
 {
-    private readonly ILogger<UserCreatedHandler> _logger;
-    private readonly ISender _sender;
+    private readonly IPlayerManagementService _playerManagementService;
 
-    public UserCreatedHandler(ILogger<UserCreatedHandler> logger, ISender sender)
+    public UserCreatedHandler(IPlayerManagementService playerManagementService, IUnitOfWork unitOfWork, ILogger<UserCreatedHandler> logger) 
+        : base(unitOfWork, logger)
     {
-        _logger = logger;
-        _sender = sender;
+        _playerManagementService = playerManagementService;
     }
 
-    public async Task Consume(ConsumeContext<UserCreated> context)
+    protected override async Task Process(UserCreated context, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling UserCreatedIntegrationEvent. Id: '{userId}' Username: {username}", 
-            context.Message.Id,
-            context.Message.Username);
-
-        await _sender.Send(new CreatePlayerCommand(
-            context.Message.Id, 
-            context.Message.Username
-        ), context.CancellationToken);
+        await _playerManagementService.CreatePlayer(new PlayerId(context.Id), context.Username, cancellationToken);
     }
 }

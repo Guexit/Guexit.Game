@@ -19,7 +19,7 @@ public sealed class WhenReceivingUserCreated : ComponentTestBase
     {
         var userCreatedEvent = new UserCreated(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-        await PublishAndWaitUntilConsumed(userCreatedEvent);
+        await ConsumeMessage(userCreatedEvent);
 
         await AssertPlayerWasCreated(userCreatedEvent);
     }

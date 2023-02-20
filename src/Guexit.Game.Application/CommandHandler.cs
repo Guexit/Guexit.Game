@@ -8,23 +8,16 @@ public abstract class CommandHandler<TCommand, TCommandCompletion> : IRequestHan
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    public CommandHandler(IUnitOfWork unitOfWork)
+    protected CommandHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
     public async ValueTask<TCommandCompletion> Handle(TCommand command, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var result = await Process(command, cancellationToken);
-            await _unitOfWork.Commit(cancellationToken);
-            return result;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        var result = await Process(command, cancellationToken);
+        await _unitOfWork.Commit(cancellationToken);
+        return result;
     }
 
     protected abstract ValueTask<TCommandCompletion> Process(TCommand command, CancellationToken cancellationToken);

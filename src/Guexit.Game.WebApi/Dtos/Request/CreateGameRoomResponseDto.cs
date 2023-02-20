@@ -11,8 +11,5 @@ public class CreateGameRoomResponseDto
         GameRoomId = gameRoomId;
     }
 
-	public static CreateGameRoomResponseDto From(CreateGameRoomCommandCompletion completion)
-	{
-		return new(completion.GameRoomId.Value);
-	}
+	public static CreateGameRoomResponseDto From(CreateGameRoomCommandCompletion completion) => new(completion.GameRoomId.Value);
 }

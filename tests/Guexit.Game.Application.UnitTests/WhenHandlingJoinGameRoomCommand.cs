@@ -1,7 +1,6 @@
 ﻿using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
-using Guexit.Game.Domain;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -21,8 +20,7 @@ public sealed class WhenHandlingJoinGameRoomCommand
         _commandHandler = new JoinGameRoomCommandHandler(
             Substitute.For<IUnitOfWork>(),
             _playerRepository,
-            _gameRoomRepository, 
-            Substitute.For<IDomainEventPublisher>()
+            _gameRoomRepository
         );
     }
 

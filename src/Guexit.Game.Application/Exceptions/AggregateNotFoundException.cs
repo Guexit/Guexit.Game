@@ -1,8 +1,8 @@
 ﻿namespace Guexit.Game.Application.Exceptions;
 
-public class AggregateNotFoundException : Exception
+public abstract class AggregateNotFoundException : Exception
 {
-    public AggregateNotFoundException(string message) : base(message)
+    protected AggregateNotFoundException(string message) : base(message)
     {
     }
 }

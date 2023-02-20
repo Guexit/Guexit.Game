@@ -14,7 +14,7 @@ public static class GameRoomEndpoints
     {
         app.MapPost("game-rooms", CreateGameRoom)
             .Produces<CreateGameRoomResponseDto>()
-            .WithApiVersionSet(versionSet)
+            .WithApiVersionSet(versionSet) // TODO: find a way to add it to all and dont repeat that
             .MapToApiVersion(1);
 
         app.MapPost("game-rooms/{gameRoomId}/join", JoinGameRoom)

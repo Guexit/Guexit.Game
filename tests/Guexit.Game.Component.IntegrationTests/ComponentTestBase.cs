@@ -15,7 +15,7 @@ public abstract class ComponentTestBase : IAsyncLifetime
     private readonly ITestDataCleaner[] _testDataCleaners;
     protected GameWebApplicationFactory WebApplicationFactory { get; }
 
-    public ComponentTestBase(GameWebApplicationFactory webApplicationFactory)
+    protected ComponentTestBase(GameWebApplicationFactory webApplicationFactory)
     {
         WebApplicationFactory = webApplicationFactory;
         _ = WebApplicationFactory.CreateClient();
@@ -23,7 +23,7 @@ public abstract class ComponentTestBase : IAsyncLifetime
         _testDataCleaners = new[] { new PersistenceDataCleaner() };
     }
 
-    protected async Task PublishAndWaitUntilConsumed<TMessage>(TMessage message)
+    protected async Task ConsumeMessage<TMessage>(TMessage message)
         where TMessage : class
     {
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
@@ -32,7 +32,7 @@ public abstract class ComponentTestBase : IAsyncLifetime
         try
         {
             await harness.Start();
-            await harness.Bus.Publish<TMessage>(message);
+            await harness.Bus.Publish(message);
 
             await harness.Consumed.Any<TMessage>();
         }

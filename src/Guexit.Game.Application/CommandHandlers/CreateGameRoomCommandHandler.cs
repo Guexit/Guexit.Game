@@ -11,19 +11,19 @@ public sealed class CreateGameRoomCommandHandler : CommandHandler<CreateGameRoom
     private readonly IPlayerRepository _playerRepository;
     private readonly IGameRoomRepository _gameRoomRepository;
     private readonly IGuidProvider _guidProvider;
-    private readonly ISystemClock _systemClock;
+    private readonly ISystemClock _clock;
 
     public CreateGameRoomCommandHandler(
         IUnitOfWork unitOfWork, 
         IPlayerRepository playerRepository, 
         IGameRoomRepository gameRoomRepository,
         IGuidProvider guidProvider, 
-        ISystemClock systemClock) : base(unitOfWork)
+        ISystemClock clock) : base(unitOfWork)
     {
         _playerRepository = playerRepository;
         _gameRoomRepository = gameRoomRepository;
         _guidProvider = guidProvider;
-        _systemClock = systemClock;
+        _clock = clock;
     }
 
     protected override async ValueTask<CreateGameRoomCommandCompletion> Process(CreateGameRoomCommand command, CancellationToken ct)
@@ -32,8 +32,8 @@ public sealed class CreateGameRoomCommandHandler : CommandHandler<CreateGameRoom
         if (playerCreatingTheGame is null)
             throw new PlayerNotFoundException(command.PlayerId);
 
-        var gameRoom = new GameRoom(new GameRoomId(_guidProvider.NewGuid()), playerCreatingTheGame.Id, _systemClock.UtcNow);
-        await _gameRoomRepository.Add(gameRoom);
+        var gameRoom = new GameRoom(new GameRoomId(_guidProvider.NewGuid()), playerCreatingTheGame.Id, _clock.UtcNow);
+        await _gameRoomRepository.Add(gameRoom, ct);
         return new CreateGameRoomCommandCompletion(gameRoom.Id);
     }
 }
