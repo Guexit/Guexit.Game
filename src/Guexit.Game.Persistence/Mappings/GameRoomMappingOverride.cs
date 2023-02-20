@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace TryGuessIt.Game.Persistence.Mappings;
 
-internal sealed class GameRoomEntityConfiguration : IEntityTypeConfiguration<GameRoom>
+internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoom>
 {
     public void Configure(EntityTypeBuilder<GameRoom> builder)
     {

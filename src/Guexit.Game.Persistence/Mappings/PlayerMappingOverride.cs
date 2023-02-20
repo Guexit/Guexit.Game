@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace TryGuessIt.Game.Persistence.Mappings;
 
-internal sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<Player>
+internal sealed class PlayerMappingOverride : IEntityTypeConfiguration<Player>
 {
     private const int MaxEmailLength = 320;
 
