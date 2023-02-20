@@ -1,7 +1,7 @@
 version: "3"
 
 services: 
-  postgresql:
+  database:
     image: postgres:14.1
     container_name: guexit_game_postgresql
     environment:
@@ -9,3 +9,19 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5433:5432"
+  webapi:
+    container_name: guexit_game_webapi
+    depends_on:
+      - database
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7192:443"
+    environment:
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Test1234!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cert.pfx
+      - ConnectionStrings__Guexit_Game_GameDb=Server=database;Port=5433;Database=guexit_game;User ID=postgres;Password=postgres;
+      - ConnectionStrings__Guexit_ServiceBus=Endpoint=sb://tryguessit-develop-service-bus.servicebus.windows.net/;SharedAccessKeyName=ServicePolicy;SharedAccessKey=CtlNcVptVsHR6q6DXWcxU239vC6u8yjet/rUEstNhdU=
+        

@@ -22,7 +22,7 @@ public static class ServiceBusInstaller
             {
                 cfg.UseMessageRetry(r => r.Incremental(10, TimeSpan.Zero, TimeSpan.FromSeconds(1)));
 
-                cfg.Host(configuration.GetConnectionString("TryGuessIt_ServiceBus"));
+                cfg.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
                 cfg.ConfigureEndpoints(context);
             });
         });
