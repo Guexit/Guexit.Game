@@ -18,7 +18,8 @@ public sealed class PlayerManagementService : IPlayerManagementService
 
     public async Task CreatePlayer(PlayerId playerId, string username, CancellationToken cancellationToken = default)
     {
-        if (await _playerRepository.GetBy(playerId, cancellationToken) is not null)
+        var existingPlayer = await _playerRepository.GetBy(playerId, cancellationToken);
+        if (existingPlayer is not null)
             return;
 
         await _playerRepository.Add(new Player(playerId, username), cancellationToken);
