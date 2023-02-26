@@ -1,20 +1,21 @@
-﻿using Guexit.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Tests.Common;
 
 public sealed class PlayerBuilder
 {
-    private PlayerId _id = new(Guid.Empty.ToString());
-    private string _username = string.Empty;
+    private PlayerId _id = new(Guid.NewGuid().ToString());
+    private string _username = Guid.NewGuid().ToString();
 
     public Player Build()
     {
         return new Player(_id, _username);
     }
     
-    public PlayerBuilder WithId(string id)
+    public PlayerBuilder WithId(PlayerId id)
     {
-        _id = new PlayerId(id);
+        _id = id;
         return this;
     }
 

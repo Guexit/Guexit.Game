@@ -3,11 +3,11 @@ using Mediator;
 
 namespace Guexit.Game.WebApi;
 
-public sealed class DomainEventPublisher : IDomainEventPublisher
+public sealed class MediatorDomainEventPublisher : IDomainEventPublisher
 {
     private readonly IPublisher _publisher;
 
-    public DomainEventPublisher(IPublisher publisher)
+    public MediatorDomainEventPublisher(IPublisher publisher)
     {
         _publisher = publisher;
     }

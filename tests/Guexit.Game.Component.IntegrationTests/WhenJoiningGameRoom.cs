@@ -2,6 +2,7 @@
 using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Tests.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TryGuessIt.Game.Persistence;
@@ -24,7 +25,7 @@ public sealed class WhenJoiningGameRoom : ComponentTestBase
         var creatorId = new PlayerId("player1");
         var playerJoiningId = new PlayerId("player2");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        await AssumePlayer(playerJoiningId);
+        await AssumeExistingPlayer(new PlayerBuilder().WithId(playerJoiningId).Build());
         await AssumeGameRoom(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
         using var client = WebApplicationFactory.CreateClient();
@@ -39,6 +40,24 @@ public sealed class WhenJoiningGameRoom : ComponentTestBase
         await AssertGameRoomHasPlayers(creatorId, playerJoiningId);
     }
 
+    [Fact]
+    public async Task ReturnsErrorIfPlayerIsAlreadyInGameRoom()
+    {
+        var creatorId = new PlayerId("player1");
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        await AssumeExistingPlayer(new PlayerBuilder().WithId(creatorId).Build());
+        await AssumeGameRoom(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
+
+        using var client = WebApplicationFactory.CreateClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join");
+        request.AddPlayerIdHeader(creatorId);
+
+        var response = await client.SendAsync(request);
+
+        response.Should().NotBeNull();
+        response!.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+    }
+
     private async Task AssertGameRoomHasPlayers(PlayerId creator, PlayerId playerJoining)
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
@@ -48,15 +67,6 @@ public sealed class WhenJoiningGameRoom : ComponentTestBase
         gameRooms.Should().HaveCount(1);
         gameRooms[0].PlayerIds.Should().BeEquivalentTo(new[] { creator, playerJoining });
         gameRooms[0].RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
-    }
-
-    private async Task AssumePlayer(PlayerId playerId)
-    {
-        await using var scope = _serviceScopeFactory.CreateAsyncScope();
-        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-        dbContext.Add(new Player(playerId, "Juan Cuesta"));
-        await dbContext.SaveChangesAsync();
     }
 
     private async Task AssumeGameRoom(GameRoom gameRoom)

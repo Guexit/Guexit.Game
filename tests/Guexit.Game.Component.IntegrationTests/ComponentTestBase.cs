@@ -1,6 +1,9 @@
 ﻿using Guexit.Game.Component.IntegrationTests.DataCleaners;
+using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
@@ -40,6 +43,24 @@ public abstract class ComponentTestBase : IAsyncLifetime
         {
             await harness.Stop();
         }
+    }
+
+    protected async Task AssumeExistingPlayer(Player player)
+    {
+        await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+
+        await dbContext.Players.AddAsync(player);
+        await dbContext.SaveChangesAsync();
+    }
+
+    protected async Task AssumeExistingGameRoom(GameRoom gameRoom)
+    {
+        await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+
+        await dbContext.GameRooms.AddAsync(gameRoom);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task InitializeAsync()

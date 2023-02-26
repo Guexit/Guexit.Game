@@ -1,11 +1,11 @@
 using Asp.Versioning;
 using Guexit.Game.WebApi.DependencyInjection;
 using Guexit.Game.WebApi.Endpoints;
+using Guexit.Game.WebApi.ErrorHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSwagger();
-
 builder.Services.AddDomain();
 builder.Services.AddApplication();
 builder.Services.AddServiceBus(builder.Configuration);
@@ -34,6 +34,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.MapExceptionsToProblemDetails();
 app.UseHttpsRedirection();
 app.MapGameRoomEndpoints(versionSet);
 
