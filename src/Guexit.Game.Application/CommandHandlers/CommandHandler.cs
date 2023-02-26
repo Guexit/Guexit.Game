@@ -1,6 +1,6 @@
 ﻿using Mediator;
 
-namespace Guexit.Game.Application;
+namespace Guexit.Game.Application.CommandHandlers;
 
 public abstract class CommandHandler<TCommand, TCommandCompletion> : IRequestHandler<TCommand, TCommandCompletion>
     where TCommand : ICommand<TCommandCompletion>

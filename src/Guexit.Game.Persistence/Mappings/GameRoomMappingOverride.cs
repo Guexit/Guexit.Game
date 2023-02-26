@@ -22,6 +22,10 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RequiredMinPlayers).HasConversion<RequiredMinPlayersValueConverter>();
         
+        builder.Property(x => x.Status)
+            .HasConversion(to => to.Value, from => GameStatus.From(from))
+            .IsRequired();
+
         builder.Property<uint>("Version").IsRowVersion();
     }
 
