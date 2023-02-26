@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning.Builder;
 using Guexit.Game.Application.Commands;
-using Guexit.Game.WebApi.Dtos.Request;
+using Guexit.Game.WebApi.Contracts.Responses;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using TryGuessIt.Game.ReadModels.Queries;
