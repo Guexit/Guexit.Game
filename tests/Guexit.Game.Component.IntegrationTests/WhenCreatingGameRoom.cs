@@ -2,6 +2,7 @@
 using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Tests.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TryGuessIt.Game.Persistence;
@@ -22,7 +23,7 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
     public async Task GameRoomIsCreated()
     {
         var playerId = new PlayerId("player1");
-        await AssumePlayerWasCreated(playerId);
+        await AssumeExistingPlayer(new PlayerBuilder().WithId(playerId).Build());
         
         var request = new HttpRequestMessage(HttpMethod.Post, "game-rooms");
         request.AddPlayerIdHeader(playerId);
@@ -35,13 +36,18 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
         await AssertGameRoomWasCreated(playerId); 
     }
 
-    private async Task AssumePlayerWasCreated(PlayerId playerId)
+    [Fact]
+    public async Task ReturnsNotFoundIfPlayerDoesNotExist()
     {
-        await using var scope = _serviceScopeFactory.CreateAsyncScope();
-        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+        var nonExistingPlayerId = new PlayerId("nonExistingPlayer");
 
-        dbContext.Add(new Player(playerId, "Juan Cuesta"));
-        await dbContext.SaveChangesAsync();
+        using var client = WebApplicationFactory.CreateClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, "game-rooms");
+        request.AddPlayerIdHeader(nonExistingPlayerId);
+        var response = await client.SendAsync(request);
+
+        response.Should().NotBeNull();
+        response!.StatusCode.Should().Be(HttpStatusCode.NotFound, await response.Content.ReadAsStringAsync());
     }
 
     private async Task AssertGameRoomWasCreated(PlayerId playerId)

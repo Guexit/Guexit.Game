@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Tests.Common\Guexit.Game.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>
