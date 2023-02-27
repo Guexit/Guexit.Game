@@ -40,7 +40,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Start()
     {
-        if (!RequiredMinPlayers.AreEnoughPlayers(PlayerIds.Count))
+        if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
 
         Status = GameStatus.AssigningCards;

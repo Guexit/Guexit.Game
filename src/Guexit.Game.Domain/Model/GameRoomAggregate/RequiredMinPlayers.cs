@@ -16,7 +16,7 @@ public sealed class RequiredMinPlayers : ValueObject
         Count = count;
     }
 
-    public bool AreEnoughPlayers(int playersCount) => playersCount >= Count;
+    public bool IsSatisfiedBy(int playersCount) => playersCount >= Count;
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

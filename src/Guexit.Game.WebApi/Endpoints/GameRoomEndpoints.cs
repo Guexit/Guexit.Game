@@ -19,6 +19,10 @@ public static class GameRoomEndpoints
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1);
 
+        app.MapPost("game-rooms/{gameRoomId}/start", StartGame)
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1);
+
         app.MapGet("game-rooms/{gameRoomId}/lobby", GetGameRoomLobby)
             .Produces<GameLobbyReadModel>()
             .WithApiVersionSet(versionSet)
@@ -42,6 +46,16 @@ public static class GameRoomEndpoints
         CancellationToken cancellationToken)
     {
         await sender.Send(new JoinGameRoomCommand(userId, gameRoomId), cancellationToken);
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> StartGame(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId, 
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(new StartGameCommand(gameRoomId, userId), cancellationToken);
         return Results.Ok();
     }
 

@@ -1,4 +1,6 @@
-﻿using Guexit.Game.Domain.Model.PlayerAggregate;
+﻿using System.ComponentModel;
+using System.Numerics;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Exceptions;
 

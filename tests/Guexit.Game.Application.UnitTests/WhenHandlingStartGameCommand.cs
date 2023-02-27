@@ -29,14 +29,15 @@ public sealed class WhenHandlingStartGameCommand
     public async Task GameRoomChangesStatusToAssigningCards()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var creatorId = new PlayerId("1");
         await _gameRoomRepository.Add(new GameRoomBuilder()
             .WithId(gameRoomId)
-            .WithCreator(new PlayerId("1"))
+            .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
             .WithMinRequiredPlayers(3)
             .Build());
 
-        await _commandHandler.Handle(new StartGameCommand(gameRoomId));
+        await _commandHandler.Handle(new StartGameCommand(gameRoomId, creatorId));
 
         var gameRoom = await _gameRoomRepository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
@@ -47,14 +48,15 @@ public sealed class WhenHandlingStartGameCommand
     public async Task GameStartedDomainEventIsRaised()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var creatorId = new PlayerId("1");
         await _gameRoomRepository.Add(new GameRoomBuilder()
             .WithId(gameRoomId)
-            .WithCreator(new PlayerId("1"))
+            .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
             .WithMinRequiredPlayers(3)
             .Build());
 
-        await _commandHandler.Handle(new StartGameCommand(gameRoomId));
+        await _commandHandler.Handle(new StartGameCommand(gameRoomId, creatorId));
 
         var gameRoom = await _gameRoomRepository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
@@ -66,13 +68,14 @@ public sealed class WhenHandlingStartGameCommand
     public async Task ThrowsInsufficientPlayersToStartGameExceptionOnLessPlayersThanRequired()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var creatorId = new PlayerId("1");
         await _gameRoomRepository.Add(new GameRoomBuilder()
             .WithId(gameRoomId)
-            .WithCreator(new PlayerId("creatorId"))
+            .WithCreator(creatorId)
             .WithMinRequiredPlayers(3)
             .Build());
 
-        var action = async () => await _commandHandler.Handle(new StartGameCommand(gameRoomId));
+        var action = async () => await _commandHandler.Handle(new StartGameCommand(gameRoomId, creatorId));
 
         await action.Should().ThrowAsync<InsufficientPlayersToStartGameException>()
             .WithMessage($"Game room {gameRoomId} requires a minimum of {RequiredMinPlayers.Default.Count} players to start, but only 1 players are present.");
@@ -81,9 +84,10 @@ public sealed class WhenHandlingStartGameCommand
     [Fact]
     public async Task ThrowsGameRoomNotFoundExceptionIfGameRoomDoesNotExist()
     {
+        var playerId = new PlayerId("1");
         var nonExistingGameRoomId = new GameRoomId(Guid.NewGuid());
 
-        var action = async () => await _commandHandler.Handle(new StartGameCommand(nonExistingGameRoomId));
+        var action = async () => await _commandHandler.Handle(new StartGameCommand(nonExistingGameRoomId, playerId));
 
         await action.Should().ThrowAsync<GameRoomNotFoundException>();
     }
