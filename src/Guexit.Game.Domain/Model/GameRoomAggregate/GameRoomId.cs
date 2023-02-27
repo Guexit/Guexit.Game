@@ -14,6 +14,6 @@ public sealed class GameRoomId : ValueObject
         yield return Value;
     }
 
-    public static implicit operator GameRoomId(Guid value) => new GameRoomId(value);
+    public static implicit operator GameRoomId(Guid value) => new(value);
     public static implicit operator Guid(GameRoomId value) => value.Value;
 }
