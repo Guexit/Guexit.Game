@@ -1,9 +1,8 @@
 ﻿using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Services;
-using Mediator;
 
 namespace Guexit.Game.Application.CommandHandlers;
-public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerCommand, Unit>
+public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerCommand>
 {
     private readonly IPlayerManagementService _playerManagementService;
 
@@ -13,9 +12,6 @@ public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerComm
         _playerManagementService = playerManagementService;
     }
 
-    protected override async ValueTask<Unit> Process(CreatePlayerCommand command, CancellationToken cancellationToken)
-    {
-        await _playerManagementService.CreatePlayer(command.PlayerId, command.Username, cancellationToken);
-        return Unit.Value;
-    }
+    protected override async ValueTask Process(CreatePlayerCommand command, CancellationToken cancellationToken) 
+        => await _playerManagementService.CreatePlayer(command.PlayerId, command.Username, cancellationToken);
 }

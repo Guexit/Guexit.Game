@@ -31,4 +31,8 @@
     <ProjectReference Include="..\Guexit.Game.EventHandlersForPublish\Guexit.Game.EventHandlersForPublish.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Responses\" />
+  </ItemGroup>
+
 </Project>

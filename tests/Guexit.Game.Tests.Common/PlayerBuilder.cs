@@ -1,5 +1,4 @@
-﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
-using Guexit.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Tests.Common;
 

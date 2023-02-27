@@ -27,5 +27,6 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         gameRoom.CreatedAt.Should().Be(createdAt);
         gameRoom.PlayerIds.Should().BeEquivalentTo(new[] { creatorId });
         gameRoom.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
+        gameRoom.Status.Should().Be(GameStatus.NotStarted);
     }
 }

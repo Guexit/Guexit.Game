@@ -33,5 +33,6 @@ public class WhenHandlingGameLobbyQuery : ReadModelsIntegrationTestBase
         lobbyReadModel!.GameRoomId.Should().Be(gameRoomId);
         lobbyReadModel.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default.Count);
         lobbyReadModel.Players.Should().BeEquivalentTo(new[] {new GameLobbyPlayerDto("Emiliano")});
+        lobbyReadModel.CanStartGame.Should().BeFalse();
     }
 }

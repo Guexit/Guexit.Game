@@ -8,14 +8,13 @@ public sealed class PersistenceDataCleaner : ITestDataCleaner
 {
     public async ValueTask Clean(GameWebApplicationFactory webApplicationFactory)
     {
-        var scopeFactory = webApplicationFactory.Services.GetRequiredService<IServiceScopeFactory>();
-        await using var scope = scopeFactory.CreateAsyncScope();
+        await using var scope = webApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
 
-        var allPlayers = await dbContext.Players.ToArrayAsync();
         var allGameRooms = await dbContext.GameRooms.ToArrayAsync();
-        dbContext.Players.RemoveRange(allPlayers);
+        var allPlayers = await dbContext.Players.ToArrayAsync();
         dbContext.GameRooms.RemoveRange(allGameRooms);
+        dbContext.Players.RemoveRange(allPlayers);
         await dbContext.SaveChangesAsync();
     }
 }
