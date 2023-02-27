@@ -9,6 +9,7 @@ public sealed class GameRoomBuilder
     private PlayerId _creatorId = new(Guid.NewGuid().ToString());
     private PlayerId[] _playersThatJoined = Array.Empty<PlayerId>();
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
+    private RequiredMinPlayers _minRequiredPlayers = RequiredMinPlayers.Default;
 
     public GameRoom Build()
     {
@@ -19,6 +20,7 @@ public sealed class GameRoomBuilder
             gameRoom.Join(player);
         }
 
+        gameRoom.DefineMinRequiredPlayers(_minRequiredPlayers.Count);
         gameRoom.ClearDomainEvents();
         return gameRoom;
     }
@@ -44,6 +46,12 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         _createdAt = createdAt;
+        return this;
+    }
+
+    public GameRoomBuilder WithMinRequiredPlayers(int count)
+    {
+        _minRequiredPlayers = new RequiredMinPlayers(count);
         return this;
     }
 }

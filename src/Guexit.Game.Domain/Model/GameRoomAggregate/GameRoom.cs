@@ -23,6 +23,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
+    public void DefineMinRequiredPlayers(int count)
+    {
+        RequiredMinPlayers = new RequiredMinPlayers(count);
+    }
+
     public void Join(PlayerId playerId)
     {
         if (PlayerIds.Contains(playerId))
@@ -31,5 +36,15 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(playerId);
 
         AddDomainEvent(new PlayerJoinedGameRoom(Id, playerId));
+    }
+
+    public void Start()
+    {
+        if (!RequiredMinPlayers.AreEnoughPlayers(PlayerIds.Count))
+            throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
+
+        Status = GameStatus.AssigningCards;
+
+        AddDomainEvent(new GameStarted(Id));
     }
 }

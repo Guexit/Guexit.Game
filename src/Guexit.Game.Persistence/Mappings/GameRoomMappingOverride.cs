@@ -11,7 +11,7 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
 {
     public void Configure(EntityTypeBuilder<GameRoom> builder)
     {
-        builder.Property(x => x.Id).HasConversion<GameRoomIdValueConverter>();
+        builder.Property(x => x.Id).HasConversion(to => to.Value, from => new GameRoomId(from));
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.PlayerIds)
@@ -20,21 +20,15 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .SetValueComparer(new PlayerIdsCollectionValueComparer());
 
         builder.Property(x => x.CreatedAt).IsRequired();
-        builder.Property(x => x.RequiredMinPlayers).HasConversion<RequiredMinPlayersValueConverter>();
+        builder.Property(x => x.RequiredMinPlayers)
+            .HasConversion(to => to.Count, from => new RequiredMinPlayers(from))
+            .IsRequired();
         
         builder.Property(x => x.Status)
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();
 
         builder.Property<uint>("Version").IsRowVersion();
-    }
-
-    private sealed class GameRoomIdValueConverter : ValueConverter<GameRoomId, Guid>
-    {
-        public GameRoomIdValueConverter()
-            : base(to => to.Value, from => new GameRoomId(from))
-        {
-        }
     }
 
     private sealed class PlayerIdsCollectionValueComparer : ValueComparer<ICollection<PlayerId>>
@@ -71,24 +65,6 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
                 playerIdsToReturn.Add(new PlayerId(id));
             }
             return playerIdsToReturn;
-        }
-    }
-    private sealed class RequiredMinPlayersValueConverter : ValueConverter<RequiredMinPlayers, int>
-    {
-        public RequiredMinPlayersValueConverter()
-            : base(v => ToProvider(v), from => From(from))
-        {
-        }
-
-        private static int ToProvider(RequiredMinPlayers requiredMinPlayers)
-        {
-            return requiredMinPlayers.Count;
-        }
-
-        private static RequiredMinPlayers From(int value)
-        {
-            
-            return new RequiredMinPlayers(value);
         }
     }
 }

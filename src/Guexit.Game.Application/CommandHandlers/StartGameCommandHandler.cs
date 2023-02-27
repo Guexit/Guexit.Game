@@ -1,16 +1,27 @@
 ﻿using Guexit.Game.Application.Commands;
+using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Mediator;
 
 namespace Guexit.Game.Application.CommandHandlers;
 
 public sealed class StartGameCommandHandler : CommandHandler<StartGameCommand, Unit>
 {
-    public StartGameCommandHandler(IUnitOfWork unitOfWork, Domain.Model.GameRoomAggregate.IGameRoomRepository _gameRoomRepository) : base(unitOfWork)
+    private readonly IGameRoomRepository _gameRoomRepository;
+
+    public StartGameCommandHandler(IUnitOfWork unitOfWork, IGameRoomRepository gameRoomRepository) : base(unitOfWork)
     {
+        _gameRoomRepository = gameRoomRepository;
     }
 
-    protected override ValueTask<Unit> Process(StartGameCommand command, CancellationToken cancellationToken)
+    protected override async ValueTask<Unit> Process(StartGameCommand command, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var gameRoom = await _gameRoomRepository.GetBy(command.GameRoomId, cancellationToken);
+        if (gameRoom is null)
+            throw new GameRoomNotFoundException(command.GameRoomId);
+
+        gameRoom.Start();
+
+        return Unit.Value;
     }
 }

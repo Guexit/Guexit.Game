@@ -4,7 +4,7 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class RequiredMinPlayers : ValueObject
 {
-    public static readonly RequiredMinPlayers Default = new RequiredMinPlayers(3);
+    public static readonly RequiredMinPlayers Default = new(3);
     
     public int Count { get; }
 
@@ -15,6 +15,8 @@ public sealed class RequiredMinPlayers : ValueObject
 
         Count = count;
     }
+
+    public bool AreEnoughPlayers(int playersCount) => playersCount >= Count;
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
