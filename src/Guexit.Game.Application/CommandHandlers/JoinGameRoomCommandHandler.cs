@@ -2,11 +2,10 @@
 using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Mediator;
 
 namespace Guexit.Game.Application.CommandHandlers;
 
-public sealed class JoinGameRoomCommandHandler : CommandHandler<JoinGameRoomCommand, Unit>
+public sealed class JoinGameRoomCommandHandler : CommandHandler<JoinGameRoomCommand>
 {
     private readonly IPlayerRepository _playerRepository;
     private readonly IGameRoomRepository _gameRoomRepository;
@@ -18,7 +17,7 @@ public sealed class JoinGameRoomCommandHandler : CommandHandler<JoinGameRoomComm
         _gameRoomRepository = gameRoomRepository;
     }
 
-    protected override async ValueTask<Unit> Process(JoinGameRoomCommand command, CancellationToken ct)
+    protected override async ValueTask Process(JoinGameRoomCommand command, CancellationToken ct)
     {
         var player = await _playerRepository.GetBy(command.PlayerId, ct);
         if (player is null)
@@ -29,7 +28,5 @@ public sealed class JoinGameRoomCommandHandler : CommandHandler<JoinGameRoomComm
             throw new GameRoomNotFoundException(command.GameRoomId);
 
         gameRoom.Join(player.Id);
-
-        return Unit.Value;
     }
 }

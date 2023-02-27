@@ -3,6 +3,7 @@ using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TryGuessIt.Game.Persistence;
@@ -22,10 +23,11 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
     [Fact]
     public async Task GameRoomIsCreated()
     {
+        var gameRoomId = Guid.NewGuid().ToString();
         var playerId = new PlayerId("player1");
         await AssumeExistingPlayer(new PlayerBuilder().WithId(playerId).Build());
         
-        var request = new HttpRequestMessage(HttpMethod.Post, "game-rooms");
+        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId}");
         request.AddPlayerIdHeader(playerId);
         using var client = WebApplicationFactory.CreateClient();
         var response = await client.SendAsync(request);
@@ -33,7 +35,7 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
         response.Should().NotBeNull();
         response!.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
 
-        await AssertGameRoomWasCreated(playerId); 
+        await AssertGameRoomWasCreated(gameRoomId, playerId);
     }
 
     [Fact]
@@ -50,7 +52,7 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
         response!.StatusCode.Should().Be(HttpStatusCode.NotFound, await response.Content.ReadAsStringAsync());
     }
 
-    private async Task AssertGameRoomWasCreated(PlayerId playerId)
+    private async Task AssertGameRoomWasCreated(string gameRoomId, PlayerId playerId)
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();

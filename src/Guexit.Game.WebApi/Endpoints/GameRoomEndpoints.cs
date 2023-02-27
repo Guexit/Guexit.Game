@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning.Builder;
 using Guexit.Game.Application.Commands;
-using Guexit.Game.WebApi.Contracts.Responses;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using TryGuessIt.Game.ReadModels.Queries;
@@ -12,8 +11,7 @@ public static class GameRoomEndpoints
 {
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
-        app.MapPost("game-rooms", CreateGameRoom)
-            .Produces<CreateGameRoomResponseDto>()
+        app.MapPost("game-rooms/{gameRoomId}", CreateGameRoom)
             .WithApiVersionSet(versionSet) // TODO: find a way to add it to all and dont repeat that
             .MapToApiVersion(1);
 
@@ -28,12 +26,13 @@ public static class GameRoomEndpoints
     }
 
     private static async Task<IResult> CreateGameRoom(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId, 
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        var completion = await sender.Send(new CreateGameRoomCommand(userId), cancellationToken);
-        return Results.Ok(CreateGameRoomResponseDto.From(completion));
+        await sender.Send(new CreateGameRoomCommand(gameRoomId, userId), cancellationToken);
+        return Results.Ok();
     }
 
     private static async Task<IResult> JoinGameRoom(

@@ -3,14 +3,14 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Application.Commands;
 
-public sealed record CreateGameRoomCommandCompletion(GameRoomId GameRoomId);
-
-public sealed class CreateGameRoomCommand : ICommand<CreateGameRoomCommandCompletion>
+public sealed class CreateGameRoomCommand : ICommand
 {
+    public GameRoomId GameRoomId { get; }
     public PlayerId PlayerId { get; }
 
-	public CreateGameRoomCommand(string playerId)
+	public CreateGameRoomCommand(Guid gameRoomId, string playerId)
     {
+        GameRoomId = new GameRoomId(gameRoomId);
         PlayerId = new PlayerId(playerId);
     }
 }

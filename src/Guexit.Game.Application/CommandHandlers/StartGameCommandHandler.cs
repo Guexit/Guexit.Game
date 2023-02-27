@@ -1,11 +1,10 @@
 ﻿using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
-using Mediator;
 
 namespace Guexit.Game.Application.CommandHandlers;
 
-public sealed class StartGameCommandHandler : CommandHandler<StartGameCommand, Unit>
+public sealed class StartGameCommandHandler : CommandHandler<StartGameCommand>
 {
     private readonly IGameRoomRepository _gameRoomRepository;
 
@@ -14,14 +13,12 @@ public sealed class StartGameCommandHandler : CommandHandler<StartGameCommand, U
         _gameRoomRepository = gameRoomRepository;
     }
 
-    protected override async ValueTask<Unit> Process(StartGameCommand command, CancellationToken cancellationToken)
+    protected override async ValueTask Process(StartGameCommand command, CancellationToken cancellationToken)
     {
         var gameRoom = await _gameRoomRepository.GetBy(command.GameRoomId, cancellationToken);
         if (gameRoom is null)
             throw new GameRoomNotFoundException(command.GameRoomId);
 
         gameRoom.Start();
-
-        return Unit.Value;
     }
 }
