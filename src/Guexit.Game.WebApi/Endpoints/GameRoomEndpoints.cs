@@ -12,21 +12,17 @@ public static class GameRoomEndpoints
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
         app.MapPost("game-rooms/{gameRoomId}", CreateGameRoom)
-            .WithApiVersionSet(versionSet) // TODO: find a way to add it to all and dont repeat that
-            .MapToApiVersion(1);
+            .WithApiVersionSet(versionSet).MapToApiVersion(1);
 
         app.MapPost("game-rooms/{gameRoomId}/join", JoinGameRoom)
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
+            .WithApiVersionSet(versionSet).MapToApiVersion(1);
 
         app.MapPost("game-rooms/{gameRoomId}/start", StartGame)
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
+            .WithApiVersionSet(versionSet).MapToApiVersion(1);
 
         app.MapGet("game-rooms/{gameRoomId}/lobby", GetGameRoomLobby)
-            .Produces<GameLobbyReadModel>()
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
+            .WithApiVersionSet(versionSet).MapToApiVersion(1)
+            .Produces<GameLobbyReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(

@@ -6,8 +6,7 @@ public class PlayerId : ValueObject
 
     public PlayerId(string value)
     {
-        if (string.IsNullOrEmpty(value)) 
-            throw new ArgumentNullException(nameof(value));
+        ArgumentException.ThrowIfNullOrEmpty(value);
 
         Value = value;
     }
