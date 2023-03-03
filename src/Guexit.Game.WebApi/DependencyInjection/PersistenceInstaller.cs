@@ -1,6 +1,8 @@
 ﻿using Guexit.Game.Application;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using TryGuessIt.Game.Persistence;
 using TryGuessIt.Game.Persistence.Repositories;
@@ -21,6 +23,7 @@ public static class PersistenceInstaller
 
         services.AddScoped<IGameRoomRepository, GameRoomRepository>();
         services.AddScoped<IPlayerRepository, PlayerRepository>();
+        services.AddScoped<IImageRepository, ImageRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
