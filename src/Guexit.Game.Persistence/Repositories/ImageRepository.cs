@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.Domain.Model.ImageAggregate;
+using Microsoft.EntityFrameworkCore;
 
 namespace TryGuessIt.Game.Persistence.Repositories;
 
@@ -11,13 +12,13 @@ public sealed class ImageRepository : IImageRepository
         _dbContext = dbContext;
     }
 
-    public ValueTask Add(Image player, CancellationToken ct = default)
+    public async ValueTask Add(Image player, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        await _dbContext.AddAsync(player, ct);
     }
 
-    public Task<Image?> GetBy(ImageId id, CancellationToken ct = default)
+    public async Task<Image?> GetBy(ImageId id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Images.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 }

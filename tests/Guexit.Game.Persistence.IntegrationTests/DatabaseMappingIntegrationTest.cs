@@ -16,6 +16,8 @@ public sealed class IntegrationTestFixture
            .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
            .AddEnvironmentVariables()
            .Build();
+
+        // TODO Move DbContext creation here
     }
 }
 

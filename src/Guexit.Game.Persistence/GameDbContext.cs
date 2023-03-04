@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ public sealed class GameDbContext : DbContext
 {
     public DbSet<Player> Players { get; set; } = default!;
 	public DbSet<GameRoom> GameRooms { get; set; } = default!;
+	public DbSet<Image> Images { get; set; } = default!;
 
     public GameDbContext(DbContextOptions<GameDbContext> contextOptions) : base(contextOptions)
 	{
@@ -19,6 +21,7 @@ public sealed class GameDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new PlayerMappingOverride());
         modelBuilder.ApplyConfiguration(new GameRoomMappingOverride());
+        modelBuilder.ApplyConfiguration(new ImageMappingOverride());
         
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();

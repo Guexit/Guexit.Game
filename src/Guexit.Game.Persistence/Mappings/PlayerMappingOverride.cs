@@ -1,7 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace TryGuessIt.Game.Persistence.Mappings;
 
