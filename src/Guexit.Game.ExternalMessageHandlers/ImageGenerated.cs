@@ -25,6 +25,6 @@ public sealed class ImageGeneratedHandler : ExternalMessageHandler<ImageGenerate
 
     protected override async Task Process(ImageGenerated message, CancellationToken cancellationToken)
     {
-        await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(message.Url));
+        await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(message.Url), cancellationToken);
     }
 }
