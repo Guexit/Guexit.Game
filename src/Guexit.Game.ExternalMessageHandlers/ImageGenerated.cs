@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Guexit.Game.ExternalMessageHandlers;
 
-// Important: DO NOT move to a different namespace or change name of the class, it's used my masstransit to match registered urn type name
+// Important: DO NOT move to a different namespace or change name of the class, it's used by masstransit to match registered urn type name
 public sealed record ImageGenerated(string Url);
 
 public sealed class ImageGeneratedHandler : ExternalMessageHandler<ImageGenerated>
