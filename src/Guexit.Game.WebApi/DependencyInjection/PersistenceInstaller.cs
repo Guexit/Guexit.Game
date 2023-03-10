@@ -13,6 +13,7 @@ public static class PersistenceInstaller
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
+        //services.AddDbContextPool<GameDbContext>(options =>
         services.AddDbContext<GameDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("Guexit_Game_GameDb"), b =>
