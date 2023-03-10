@@ -15,10 +15,10 @@ public sealed class ImageManagementService : IImageManagementService
     private readonly ISystemClock _clock;
     private readonly ILogicalShardProvider _logicalShardProvider;
 
-    public ImageManagementService(IImageRepository imageRepository, ISystemClock systemClock, ILogicalShardProvider logicalShardProvider)
+    public ImageManagementService(IImageRepository imageRepository, ISystemClock clock, ILogicalShardProvider logicalShardProvider)
     {
         _imageRepository = imageRepository;
-        _clock = systemClock;
+        _clock = clock;
         _logicalShardProvider = logicalShardProvider;
     }
 
