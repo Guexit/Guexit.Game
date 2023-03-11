@@ -17,8 +17,7 @@ internal sealed class ImageMappingOverride : IEntityTypeConfiguration<Image>
         builder.Property(x => x.LogicalShard).IsRequired();
         builder.Property(x => x.GameRoomId).HasConversion(to => to.Value, from => new GameRoomId(from));
 
-        builder.HasIndex(x => x.LogicalShard);
-        builder.HasIndex(x => x.CreatedAt).IsDescending(false);
+        builder.HasIndex(x => new { x.LogicalShard, x.CreatedAt });
 
         builder.Property<uint>("Version").IsRowVersion();
     }

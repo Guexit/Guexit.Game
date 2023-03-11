@@ -14,18 +14,21 @@ public static class ServiceBusInstaller
             {
                 outboxOptions.UsePostgres();
                 outboxOptions.UseBusOutbox();
+                //outboxOptions.QueryDelay = TimeSpan.FromSeconds(2);
             });
             
             config.SetKebabCaseEndpointNameFormatter();
 
             config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
-            config.UsingAzureServiceBus((context, cfg) =>
+            config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {
-                cfg.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
-                cfg.ConfigureEndpoints(context);
-                cfg.SubscriptionEndpoint("guexit-game", "guexit-imagegeneration", e => e.ConfigureConsumer<ImageGeneratedHandler>(context));
+                serviceBusConfiguration.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
+                serviceBusConfiguration.ConfigureEndpoints(context);
 
-                cfg.UseMessageRetry(r => r.Incremental(10, TimeSpan.Zero, TimeSpan.FromSeconds(1)));
+                serviceBusConfiguration.SubscriptionEndpoint("guexit-game", "guexit-imagegeneration", 
+                    endpoint => endpoint.ConfigureConsumer<ImageGeneratedHandler>(context));
+
+                serviceBusConfiguration.UseMessageRetry(r => r.Incremental(10, TimeSpan.Zero, TimeSpan.FromSeconds(1)));
             });
         });
 
