@@ -20,6 +20,8 @@ public static class ServiceBusInstaller
             config.SetKebabCaseEndpointNameFormatter();
 
             config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
+            config.AddSagas(typeof(Sagas.IAssemblyMarker).Assembly);
+
             config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {
                 serviceBusConfiguration.Host(configuration.GetConnectionString("Guexit_ServiceBus"));

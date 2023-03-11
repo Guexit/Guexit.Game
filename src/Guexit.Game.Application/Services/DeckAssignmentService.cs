@@ -1,0 +1,16 @@
+﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+
+namespace Guexit.Game.Application.Services;
+
+public interface IDeckAssignmentService
+{
+    Task AssignDeck(GameRoomId gameRoomId, CancellationToken cancellationToken = default);
+}
+
+public class DeckAssignmentService
+{
+    public Task AssignDeck(GameRoomId gameRoomId, CancellationToken cancellationToken = default)
+    {
+        return Task.FromException(new NotImplementedException());
+    }
+}

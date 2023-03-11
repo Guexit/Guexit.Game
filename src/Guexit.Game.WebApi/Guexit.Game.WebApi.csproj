@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj" />
     <ProjectReference Include="..\Guexit.Game.ReadModels\Guexit.Game.ReadModels.csproj" />
     <ProjectReference Include="..\Guexit.Game.EventHandlersForPublish\Guexit.Game.EventHandlersForPublish.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Sagas\Guexit.Game.Sagas.csproj" />
   </ItemGroup>
 
 </Project>

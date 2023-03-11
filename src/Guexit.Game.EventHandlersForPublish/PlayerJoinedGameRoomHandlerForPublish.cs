@@ -20,3 +20,19 @@ public class PlayerJoinedGameRoomHandlerForPublish : IDomainEventHandler<PlayerJ
         }, ct);
     }
 }
+
+public class GameStartedHandlerForPublish : IDomainEventHandler<GameStarted>
+{
+    private readonly IBus _bus;
+
+    public GameStartedHandlerForPublish(IBus bus) => _bus = bus;
+
+    public async ValueTask Handle(GameStarted @event, CancellationToken ct = default)
+    {
+        await _bus.Publish(new AssignDeckCommand
+        {
+            GameRoomId = @event.GameRoomId, 
+            LogicalShard = 1
+        }, ct);
+    }
+}
