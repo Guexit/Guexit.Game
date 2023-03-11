@@ -4,7 +4,7 @@ public sealed class Player : AggregateRoot<PlayerId>
 {
     public string Username { get; private set; } = default!;
 
-    public Player()
+    private Player()
     {
         // Entity Framework required parameterless ctor
     }

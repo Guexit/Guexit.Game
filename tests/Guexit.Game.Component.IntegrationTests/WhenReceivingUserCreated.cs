@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests;
+
 public sealed class WhenReceivingUserCreated : ComponentTestBase
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;

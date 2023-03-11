@@ -25,7 +25,7 @@ public sealed class UnitOfWork : IUnitOfWork
         var aggregateRoots = _dbContext.ChangeTracker.Entries<IAggregateRoot>().Select(x => x.Entity).ToArray();
         var domainEvents = aggregateRoots.SelectMany(x => x.DomainEvents).ToArray();
 
-        while (domainEvents.Any())
+        while (domainEvents.Length > 0)
         {
             foreach (var aggregateRoot in aggregateRoots) 
                 aggregateRoot.ClearDomainEvents();

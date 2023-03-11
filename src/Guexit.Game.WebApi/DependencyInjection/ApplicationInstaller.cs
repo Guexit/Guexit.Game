@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Application.Services;
+﻿using Guexit.Game.Application.CardAssigment;
+using Guexit.Game.Application.Services;
 using Guexit.Game.WebApi.Logging;
 using Mediator;
 
@@ -15,6 +16,14 @@ public static class ApplicationInstaller
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
 
         services.AddScoped<IPlayerManagementService, PlayerManagementService>();
+        services.AddScoped<IImageManagementService, ImageManagementService>();
+        services.AddScoped<ILogicalShardProvider, LogicalShardProvider>();
+
+        services.AddOptions<CardAssignmentOptions>()
+            .BindConfiguration(CardAssignmentOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 }

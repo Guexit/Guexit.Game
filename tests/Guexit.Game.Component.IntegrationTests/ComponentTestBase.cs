@@ -63,13 +63,11 @@ public abstract class ComponentTestBase : IAsyncLifetime
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
     {
         foreach (var cleaner in _testDataCleaners)
-        {
             await cleaner.Clean(WebApplicationFactory);
-        }
     }
-
-    public Task DisposeAsync() => Task.CompletedTask;
 }

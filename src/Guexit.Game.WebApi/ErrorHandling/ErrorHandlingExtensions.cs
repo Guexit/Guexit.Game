@@ -14,7 +14,8 @@ public static class ErrorHandlingExtensions
             {
                 var exception = context.Features.Get<IExceptionHandlerFeature>()!.Error;
 
-                await BuildProblemDetails(exception).ExecuteAsync(context);
+                var problem = BuildProblemDetails(exception);
+                await problem.ExecuteAsync(context);
             });
         });
 

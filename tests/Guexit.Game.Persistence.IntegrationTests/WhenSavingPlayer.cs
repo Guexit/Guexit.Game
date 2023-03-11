@@ -1,4 +1,5 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TryGuessIt.Game.Persistence.Repositories;
 
 namespace TryGuessIt.Game.Persistence.IntegrationTests;
