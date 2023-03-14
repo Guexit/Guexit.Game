@@ -1,5 +1,13 @@
-﻿using Guexit.Game.ExternalMessageHandlers;
+﻿using System;
+using System.Reflection;
+using Guexit.Game.ExternalMessageHandlers;
+using Guexit.Game.Sagas;
 using MassTransit;
+using MassTransit.EntityFrameworkCoreIntegration;
+using MassTransit.Internals;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.WebApi.DependencyInjection;
@@ -20,7 +28,22 @@ public static class ServiceBusInstaller
             config.SetKebabCaseEndpointNameFormatter();
 
             config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
-            config.AddSagas(typeof(Sagas.IAssemblyMarker).Assembly);
+
+            config.AddSagaStateMachine<DeckAssignmentSaga, DeckAssignmentState>()
+                .EntityFrameworkRepository(cfg =>
+                {
+                    cfg.ConcurrencyMode = ConcurrencyMode.Pessimistic;
+
+                    cfg.AddDbContext<DbContext, DeckAssignmentSagaDbContext>((serviceProvider, builder) =>
+                    {
+                        builder.UseNpgsql(configuration.GetConnectionString("Guexit_Game_MasstransitJobServiceDb"), m =>
+                        {
+                            m.MigrationsAssembly(typeof(Sagas.IAssemblyMarker).Assembly.GetName().Name);
+                            m.MigrationsHistoryTable($"__{nameof(JobServiceSagaDbContext)}");
+                        });
+                    });
+                })
+                ;
 
             config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {
@@ -38,3 +61,17 @@ public static class ServiceBusInstaller
     }
 }
 
+public class DeckAssignmentSagaDbContextFactory : IDesignTimeDbContextFactory<DeckAssignmentSagaDbContext>
+{
+    public DeckAssignmentSagaDbContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<DeckAssignmentSagaDbContext>();
+        optionsBuilder.UseNpgsql(Environment.GetEnvironmentVariable("ConnectionStrings__Guexit_Game_MasstransitJobServiceDb"), m =>
+        {
+            m.MigrationsAssembly(typeof(Sagas.IAssemblyMarker).Assembly.GetName().Name);
+            m.MigrationsHistoryTable($"__{nameof(JobServiceSagaDbContext)}");
+        });
+
+        return new DeckAssignmentSagaDbContext(optionsBuilder.Options);
+    }
+}

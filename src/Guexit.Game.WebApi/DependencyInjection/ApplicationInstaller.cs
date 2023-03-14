@@ -18,6 +18,7 @@ public static class ApplicationInstaller
         services.AddScoped<IPlayerManagementService, PlayerManagementService>();
         services.AddScoped<IImageManagementService, ImageManagementService>();
         services.AddScoped<ILogicalShardProvider, LogicalShardProvider>();
+        services.AddScoped<IDeckAssignmentService, DeckAssignmentService>();
 
         services.AddOptions<CardAssignmentOptions>()
             .BindConfiguration(CardAssignmentOptions.SectionName)

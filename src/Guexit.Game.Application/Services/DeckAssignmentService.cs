@@ -7,7 +7,7 @@ public interface IDeckAssignmentService
     Task AssignDeck(GameRoomId gameRoomId, CancellationToken cancellationToken = default);
 }
 
-public class DeckAssignmentService
+public class DeckAssignmentService : IDeckAssignmentService
 {
     public Task AssignDeck(GameRoomId gameRoomId, CancellationToken cancellationToken = default)
     {
