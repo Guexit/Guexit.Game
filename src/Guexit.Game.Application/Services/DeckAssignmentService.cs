@@ -11,6 +11,7 @@ public class DeckAssignmentService : IDeckAssignmentService
 {
     public Task AssignDeck(GameRoomId gameRoomId, CancellationToken cancellationToken = default)
     {
-        return Task.FromException(new NotImplementedException());
+        //return Task.FromException(new NotImplementedException());        //return Task.FromException(new NotImplementedException());
+        return Task.CompletedTask;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Guexit.Game.ExternalMessageHandlers;
+using Guexit.Game.Messages;
 using Guexit.Game.Sagas;
 using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
@@ -22,14 +23,17 @@ public static class ServiceBusInstaller
             {
                 outboxOptions.UsePostgres();
                 outboxOptions.UseBusOutbox();
-                //outboxOptions.QueryDelay = TimeSpan.FromSeconds(2);
             });
             
             config.SetKebabCaseEndpointNameFormatter();
 
             config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
 
-            config.AddSagaStateMachine<DeckAssignmentSaga, DeckAssignmentState>()
+            config.AddSagaStateMachine<DeckAssignmentSaga, DeckAssignmentState>(cfg =>
+                {
+                    var partitioner = cfg.CreatePartitioner(1);
+                    cfg.Message<AssignDeckCommand>(x => x.UsePartitioner(partitioner, m => new Guid(m.Message.LogicalShard, 0, 0, new byte[8])));
+                })
                 .EntityFrameworkRepository(cfg =>
                 {
                     cfg.ConcurrencyMode = ConcurrencyMode.Pessimistic;
