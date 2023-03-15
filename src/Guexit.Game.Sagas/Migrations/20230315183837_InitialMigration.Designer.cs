@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Guexit.Game.Sagas.Migrations
 {
     [DbContext(typeof(DeckAssignmentSagaDbContext))]
-    [Migration("20230314200137_InitialMigration")]
+    [Migration("20230315183837_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -29,6 +29,10 @@ namespace Guexit.Game.Sagas.Migrations
                 {
                     b.Property<Guid>("CorrelationId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("LogicalShard")
                         .HasColumnType("integer");

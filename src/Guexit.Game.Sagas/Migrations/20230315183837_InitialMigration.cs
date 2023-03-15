@@ -16,6 +16,7 @@ namespace Guexit.Game.Sagas.Migrations
                 columns: table => new
                 {
                     CorrelationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CurrentState = table.Column<string>(type: "text", nullable: false),
                     LogicalShard = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

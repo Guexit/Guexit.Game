@@ -27,6 +27,10 @@ namespace Guexit.Game.Sagas.Migrations
                     b.Property<Guid>("CorrelationId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("LogicalShard")
                         .HasColumnType("integer");
 

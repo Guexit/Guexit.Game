@@ -1,30 +1,41 @@
-﻿using Guexit.Game.Messages;
+﻿using Guexit.Game.Application.Services;
+using Guexit.Game.Messages;
 using MassTransit;
-using MassTransit.EntityFrameworkCoreIntegration;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Guexit.Game.Sagas;
 
-public sealed class DeckAssignmentState : SagaStateMachineInstance
-{
-    public Guid CorrelationId { get; set; }
-    public int LogicalShard { get; set; }
-}
-
 public sealed class DeckAssignmentSaga : MassTransitStateMachine<DeckAssignmentState>
 {
-
     public DeckAssignmentSaga()
     {
-        Event(() => AssignDeckCommand, @event => @event
-            .CorrelateBy((instance, context) => instance.LogicalShard == context.Message.LogicalShard)
-            .SelectId(x => NewId.NextGuid())
-        );
+        InstanceState(x => x.CurrentState);
+
+        Event(() => AssignDeckCommand, x =>
+        {
+            x.CorrelateBy<int>(state => state.LogicalShard, context => context.Message.LogicalShard);
+            x.SelectId(context =>
+            {
+                //return new Guid(context.Message.LogicalShard, 0, 0, new byte[8]);
+                return NewId.NextGuid();
+            });
+        });
 
         Initially(When(AssignDeckCommand)
-            .Then(context => Console.WriteLine("Polla"))
-            .TransitionTo(Completed));
+            .TransitionTo(Running)
+            .ThenAsync(async context =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(10));
+                Console.WriteLine("Finishing saga...");
+            })
+            .Activity(x => x.OfType<AssignDeckCommandActivity>()));
+
+        WhenEnter(Completed, (context) => context
+            .ThenAsync(async (context) =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(20));
+            }));
+
+        SetCompletedWhenFinalized();
     }
 
     public State Running { get; private set; } = default!;
@@ -33,28 +44,36 @@ public sealed class DeckAssignmentSaga : MassTransitStateMachine<DeckAssignmentS
     public Event<AssignDeckCommand> AssignDeckCommand { get; private set; } = default!;
 }
 
-public sealed class DeckAssignmentSagaDbContext : SagaDbContext
+public class AssignDeckCommandActivity : IStateMachineActivity<DeckAssignmentState, AssignDeckCommand>
 {
-    public DeckAssignmentSagaDbContext(DbContextOptions<DeckAssignmentSagaDbContext> options) : base(options)
+    readonly IDeckAssignmentService _service;
+
+    public AssignDeckCommandActivity(IDeckAssignmentService service)
     {
+        _service = service;
     }
 
-    protected override IEnumerable<ISagaClassMap> Configurations
+    public void Probe(ProbeContext context)
     {
-        get
-        {
-            yield return new DeckAssignmentStateMap();
-        }
+        context.CreateScope("deck-assignment-command");
     }
-}
 
-public sealed class DeckAssignmentStateMap : SagaClassMap<DeckAssignmentState>
-{
-    protected override void Configure(EntityTypeBuilder<DeckAssignmentState> entity, ModelBuilder model)
+    public void Accept(StateMachineVisitor visitor)
     {
-        entity.Property(x => x.LogicalShard);
+        visitor.Visit(this);
+    }
 
-        // If using Optimistic concurrency, otherwise remove this property
-        //entity.Property(x => x.RowVersion).IsRowVersion();
+    public async Task Execute(BehaviorContext<DeckAssignmentState, AssignDeckCommand> context, IBehavior<DeckAssignmentState, AssignDeckCommand> next)
+    {
+        await _service.AssignDeck(context.Message.GameRoomId, context.CancellationToken);
+
+        await next.Execute(context);
+    }
+
+    public Task Faulted<TException>(BehaviorExceptionContext<DeckAssignmentState, AssignDeckCommand, TException> context,
+        IBehavior<DeckAssignmentState, AssignDeckCommand> next)
+        where TException : Exception
+    {
+        return next.Faulted(context);
     }
 }
