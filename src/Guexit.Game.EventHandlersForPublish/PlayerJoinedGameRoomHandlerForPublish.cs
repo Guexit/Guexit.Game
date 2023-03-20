@@ -31,8 +31,7 @@ public class GameStartedHandlerForPublish : IDomainEventHandler<GameStarted>
     {
         await _bus.Publish(new AssignDeckCommand
         {
-            GameRoomId = @event.GameRoomId, 
-            LogicalShard = 1
+            GameRoomId = @event.GameRoomId
         }, ct);
     }
 }

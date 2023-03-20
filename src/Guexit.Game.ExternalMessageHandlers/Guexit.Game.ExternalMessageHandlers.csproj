@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Guexit.Game.Application\Guexit.Game.Application.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Messages\Guexit.Game.Messages.csproj" />
   </ItemGroup>
 
 </Project>
