@@ -3,6 +3,7 @@ using System;
 using Guexit.Game.Sagas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Guexit.Game.Sagas.Migrations
 {
     [DbContext(typeof(DeckAssignmentSagaDbContext))]
-    partial class DeckAssignmentSagaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230316081035_InitialMigrationPolla")]
+    partial class InitialMigrationPolla
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,10 +36,6 @@ namespace Guexit.Game.Sagas.Migrations
 
                     b.Property<int>("LogicalShard")
                         .HasColumnType("integer");
-
-                    b.Property<byte[]>("Version")
-                        .IsRequired()
-                        .HasColumnType("bytea");
 
                     b.HasKey("CorrelationId");
 

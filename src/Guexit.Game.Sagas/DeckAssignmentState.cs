@@ -8,4 +8,5 @@ public sealed class DeckAssignmentState : SagaStateMachineInstance
     public string CurrentState { get; set; } = default!;
 
     public int LogicalShard { get; set; }
+    public byte[] Version { get; set; } = default!;
 }
