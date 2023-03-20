@@ -1,7 +1,8 @@
 ﻿using Guexit.Game.Domain.Model.ImageAggregate;
+using Guexit.Game.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace TryGuessIt.Game.Persistence.Repositories;
+namespace Guexit.Game.Persistence.Repositories;
 
 public sealed class ImageRepository : IImageRepository
 {

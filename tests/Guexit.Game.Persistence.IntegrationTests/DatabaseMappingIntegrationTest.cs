@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 
-namespace TryGuessIt.Game.Persistence.IntegrationTests;
+namespace Guexit.Game.Persistence.IntegrationTests;
 
 public sealed class IntegrationTestFixture
 {

@@ -1,7 +1,7 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Persistence;
 using Guexit.IdentityProvider.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests;
 

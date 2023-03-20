@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.ReadModels.ReadModels;
+﻿namespace Guexit.Game.ReadModels.ReadModels;
 
 public sealed class GameLobbyReadModel
 {

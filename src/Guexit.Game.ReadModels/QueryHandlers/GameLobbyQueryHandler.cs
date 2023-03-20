@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Guexit.Game.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TryGuessIt.Game.Persistence;
-using TryGuessIt.Game.ReadModels.Queries;
-using TryGuessIt.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.Queries;
+using Guexit.Game.ReadModels.ReadModels;
 
-namespace TryGuessIt.Game.ReadModels.QueryHandlers;
+namespace Guexit.Game.ReadModels.QueryHandlers;
 
 public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLobbyReadModel>
 {

@@ -1,8 +1,7 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TryGuessIt.Game.Persistence.Repositories;
+using Guexit.Game.Persistence.Repositories;
 
-namespace TryGuessIt.Game.Persistence.IntegrationTests;
+namespace Guexit.Game.Persistence.IntegrationTests;
 
 public sealed class WhenSavingPlayer : DatabaseMappingIntegrationTest
 {

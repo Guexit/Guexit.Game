@@ -1,9 +1,9 @@
 ﻿using Guexit.Game.Component.IntegrationTests.DataCleaners;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Persistence;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests;
 

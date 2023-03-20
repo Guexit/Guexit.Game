@@ -1,7 +1,7 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
-using TryGuessIt.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.ReadModels;
 
-namespace TryGuessIt.Game.ReadModels.Queries;
+namespace Guexit.Game.ReadModels.Queries;
 
 public sealed class GameLobbyQuery : IQuery<GameLobbyReadModel>
 {

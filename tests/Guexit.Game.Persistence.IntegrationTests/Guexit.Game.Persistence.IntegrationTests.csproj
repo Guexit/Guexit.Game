@@ -7,7 +7,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>TryGuessIt.Game.Persistence.IntegrationTests</RootNamespace>
+    <RootNamespace>Guexit.Game.Persistence.IntegrationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

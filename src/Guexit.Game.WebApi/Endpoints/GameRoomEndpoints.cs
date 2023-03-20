@@ -2,8 +2,8 @@
 using Guexit.Game.Application.Commands;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
-using TryGuessIt.Game.ReadModels.Queries;
-using TryGuessIt.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.Queries;
+using Guexit.Game.ReadModels.ReadModels;
 
 namespace Guexit.Game.WebApi.Endpoints;
 

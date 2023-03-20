@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Guexit.Game.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests.DataCleaners;
 

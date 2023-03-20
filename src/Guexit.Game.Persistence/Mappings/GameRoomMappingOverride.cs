@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace TryGuessIt.Game.Persistence.Mappings;
+namespace Guexit.Game.Persistence.Mappings;
 
 internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoom>
 {
