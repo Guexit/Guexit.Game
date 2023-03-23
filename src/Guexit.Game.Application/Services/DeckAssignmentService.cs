@@ -17,7 +17,6 @@ public class DeckAssignmentService : IDeckAssignmentService
     {
         _logicalShardDistributedLock = logicalShardDistributedLock;
         _logicalShardProvider = logicalShardProvider;
-        
     }
 
     public async Task AssignDeck(GameRoomId gameRoomId, CancellationToken cancellationToken = default)

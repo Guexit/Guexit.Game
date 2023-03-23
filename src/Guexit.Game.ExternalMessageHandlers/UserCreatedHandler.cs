@@ -16,8 +16,8 @@ public sealed class UserCreatedHandler : ExternalMessageHandler<UserCreated>
         _playerManagementService = playerManagementService;
     }
 
-    protected override async Task Process(UserCreated context, CancellationToken cancellationToken)
+    protected override async Task Process(UserCreated gameStarted, CancellationToken cancellationToken)
     {
-        await _playerManagementService.CreatePlayer(new PlayerId(context.Id), context.Username, cancellationToken);
+        await _playerManagementService.CreatePlayer(new PlayerId(gameStarted.Id), gameStarted.Username, cancellationToken);
     }
 }

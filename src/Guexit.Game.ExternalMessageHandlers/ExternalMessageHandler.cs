@@ -33,5 +33,5 @@ public abstract class ExternalMessageHandler<TMessage> : IConsumer<TMessage> whe
         }
     }
 
-    protected abstract Task Process(TMessage message, CancellationToken cancellationToken);
+    protected abstract Task Process(TMessage gameStarted, CancellationToken cancellationToken);
 }

@@ -1,5 +1,2 @@
 dotnet ef migrations add AddPlayer -p .\src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj
 dotnet ef database update -p .\src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj -c GameDbContext
-
-dotnet ef migrations add InitialMigration -c JobServiceSagaDbContext -p .\src\Guexit.Game.Sagas\Guexit.Game.Sagas.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj
-dotnet ef database update  -c DeckAssignmentSagaDbContext -p .\src\Guexit.Game.Sagas\Guexit.Game.Sagas.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj

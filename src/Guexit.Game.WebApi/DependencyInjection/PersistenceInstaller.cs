@@ -28,7 +28,7 @@ public static class PersistenceInstaller
         services.AddScoped<IImageRepository, ImageRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        services.AddScoped<ILogicalShardDistributedLock, PostgreSqlLogicalShardDistributedLock>();
+        services.AddScoped<ILogicalShardDistributedLock, NpgsqlLogicalShardDistributedLock>();
 
         return services;
     }

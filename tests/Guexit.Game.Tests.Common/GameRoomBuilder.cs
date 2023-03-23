@@ -10,7 +10,7 @@ public sealed class GameRoomBuilder
     private PlayerId[] _playersThatJoined = Array.Empty<PlayerId>();
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
     private RequiredMinPlayers _minRequiredPlayers = RequiredMinPlayers.Default;
-
+    
     public GameRoom Build()
     {
         var gameRoom = new GameRoom(_id, _creatorId, _createdAt);

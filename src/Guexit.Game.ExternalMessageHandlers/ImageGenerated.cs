@@ -23,8 +23,8 @@ public sealed class ImageGeneratedHandler : ExternalMessageHandler<ImageGenerate
         _guidProvider = guidProvider;
     }
 
-    protected override async Task Process(ImageGenerated message, CancellationToken cancellationToken)
+    protected override async Task Process(ImageGenerated gameStarted, CancellationToken cancellationToken)
     {
-        await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(message.Url), cancellationToken);
+        await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(gameStarted.Url), cancellationToken);
     }
 }

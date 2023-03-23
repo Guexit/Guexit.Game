@@ -23,7 +23,7 @@ public sealed class WhenStartingGame : ComponentTestBase
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var playerId = new PlayerId("1");
-        await AssumeExistingGameRoom(new GameRoomBuilder()
+        await Save(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(playerId).WithPlayersThatJoined("2", "3", "4")
             .WithMinRequiredPlayers(3)
@@ -33,8 +33,8 @@ public sealed class WhenStartingGame : ComponentTestBase
         var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start");
         request.AddPlayerIdHeader(playerId);
         var response = await client.SendAsync(request);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
         await AssertGameRoomHasStarted(gameRoomId);
     }
 

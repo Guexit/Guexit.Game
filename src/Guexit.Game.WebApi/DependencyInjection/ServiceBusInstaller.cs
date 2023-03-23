@@ -25,7 +25,7 @@ public static class ServiceBusInstaller
             {
                 serviceBusConfiguration.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
                 serviceBusConfiguration.ConfigureEndpoints(context);
-
+                
                 serviceBusConfiguration.SubscriptionEndpoint("guexit-game", "guexit-imagegeneration", 
                     endpoint => endpoint.ConfigureConsumer<ImageGeneratedHandler>(context));
 

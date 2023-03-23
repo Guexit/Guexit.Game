@@ -25,8 +25,8 @@ public sealed class WhenJoiningGameRoom : ComponentTestBase
         var creatorId = new PlayerId("player1");
         var playerJoiningId = new PlayerId("player2");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        await AssumeExistingPlayer(new PlayerBuilder().WithId(playerJoiningId).Build());
-        await AssumeGameRoom(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
+        await Save(new PlayerBuilder().WithId(playerJoiningId).Build());
+        await Save(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
         using var client = WebApplicationFactory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join");
@@ -45,8 +45,8 @@ public sealed class WhenJoiningGameRoom : ComponentTestBase
     {
         var creatorId = new PlayerId("player1");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        await AssumeExistingPlayer(new PlayerBuilder().WithId(creatorId).Build());
-        await AssumeGameRoom(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
+        await Save(new PlayerBuilder().WithId(creatorId).Build());
+        await Save(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
         using var client = WebApplicationFactory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join");
@@ -67,14 +67,5 @@ public sealed class WhenJoiningGameRoom : ComponentTestBase
         gameRooms.Should().HaveCount(1);
         gameRooms[0].PlayerIds.Should().BeEquivalentTo(new[] { creator, playerJoining });
         gameRooms[0].RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
-    }
-
-    private async Task AssumeGameRoom(GameRoom gameRoom)
-    {
-        await using var scope = _serviceScopeFactory.CreateAsyncScope();
-        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-        dbContext.Add(gameRoom);
-        await dbContext.SaveChangesAsync();
     }
 }

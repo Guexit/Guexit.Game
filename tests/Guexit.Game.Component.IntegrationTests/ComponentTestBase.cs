@@ -1,8 +1,12 @@
-﻿using Guexit.Game.Component.IntegrationTests.DataCleaners;
+﻿using System.Linq.Expressions;
+using Guexit.Game.Component.IntegrationTests.DataCleaners;
+using Guexit.Game.Domain;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using MassTransit.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
@@ -45,24 +49,23 @@ public abstract class ComponentTestBase : IAsyncLifetime
         }
     }
 
-    protected async Task AssumeExistingPlayer(Player player)
+    protected async Task Save<TAggregate>(params TAggregate[] aggregate) where TAggregate : class, IAggregateRoot
     {
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-        await dbContext.Players.AddAsync(player);
+        await dbContext.Set<TAggregate>().AddRangeAsync(aggregate);
         await dbContext.SaveChangesAsync();
     }
 
-    protected async Task AssumeExistingGameRoom(GameRoom gameRoom)
+    protected TAggregate GetSingle<TAggregate>(Func<TAggregate, bool> predicate) where TAggregate : class, IAggregateRoot
     {
-        await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
-        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-        await dbContext.GameRooms.AddAsync(gameRoom);
-        await dbContext.SaveChangesAsync();
+        using var scope = WebApplicationFactory.Services.CreateAsyncScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+    
+        return dbContext.Set<TAggregate>().Single(predicate);
     }
 
+    
     public Task InitializeAsync() => Task.CompletedTask;
 
     public async Task DisposeAsync()

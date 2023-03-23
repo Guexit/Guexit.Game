@@ -44,6 +44,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Messages", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.EventHandlersForPublish", "src\Guexit.Game.EventHandlersForPublish\Guexit.Game.EventHandlersForPublish.csproj", "{3EBAC9C0-D9AE-4228-B4CF-069C38A9963C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guexit.Game.EventHandlersForPublish.UnitTests", "tests\Guexit.Game.EventHandlersForPublish.UnitTests\Guexit.Game.EventHandlersForPublish.UnitTests.csproj", "{7B4178AD-FB0A-4340-BCA7-247D7781C5D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,10 @@ Global
 		{3EBAC9C0-D9AE-4228-B4CF-069C38A9963C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EBAC9C0-D9AE-4228-B4CF-069C38A9963C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EBAC9C0-D9AE-4228-B4CF-069C38A9963C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B4178AD-FB0A-4340-BCA7-247D7781C5D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4178AD-FB0A-4340-BCA7-247D7781C5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4178AD-FB0A-4340-BCA7-247D7781C5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B4178AD-FB0A-4340-BCA7-247D7781C5D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{E9AC6344-CD5B-4B53-ABAD-F0F299C93F6A} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
 		{3A09D1B1-F6C9-4694-8FF5-337090F29832} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{3EBAC9C0-D9AE-4228-B4CF-069C38A9963C} = {793A1A93-00AD-44FD-A22F-EF307E756742}
+		{7B4178AD-FB0A-4340-BCA7-247D7781C5D0} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A9CFE4F-FA8B-4163-A8DA-117487BB5948}
