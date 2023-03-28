@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Guexit.Game.Messages;
 using MassTransit;
 using Microsoft.Extensions.Options;
 
@@ -24,10 +25,17 @@ public sealed class ImageGenerationHeartbeat : BackgroundService
             await using var scope = _scopeFactory.CreateAsyncScope();
 
             var bus = scope.ServiceProvider.GetRequiredService<IBus>();
+            var sendEndpoint = await bus.GetSendEndpoint(new Uri("queue:guexit-cron-generate-image-command"));
 
-            // If the size of image pool is less than _options.Value.TargetAvailableImagePoolSize ask for N images
-
-            await Task.Delay(1000);
+            await sendEndpoint.Send(new GenerateImagesCommand
+            {
+                Prompt = new() 
+                {
+                    Negative = "Pollito fresco",
+                    Positive = "Pollito fresquisimo!"
+                },
+                Quantity = 1,
+            }, stoppingToken);
         }
     }
 }
