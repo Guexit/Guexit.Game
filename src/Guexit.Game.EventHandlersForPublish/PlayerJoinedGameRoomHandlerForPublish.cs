@@ -5,7 +5,7 @@ using MassTransit;
 
 namespace Guexit.Game.EventHandlersForPublish;
 
-public class PlayerJoinedGameRoomHandlerForPublish : IDomainEventHandler<PlayerJoinedGameRoom>
+public sealed class PlayerJoinedGameRoomHandlerForPublish : IDomainEventHandler<PlayerJoinedGameRoom>
 {
     private readonly IBus _bus;
 
@@ -13,25 +13,6 @@ public class PlayerJoinedGameRoomHandlerForPublish : IDomainEventHandler<PlayerJ
 
     public async ValueTask Handle(PlayerJoinedGameRoom @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new PlayerJoinedGameRoomIntegrationEvent
-        {
-            PlayerId = @event.PlayerId,
-            GameRoomId = @event.GameRoomId
-        }, ct);
-    }
-}
-
-public class GameStartedHandlerForPublish : IDomainEventHandler<GameStarted>
-{
-    private readonly IBus _bus;
-
-    public GameStartedHandlerForPublish(IBus bus) => _bus = bus;
-
-    public async ValueTask Handle(GameStarted @event, CancellationToken ct = default)
-    {
-        await _bus.Publish(new AssignDeckCommand
-        {
-            GameRoomId = @event.GameRoomId
-        }, ct);
+        await _bus.Publish(new PlayerJoinedGameRoomIntegrationEvent(@event.GameRoomId, @event.PlayerId), ct);
     }
 }
