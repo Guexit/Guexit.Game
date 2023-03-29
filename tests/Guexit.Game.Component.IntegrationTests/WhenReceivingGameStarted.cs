@@ -9,6 +9,10 @@ namespace Guexit.Game.Component.IntegrationTests;
 
 public sealed class WhenReceivingGameStarted : ComponentTestBase
 {
+    public WhenReceivingGameStarted(GameWebApplicationFactory factory) : base(factory)
+    {
+    }
+
     [Fact]
     public async Task AssignsDeckToGameRoom()
     {
@@ -49,7 +53,4 @@ public sealed class WhenReceivingGameStarted : ComponentTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
     }
 
-    public WhenReceivingGameStarted(GameWebApplicationFactory factory) : base(factory)
-    {
-    }
 }

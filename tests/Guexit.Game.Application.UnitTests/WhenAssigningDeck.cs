@@ -95,9 +95,9 @@ public sealed class WhenAssigningDeck
         gameRoom.Deck.Should().HaveCount(requiredCardsInDeck - (CardsInHandPerPlayer * playersInGameRoom));
         gameRoom.Deck.Should().AllSatisfy(card => card.Url.ToString().Should().StartWith("https://pablocompany/image/"));
         gameRoom.Deck.Should().AllSatisfy(card => card.Url.ToString().Should().StartWith("https://pablocompany/image/"));
-        gameRoom.PlayerHands[new PlayerId("creator")].Should().NotBeEmpty();
-        gameRoom.PlayerHands[new PlayerId("2")].Should().HaveCount(CardsInHandPerPlayer);
-        gameRoom.PlayerHands[new PlayerId("3")].Should().HaveCount(CardsInHandPerPlayer);
-        gameRoom.PlayerHands[new PlayerId("4")].Should().HaveCount(CardsInHandPerPlayer);
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("creator")).Cards.Should().NotBeEmpty();
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("2")).Cards.Should().HaveCount(CardsInHandPerPlayer);
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("3")).Cards.Should().HaveCount(CardsInHandPerPlayer);
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("4")).Cards.Should().HaveCount(CardsInHandPerPlayer);
     }
 }

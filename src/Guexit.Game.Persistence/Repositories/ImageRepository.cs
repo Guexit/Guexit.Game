@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Domain.Model.ImageAggregate;
+﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.ImageAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.Persistence.Repositories;
@@ -24,14 +25,14 @@ public sealed class ImageRepository : IImageRepository
 
     public async Task<int> CountAvailableImages(int logicalShard, CancellationToken ct = default)
     {
-        return await _dbContext.Images.CountAsync(x => x.GameRoomId == null, ct);
+        return await _dbContext.Images.CountAsync(x => x.GameRoomId == GameRoomId.Empty, ct);
     }
 
     public async Task<Image[]> GetAvailableImages(int amount, int logicalShard, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Images
             .Take(amount)
-            .Where(x => x.GameRoomId == null && x.LogicalShard == logicalShard)
+            .Where(x => x.GameRoomId == GameRoomId.Empty && x.LogicalShard == logicalShard)
             .ToArrayAsync(cancellationToken);
     }
 

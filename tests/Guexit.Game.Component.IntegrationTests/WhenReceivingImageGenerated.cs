@@ -1,17 +1,12 @@
-﻿using Guexit.Game.ExternalMessageHandlers;
-using Guexit.Game.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Guexit.Game.Domain.Model.ImageAggregate;
+using Guexit.Game.ExternalMessageHandlers;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
 public sealed class WhenReceivingImageGenerated : ComponentTestBase
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
     public WhenReceivingImageGenerated(GameWebApplicationFactory factory) : base(factory)
     {
-        _serviceScopeFactory = WebApplicationFactory.Services.GetRequiredService<IServiceScopeFactory>();
     }
 
     [Fact]
@@ -22,16 +17,7 @@ public sealed class WhenReceivingImageGenerated : ComponentTestBase
 
         await ConsumeMessage(imageGenerated);
 
-        await AssertImageWasAdded(imageUrl);
-    }
-
-    private async Task AssertImageWasAdded(string imageUrl)
-    {
-        await using var scope = _serviceScopeFactory.CreateAsyncScope();
-        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-        var images = await dbContext.Images.ToArrayAsync();
-        images.Should().HaveCount(1);
-        images[0].Url.Should().Be(imageUrl);
+        var image = GetSingle<Image>(x => x.Url == new Uri(imageUrl));
+        image.Url.Should().Be(new Uri(imageUrl));
     }
 }

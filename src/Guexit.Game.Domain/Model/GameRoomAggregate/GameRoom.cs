@@ -13,8 +13,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
-    public Queue<Card> Deck { get; private set; } = new Queue<Card>();
-    public Dictionary<PlayerId, List<Card>> PlayerHands { get; private set; } = new();
+    public ICollection<Card> Deck { get; private set; } = new List<Card>();
+    public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
 
     private GameRoom()
     {
@@ -57,7 +57,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void AssignDeck(IEnumerable<Card> cards)
     {
-        Deck = new Queue<Card>(cards);
+        Deck = new List<Card>(cards);
         Status = GameStatus.InProgress;
         DispatchInitialPlayerHands();
     }
@@ -69,10 +69,12 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             var cardsToDispatch = new List<Card>(CardsInHandPerPlayer);
             for (int i = 0; i < CardsInHandPerPlayer; i++)
             {
-                cardsToDispatch.Add(Deck.Dequeue());
+                var card = Deck.Last();
+                cardsToDispatch.Add(card);
+                Deck.Remove(card);
             }
 
-            PlayerHands.Add(player, cardsToDispatch);
+            PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDispatch, Id));
         }
     }
 }

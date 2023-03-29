@@ -1,5 +1,4 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
-using Guexit.Game.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.Persistence.Repositories;
@@ -20,6 +19,9 @@ public sealed class GameRoomRepository : IGameRoomRepository
 
     public async ValueTask<GameRoom?> GetBy(GameRoomId id, CancellationToken ct = default)
     {
-        return await _dbContext.GameRooms.FirstOrDefaultAsync(g => g.Id == id, ct);
+        return await _dbContext.GameRooms
+            .Include(x => x.PlayerHands)
+            .Include(x => x.Deck)
+            .SingleOrDefaultAsync(g => g.Id == id, ct);
     }
 }

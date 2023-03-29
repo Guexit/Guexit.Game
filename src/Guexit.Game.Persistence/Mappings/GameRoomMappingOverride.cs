@@ -28,6 +28,9 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();
 
+        builder.HasMany(x => x.PlayerHands);
+        builder.HasMany(x => x.Deck);
+
         builder.Property<uint>("Version").IsRowVersion();
     }
 

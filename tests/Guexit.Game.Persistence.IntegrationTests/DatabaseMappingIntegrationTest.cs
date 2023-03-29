@@ -29,7 +29,7 @@ public sealed class MappingIntegrationTestCollectionDefinition : ICollectionFixt
 [Collection(nameof(MappingIntegrationTestCollectionDefinition))]
 public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
 {
-    private readonly IDbContextTransaction _transactionToDiscardChanges;
+    //private readonly IDbContextTransaction _transactionToDiscardChanges;
     protected readonly GameDbContext DbContext;
 
     protected DatabaseMappingIntegrationTest(IntegrationTestFixture fixture)
@@ -40,7 +40,7 @@ public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
             .Options;
 
         DbContext = new GameDbContext(dbContextOptions);
-        _transactionToDiscardChanges = DbContext.Database.BeginTransaction();
+        //_transactionToDiscardChanges = DbContext.Database.BeginTransaction();
     }
 
     protected async Task SaveChangesAndClearChangeTracking()
@@ -53,8 +53,8 @@ public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await _transactionToDiscardChanges.RollbackAsync();
-        await _transactionToDiscardChanges.DisposeAsync();
+        //await _transactionToDiscardChanges.RollbackAsync();
+        //await _transactionToDiscardChanges.DisposeAsync();
         await DbContext.DisposeAsync();
     }
 }
