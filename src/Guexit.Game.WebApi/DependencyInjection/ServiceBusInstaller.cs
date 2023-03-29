@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.ExternalMessageHandlers;
+using Guexit.Game.Messages;
 using Guexit.Game.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ public static class ServiceBusInstaller
             config.SetKebabCaseEndpointNameFormatter();
 
             config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
+
+            EndpointConvention.Map<GenerateImagesCommand>(new Uri("queue:guexit-cron-generate-image-command"));
 
             config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {

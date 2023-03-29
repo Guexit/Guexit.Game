@@ -7,8 +7,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\Guexit.Game.Messages\Guexit.Game.Messages.csproj" />
         <ProjectReference Include="..\Guexit.Game.Domain\Guexit.Game.Domain.csproj" />
+        <ProjectReference Include="..\Guexit.Game.Messages\Guexit.Game.Messages.csproj" />
     </ItemGroup>
 
     <ItemGroup>
