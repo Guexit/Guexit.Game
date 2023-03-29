@@ -1,27 +1,54 @@
-﻿namespace Guexit.Game.Messages;
+﻿using System.Text.Json.Serialization;
 
-public class GenerateImagesCommand
+namespace Guexit.Game.Messages;
+
+public sealed class GenerateImagesCommand
 {
+    [JsonPropertyName("text_to_image")]
     public required TextToImage TextToImage { get; init; }
+
+    [JsonPropertyName("return_images")]
     public bool ReturnImages { get; init; } = false;
+
+    [JsonPropertyName("upload_images")]
     public bool UploadImages { get; init; } = true;
 }
 
-public class TextToImage
+public sealed class TextToImage
 {
-    public required string ModelPath { get; init; }
-    public required string ModelScheduler { get; init; }
+    [JsonPropertyName("model_path")]
+    public string ModelPath { get; init; } = "prompthero/openjourney-v2";
+
+    [JsonPropertyName("model_scheduler")]
+    public string ModelScheduler { get; init; } = "euler_a";
+
+    [JsonPropertyName("prompt")]
     public required Prompt Prompt { get; init; }
+
+    [JsonPropertyName("height")]
     public int Height { get; init; } = 688;
+
+    [JsonPropertyName("width")]
     public int Width { get; init; } = 512;
+
+    [JsonPropertyName("num_inference_steps")]
     public int NumInferenceSteps { get; init; } = 50;
-    public int NumImages { get; init; } = 2;
+
+    [JsonPropertyName("num_images")]
+    public required int NumImages { get; init; }
+
+    [JsonPropertyName("seed")]
     public int Seed { get; init; } = 57857;
 }
 
-public class Prompt
+public sealed class Prompt
 {
+    [JsonPropertyName("positive")]
     public required string Positive { get; init; }
+
+    [JsonPropertyName("negative")]
     public required string Negative { get; init; }
-    public required double GuidanceScale { get; init; } = 16.5;
+
+    [JsonPropertyName("guidance_scale")]
+    public double GuidanceScale { get; init; } = 16.5;
 }

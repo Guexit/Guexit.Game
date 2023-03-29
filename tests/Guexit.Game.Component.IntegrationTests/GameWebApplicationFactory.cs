@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.WebApi;
+using Guexit.Game.WebApi.RecurrentTasks.ImageGeneration;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,6 +14,9 @@ public sealed class GameWebApplicationFactory : WebApplicationFactory<IAssemblyM
         builder.ConfigureTestServices(services =>
         {
             services.AddMassTransitTestHarness();
+
+            var imageGenerationBackgroundService = services.Single(d => d.ImplementationType == typeof(ImageGenerationBackgroundService));
+            services.Remove(imageGenerationBackgroundService);
         });
     }
 }

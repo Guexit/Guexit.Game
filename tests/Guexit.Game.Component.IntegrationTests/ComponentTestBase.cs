@@ -1,12 +1,7 @@
-﻿using System.Linq.Expressions;
-using Guexit.Game.Component.IntegrationTests.DataCleaners;
+﻿using Guexit.Game.Component.IntegrationTests.DataCleaners;
 using Guexit.Game.Domain;
-using Guexit.Game.Domain.Model.GameRoomAggregate;
-using Guexit.Game.Domain.Model.ImageAggregate;
-using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using MassTransit.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;

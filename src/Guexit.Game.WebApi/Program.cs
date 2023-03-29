@@ -1,9 +1,7 @@
 using Asp.Versioning;
-using Guexit.Game.Application.CardAssigment;
 using Guexit.Game.WebApi.DependencyInjection;
 using Guexit.Game.WebApi.Endpoints;
 using Guexit.Game.WebApi.ErrorHandling;
-using Guexit.Game.WebApi.RecurrentTasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,13 +10,7 @@ builder.Services.AddDomain();
 builder.Services.AddApplication();
 builder.Services.AddServiceBus(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration);
-
-builder.Services.AddOptions<ImageGenerationHeartbeatOptions>()
-           .BindConfiguration(ImageGenerationHeartbeatOptions.SectionName)
-           .ValidateDataAnnotations()
-           .ValidateOnStart();
-
-builder.Services.AddHostedService<ImageGenerationHeartbeat>();
+builder.Services.AddRecurrentTasks(builder.Configuration);
 
 var app = builder.Build();
 
