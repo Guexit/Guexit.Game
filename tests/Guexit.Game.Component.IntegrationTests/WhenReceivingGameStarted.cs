@@ -16,17 +16,19 @@ public sealed class WhenReceivingGameStarted : ComponentTestBase
         var playerId2 = new PlayerId("2");
         var playerId3 = new PlayerId("3");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        await Save(
-            new PlayerBuilder().WithId(playerId1).Build(),
+
+        await Save(new PlayerBuilder().WithId(playerId1).Build(),
             new PlayerBuilder().WithId(playerId2).Build(),
             new PlayerBuilder().WithId(playerId3).Build());
+
         await Save(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(playerId1)
             .WithPlayersThatJoined(playerId2, playerId3)
             .Build());
+
         var imageBuilder = new ImageBuilder().WithLogicalShard(1);
-        await Save(Enumerable.Range(0, 70)
+        await Save(Enumerable.Range(0, 200)
             .Select(i => imageBuilder.WithId(Guid.NewGuid()).WithUrl(new Uri($"https://pablocompany/image/{i}")).Build())
             .ToArray());
 
