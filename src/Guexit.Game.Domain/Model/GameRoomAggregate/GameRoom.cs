@@ -60,6 +60,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         Deck = new List<Card>(cards);
         Status = GameStatus.InProgress;
         DispatchInitialPlayerHands();
+
+        AddDomainEvent(new DeckAssigned(Id));
     }
 
     private void DispatchInitialPlayerHands()

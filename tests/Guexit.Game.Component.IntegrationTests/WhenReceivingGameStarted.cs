@@ -4,6 +4,7 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
@@ -39,8 +40,11 @@ public sealed class WhenReceivingGameStarted : ComponentTestBase
         await StartGame(gameRoomId, playerId1);
         await ConsumeMessage(new GameStarted(gameRoomId));
 
-        var gameRoom = GetSingle<GameRoom>(x => x.Id == gameRoomId);
-        gameRoom.Status.Should().Be(GameStatus.InProgress);
+        var gameRoom = await WebApplicationFactory.Services.CreateScope().ServiceProvider
+            .GetRequiredService<IGameRoomRepository>().GetBy(gameRoomId);
+        gameRoom!.Status.Should().Be(GameStatus.InProgress);
+        gameRoom.Deck.Should().AllSatisfy(x => x.Url.ToString().StartsWith("https://pablocompany/image/"));
+        gameRoom.PlayerHands.First(x => x.PlayerId == playerId1).Cards.Should().HaveCount(4);
     }
 
     private async Task StartGame(GameRoomId gameRoomId, PlayerId playerId1)

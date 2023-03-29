@@ -57,5 +57,7 @@ public sealed class DeckAssignmentService : IDeckAssignmentService
         var images = await _imageRepository.GetAvailableImages(gameRoom.GetRequiredNumberOfCardsInDeck(), logicalShard, cancellationToken);
         var cards = images.Select(x => new Card(Guid.NewGuid(), x.Url)).ToArray();
         gameRoom.AssignDeck(cards);
+
+        // TODO: Mark images as assigned
     }
 }

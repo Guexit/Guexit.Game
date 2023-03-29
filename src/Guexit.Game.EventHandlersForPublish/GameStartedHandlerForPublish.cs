@@ -5,7 +5,7 @@ using MassTransit;
 
 namespace Guexit.Game.EventHandlersForPublish;
 
-public class GameStartedHandlerForPublish : IDomainEventHandler<GameStarted>
+public sealed class GameStartedHandlerForPublish : IDomainEventHandler<GameStarted>
 {
     private readonly IBus _bus;
 
