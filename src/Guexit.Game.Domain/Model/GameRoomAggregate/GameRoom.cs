@@ -35,6 +35,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Join(PlayerId playerId)
     {
+        if (Status != GameStatus.NotStarted)
+            throw new CannotJoinStartedGameException(playerId, Id);
+
         if (PlayerIds.Contains(playerId))
             throw new PlayerIsAlreadyInGameRoomException(playerId);
 
@@ -45,6 +48,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Start()
     {
+        if (Status != GameStatus.NotStarted)
+            throw new CannotStartAlreadyStartedGameException(Id);
+
         if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
 

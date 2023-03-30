@@ -58,6 +58,6 @@ public sealed class DeckAssignmentService : IDeckAssignmentService
         var cards = images.Select(x => new Card(Guid.NewGuid(), x.Url)).ToArray();
         gameRoom.AssignDeck(cards);
 
-        // TODO: Mark images as assigned
+        // TODO: Mark images as assigned, probably before MVP to adjust image generation 
     }
 }
