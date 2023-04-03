@@ -2,11 +2,11 @@
 using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Persistence;
 using Guexit.Game.Tests.Common;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
@@ -25,7 +25,7 @@ public sealed class WhenCreatingGameRoom : ComponentTestBase
     {
         var gameRoomId = Guid.NewGuid().ToString();
         var playerId = new PlayerId("player1");
-        await AssumeExistingPlayer(new PlayerBuilder().WithId(playerId).Build());
+        await Save(new PlayerBuilder().WithId(playerId).Build());
         
         var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId}");
         request.AddPlayerIdHeader(playerId);

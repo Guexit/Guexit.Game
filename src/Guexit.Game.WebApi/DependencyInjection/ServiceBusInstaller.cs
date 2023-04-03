@@ -1,6 +1,8 @@
 ﻿using Guexit.Game.ExternalMessageHandlers;
+using Guexit.Game.Messages;
+using Guexit.Game.Persistence;
 using MassTransit;
-using TryGuessIt.Game.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.WebApi.DependencyInjection;
 
@@ -14,17 +16,19 @@ public static class ServiceBusInstaller
             {
                 outboxOptions.UsePostgres();
                 outboxOptions.UseBusOutbox();
-                //outboxOptions.QueryDelay = TimeSpan.FromSeconds(2);
             });
             
             config.SetKebabCaseEndpointNameFormatter();
 
             config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
+
+            EndpointConvention.Map<GenerateImagesCommand>(new Uri("queue:guexit-cron-generate-image-command"));
+
             config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {
                 serviceBusConfiguration.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
                 serviceBusConfiguration.ConfigureEndpoints(context);
-
+                
                 serviceBusConfiguration.SubscriptionEndpoint("guexit-game", "guexit-imagegeneration", 
                     endpoint => endpoint.ConfigureConsumer<ImageGeneratedHandler>(context));
 
@@ -35,4 +39,3 @@ public static class ServiceBusInstaller
         return services;
     }
 }
-

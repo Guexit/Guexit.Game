@@ -1,11 +1,12 @@
 ﻿using Guexit.Game.Application;
+using Guexit.Game.Application.CardAssigment;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using MassTransit;
+using Guexit.Game.Persistence;
+using Guexit.Game.Persistence.Npgsql;
+using Guexit.Game.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
-using TryGuessIt.Game.Persistence;
-using TryGuessIt.Game.Persistence.Repositories;
 
 namespace Guexit.Game.WebApi.DependencyInjection;
 
@@ -26,6 +27,8 @@ public static class PersistenceInstaller
         services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IImageRepository, ImageRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<ILogicalShardDistributedLock, NpgsqlLogicalShardDistributedLock>();
 
         return services;
     }

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Guexit.Game.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TryGuessIt.Game.Persistence;
 
 namespace Guexit.Game.Component.IntegrationTests.DataCleaners;
 
@@ -11,6 +11,8 @@ public sealed class PersistenceDataCleaner : ITestDataCleaner
         await using var scope = webApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
 
+        await dbContext.Cards.ExecuteDeleteAsync();
+        await dbContext.PlayerHands.ExecuteDeleteAsync();
         await dbContext.GameRooms.ExecuteDeleteAsync();
         await dbContext.Players.ExecuteDeleteAsync();
         await dbContext.Images.ExecuteDeleteAsync();

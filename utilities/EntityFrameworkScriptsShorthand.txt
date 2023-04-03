@@ -1,2 +1,2 @@
 dotnet ef migrations add AddPlayer -p .\src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj
-dotnet ef database update -p .\src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj
+dotnet ef database update -p .\src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj -s .\src\Guexit.Game.WebApi\Guexit.Game.WebApi.csproj -c GameDbContext

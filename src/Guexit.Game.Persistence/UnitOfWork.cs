@@ -1,7 +1,8 @@
 ﻿using Guexit.Game.Application;
 using Guexit.Game.Domain;
+using Guexit.Game.Persistence;
 
-namespace TryGuessIt.Game.Persistence;
+namespace Guexit.Game.Persistence;
 
 public sealed class UnitOfWork : IUnitOfWork
 {

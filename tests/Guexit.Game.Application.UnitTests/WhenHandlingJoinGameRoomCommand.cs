@@ -4,6 +4,7 @@ using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Tests.Common;
 
 namespace Guexit.Game.Application.UnitTests;
 
@@ -40,6 +41,28 @@ public sealed class WhenHandlingJoinGameRoomCommand
         var gameRoom = await _gameRoomRepository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
         gameRoom!.PlayerIds.Should().BeEquivalentTo(new[] { creator, playerJoining });
+    }
+
+    [Fact]
+    public async Task ThrowsCannotJoinStartedGameIfGameRoomStatusIsDifferentFromNotStarted()
+    {
+        var creator = new PlayerId("player1");
+        var playerThatJoined = new PlayerId("player2");
+        var playerJoining = new PlayerId("player3");
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        await AssumePlayerInRepository(creator);
+        await AssumePlayerInRepository(playerJoining);
+        var gameRoom = new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creator)
+            .WithPlayersThatJoined(playerThatJoined, "otherPlayerId")
+            .Started()
+            .Build();
+        await _gameRoomRepository.Add(gameRoom);
+
+        var action = async () => await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
+
+        await action.Should().ThrowAsync<CannotJoinStartedGameException>();
     }
 
     [Fact]

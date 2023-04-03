@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.ReadModels;
+﻿namespace Guexit.Game.ReadModels;
 
 public interface IAssemblyMarker
 {

@@ -2,8 +2,8 @@
 
 public sealed class PlayerJoinedGameRoomIntegrationEvent
 {
-    public Guid GameRoomId { get; set; }
-    public string PlayerId { get; set; } = default!;
+    public Guid GameRoomId { get; init; }
+    public string PlayerId { get; init; } = default!;
 
     public PlayerJoinedGameRoomIntegrationEvent()
     {

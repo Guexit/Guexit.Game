@@ -1,4 +1,4 @@
-﻿namespace TryGuessIt.Game.Persistence;
+﻿namespace Guexit.Game.Persistence;
 
 public interface IAssemblyMarker
 {

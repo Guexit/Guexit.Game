@@ -7,7 +7,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>TryGuessIt.Game.Persistence.IntegrationTests</RootNamespace>
+    <RootNamespace>Guexit.Game.Persistence.IntegrationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Tests.Common\Guexit.Game.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

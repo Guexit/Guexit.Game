@@ -7,13 +7,42 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Guexit.Game.Persistence.Npgsql.Migrations
 {
     /// <inheritdoc />
-    public partial class RemovesCustomOutboxAndAddsMasstransitOutbox : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "OutboxMessages");
+            migrationBuilder.CreateTable(
+                name: "GameRooms",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlayerIds = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    RequiredMinPlayers = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameRooms", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    LogicalShard = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "InboxState",
@@ -85,6 +114,77 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     table.PrimaryKey("PK_OutboxState", x => x.OutboxId);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Username = table.Column<string>(type: "character varying(320)", maxLength: 320, nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerHands",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlayerId = table.Column<string>(type: "text", nullable: false),
+                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerHands", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlayerHands_GameRooms_GameRoomId",
+                        column: x => x.GameRoomId,
+                        principalTable: "GameRooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cards",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PlayerHandId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cards_GameRooms_GameRoomId",
+                        column: x => x.GameRoomId,
+                        principalTable: "GameRooms",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Cards_PlayerHands_PlayerHandId",
+                        column: x => x.PlayerHandId,
+                        principalTable: "PlayerHands",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cards_GameRoomId",
+                table: "Cards",
+                column: "GameRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cards_PlayerHandId",
+                table: "Cards",
+                column: "PlayerHandId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_LogicalShard_CreatedAt",
+                table: "Images",
+                columns: new[] { "LogicalShard", "CreatedAt" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_InboxState_Delivered",
                 table: "InboxState",
@@ -116,11 +216,23 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                 name: "IX_OutboxState_Created",
                 table: "OutboxState",
                 column: "Created");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerHands_GameRoomId_PlayerId",
+                table: "PlayerHands",
+                columns: new[] { "GameRoomId", "PlayerId" },
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Cards");
+
+            migrationBuilder.DropTable(
+                name: "Images");
+
             migrationBuilder.DropTable(
                 name: "InboxState");
 
@@ -130,32 +242,14 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
             migrationBuilder.DropTable(
                 name: "OutboxState");
 
-            migrationBuilder.CreateTable(
-                name: "OutboxMessages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    FullyQualifiedTypeName = table.Column<string>(type: "text", nullable: false),
-                    PublishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    SerializedData = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
-                });
+            migrationBuilder.DropTable(
+                name: "Players");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_CreatedAt",
-                table: "OutboxMessages",
-                column: "CreatedAt",
-                descending: new bool[0]);
+            migrationBuilder.DropTable(
+                name: "PlayerHands");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_PublishedAt",
-                table: "OutboxMessages",
-                column: "PublishedAt",
-                descending: new bool[0]);
+            migrationBuilder.DropTable(
+                name: "GameRooms");
         }
     }
 }

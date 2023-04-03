@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace TryGuessIt.Game.Persistence.Mappings;
+namespace Guexit.Game.Persistence.Mappings;
 
 internal sealed class PlayerMappingOverride : IEntityTypeConfiguration<Player>
 {

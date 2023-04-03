@@ -1,8 +1,8 @@
-﻿using Mediator;
+﻿using Guexit.Game.Persistence;
+using Mediator;
 using Microsoft.Extensions.Logging;
-using TryGuessIt.Game.Persistence;
 
-namespace TryGuessIt.Game.ReadModels;
+namespace Guexit.Game.ReadModels;
 
 public abstract class QueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
     where TQuery : Queries.IQuery<TResponse>

@@ -2,7 +2,7 @@
 
 public sealed class GameRoomId : ValueObject
 {
-    internal static readonly GameRoomId Empty = new(Guid.Empty);
+    public static readonly GameRoomId Empty = new(Guid.Empty);
 
     public Guid Value { get; }
 

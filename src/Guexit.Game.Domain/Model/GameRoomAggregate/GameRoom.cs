@@ -6,11 +6,16 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
+    private const int TotalCardsPerPlayer = 8;
+    private const int CardsInHandPerPlayer = 4;
+
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
-    
+    public ICollection<Card> Deck { get; private set; } = new List<Card>();
+    public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
+
     private GameRoom()
     {
         // Entity Framework required parameterless ctor
@@ -30,6 +35,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Join(PlayerId playerId)
     {
+        if (Status != GameStatus.NotStarted)
+            throw new CannotJoinStartedGameException(playerId, Id);
+
         if (PlayerIds.Contains(playerId))
             throw new PlayerIsAlreadyInGameRoomException(playerId);
 
@@ -40,11 +48,43 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Start()
     {
+        if (Status != GameStatus.NotStarted)
+            throw new CannotStartAlreadyStartedGameException(Id);
+
         if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
 
         Status = GameStatus.AssigningCards;
 
         AddDomainEvent(new GameStarted(Id));
+    }
+
+    public int GetRequiredNumberOfCardsInDeck() => PlayerIds.Count * TotalCardsPerPlayer;
+
+    public void AssignDeck(IEnumerable<Card> cards)
+    {
+        Deck = new List<Card>(cards);
+        DealInitialPlayerHands();
+        Status = GameStatus.InProgress;
+
+        AddDomainEvents(
+            new DeckAssigned(Id), 
+            new InitialCardsDealed(Id));
+    }
+
+    private void DealInitialPlayerHands()
+    {
+        foreach (var player in PlayerIds)
+        {
+            var cardsToDeal = new List<Card>(CardsInHandPerPlayer);
+            for (int i = 0; i < CardsInHandPerPlayer; i++)
+            {
+                var card = Deck.First();
+                cardsToDeal.Add(card);
+                Deck.Remove(card);
+            }
+
+            PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
+        }
     }
 }

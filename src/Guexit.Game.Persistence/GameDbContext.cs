@@ -1,20 +1,22 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Persistence.Mappings;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using TryGuessIt.Game.Persistence.Mappings;
 
-namespace TryGuessIt.Game.Persistence;
+namespace Guexit.Game.Persistence;
 
 public sealed class GameDbContext : DbContext
 {
     public DbSet<Player> Players { get; set; } = default!;
-	public DbSet<GameRoom> GameRooms { get; set; } = default!;
-	public DbSet<Image> Images { get; set; } = default!;
+    public DbSet<GameRoom> GameRooms { get; set; } = default!;
+    public DbSet<Image> Images { get; set; } = default!;
+    public DbSet<Card> Cards { get; set; } = default!;
+    public DbSet<Card> PlayerHands { get; set; } = default!;
 
     public GameDbContext(DbContextOptions<GameDbContext> contextOptions) : base(contextOptions)
-	{
+    {
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,7 +24,9 @@ public sealed class GameDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PlayerMappingOverride());
         modelBuilder.ApplyConfiguration(new GameRoomMappingOverride());
         modelBuilder.ApplyConfiguration(new ImageMappingOverride());
-        
+        modelBuilder.ApplyConfiguration(new CardMappingOverride());
+        modelBuilder.ApplyConfiguration(new PlayerHandMappingOverride());
+
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();
         modelBuilder.AddOutboxStateEntity();

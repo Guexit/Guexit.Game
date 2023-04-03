@@ -1,10 +1,10 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.ReadModels.Queries;
+using Guexit.Game.ReadModels.QueryHandlers;
+using Guexit.Game.ReadModels.ReadModels;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using TryGuessIt.Game.ReadModels.Queries;
-using TryGuessIt.Game.ReadModels.QueryHandlers;
-using TryGuessIt.Game.ReadModels.ReadModels;
 
 namespace TryGuessIt.Game.ReadModels.IntegrationTests;
 
@@ -26,7 +26,7 @@ public class WhenHandlingGameLobbyQuery : ReadModelsIntegrationTestBase
         await DbContext.SaveChangesAsync();
         DbContext.ChangeTracker.Clear();
 
-        var queryHandler = new GameLobbyQueryHandler(DbContext, Substitute.For<ILogger<QueryHandler<GameLobbyQuery, GameLobbyReadModel>>>());
+        var queryHandler = new GameLobbyQueryHandler(DbContext, Substitute.For<ILogger<GameLobbyQueryHandler>>());
         var lobbyReadModel = await queryHandler.Handle(new GameLobbyQuery(gameRoomId));
 
         lobbyReadModel.Should().NotBeNull();

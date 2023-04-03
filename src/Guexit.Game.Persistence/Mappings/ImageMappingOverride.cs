@@ -3,7 +3,7 @@ using Guexit.Game.Domain.Model.ImageAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace TryGuessIt.Game.Persistence.Mappings;
+namespace Guexit.Game.Persistence.Mappings;
 
 internal sealed class ImageMappingOverride : IEntityTypeConfiguration<Image>
 {

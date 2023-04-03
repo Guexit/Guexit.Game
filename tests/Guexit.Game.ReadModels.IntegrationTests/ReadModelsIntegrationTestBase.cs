@@ -1,7 +1,7 @@
+using Guexit.Game.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
-using TryGuessIt.Game.Persistence;
 
 namespace TryGuessIt.Game.ReadModels.IntegrationTests;
 
