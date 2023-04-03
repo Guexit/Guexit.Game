@@ -5,13 +5,13 @@ using MassTransit;
 
 namespace Guexit.Game.EventHandlersForPublish;
 
-public sealed class DeckAssignedForPublish : IDomainEventHandler<DeckAssigned>
+public sealed class InitialCardsDealedHandlerForPublish : IDomainEventHandler<InitialCardsDealed>
 {
     private readonly IBus _bus;
 
-    public DeckAssignedForPublish(IBus bus) => _bus = bus;
+    public InitialCardsDealedHandlerForPublish(IBus bus) => _bus = bus;
 
-    public async ValueTask Handle(DeckAssigned @event, CancellationToken ct = default)
+    public async ValueTask Handle(InitialCardsDealed @event, CancellationToken ct = default)
     {
         await _bus.Publish(new DeckAssignedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }

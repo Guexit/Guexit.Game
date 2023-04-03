@@ -64,10 +64,12 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void AssignDeck(IEnumerable<Card> cards)
     {
         Deck = new List<Card>(cards);
-        Status = GameStatus.InProgress;
         DealInitialPlayerHands();
+        Status = GameStatus.InProgress;
 
-        AddDomainEvent(new DeckAssigned(Id));
+        AddDomainEvents(
+            new DeckAssigned(Id), 
+            new InitialCardsDealed(Id));
     }
 
     private void DealInitialPlayerHands()
