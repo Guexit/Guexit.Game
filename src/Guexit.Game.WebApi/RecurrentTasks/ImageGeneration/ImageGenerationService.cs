@@ -8,6 +8,12 @@ namespace Guexit.Game.WebApi.RecurrentTasks.ImageGeneration;
 
 public sealed class ImageGenerationService
 {
+    private static readonly (string PositivePrompt, string NegativePrompt)[] Prompts = new[]
+    {
+        ("", ""),
+
+    };
+
     private readonly IBus _bus;
     private readonly GameDbContext _dbContext;
     private readonly ILogger<ImageGenerationService> _logger;

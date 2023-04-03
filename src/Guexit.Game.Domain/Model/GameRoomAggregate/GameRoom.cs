@@ -65,24 +65,24 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         Deck = new List<Card>(cards);
         Status = GameStatus.InProgress;
-        DispatchInitialPlayerHands();
+        DealInitialPlayerHands();
 
         AddDomainEvent(new DeckAssigned(Id));
     }
 
-    private void DispatchInitialPlayerHands()
+    private void DealInitialPlayerHands()
     {
         foreach (var player in PlayerIds)
         {
-            var cardsToDispatch = new List<Card>(CardsInHandPerPlayer);
+            var cardsToDeal = new List<Card>(CardsInHandPerPlayer);
             for (int i = 0; i < CardsInHandPerPlayer; i++)
             {
-                var card = Deck.Last();
-                cardsToDispatch.Add(card);
+                var card = Deck.First();
+                cardsToDeal.Add(card);
                 Deck.Remove(card);
             }
 
-            PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDispatch, Id));
+            PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
         }
     }
 }

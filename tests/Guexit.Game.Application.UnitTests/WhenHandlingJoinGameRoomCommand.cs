@@ -52,12 +52,13 @@ public sealed class WhenHandlingJoinGameRoomCommand
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         await AssumePlayerInRepository(creator);
         await AssumePlayerInRepository(playerJoining);
-        await AssumeGameInRepository(gameRoomId, creator);
-        await _gameRoomRepository.Add(new GameRoomBuilder()
+        var gameRoom = new GameRoomBuilder()
+            .WithId(gameRoomId)
             .WithCreator(creator)
-            .WithPlayersThatJoined(playerThatJoined)
+            .WithPlayersThatJoined(playerThatJoined, "otherPlayerId")
             .Started()
-            .Build());
+            .Build();
+        await _gameRoomRepository.Add(gameRoom);
 
         var action = async () => await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
 
