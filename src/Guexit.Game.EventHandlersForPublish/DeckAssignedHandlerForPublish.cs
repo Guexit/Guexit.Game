@@ -13,6 +13,6 @@ public sealed class InitialCardsDealedHandlerForPublish : IDomainEventHandler<In
 
     public async ValueTask Handle(InitialCardsDealed @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new DeckAssignedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
+        await _bus.Publish(new InitialCardsDealedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }
 }

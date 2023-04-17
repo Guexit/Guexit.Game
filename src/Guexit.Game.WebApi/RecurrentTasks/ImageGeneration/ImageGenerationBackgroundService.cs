@@ -19,6 +19,9 @@ public sealed class ImageGenerationBackgroundService : BackgroundService
     {
         while (await _timer.WaitForNextTickAsync(stoppingToken) && !stoppingToken.IsCancellationRequested)
         {
+            if (!_options.Value.Enabled)
+                return;
+
             await using var scope = _scopeFactory.CreateAsyncScope();
             var imageGenerationService = scope.ServiceProvider.GetRequiredService<ImageGenerationService>();
 

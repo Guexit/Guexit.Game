@@ -10,6 +10,8 @@ services:
     ports:
       - "5433:5432"
   webapi:
+    networks: 
+      - guexit   
     container_name: guexit_game_webapi
     build:
       context: .
