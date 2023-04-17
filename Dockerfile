@@ -7,6 +7,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env /publish/out .
 
-# Run this to generate it: dotnet dev-certs https -ep cert.pfx -p Test1234!
-COPY cert.pfx /https/cert.pfx
 ENTRYPOINT ["dotnet", "Guexit.Game.WebApi.dll"]
