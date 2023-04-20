@@ -15,14 +15,16 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLob
 
     protected override async Task<GameLobbyReadModel> Process(GameLobbyQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().FirstAsync(x => x.Id == query.GameRoomId, cancellationToken: ct);
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().SingleAsync(x => x.Id == query.GameRoomId, cancellationToken: ct);
         var playersInGame = await DbContext.Players.AsNoTracking().Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(ct);
 
-        var gameLobbyReadModel = new GameLobbyReadModel(
-            gameRoom.Id.Value,
-            gameRoom.RequiredMinPlayers.Count, 
-            playersInGame.Select(x => new GameLobbyPlayerDto(x.Username)).ToArray()
-        );
-        return gameLobbyReadModel;
+        return new GameLobbyReadModel
+        {
+            GameRoomId = gameRoom.Id.Value,
+            Players = playersInGame.Select(x => new GameLobbyPlayerDto { Username = x.Username }).ToArray(),
+            RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
+            CanStartGame = gameRoom.RequiredMinPlayers.Count < playersInGame.Length,
+            GameStatus = gameRoom.Status.Value
+        };
     }
 }
