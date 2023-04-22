@@ -23,7 +23,7 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLob
             GameRoomId = gameRoom.Id.Value,
             Players = playersInGame.Select(x => new GameLobbyPlayerDto { Username = x.Username }).ToArray(),
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
-            CanStartGame = gameRoom.RequiredMinPlayers.Count < playersInGame.Length,
+            CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length,
             GameStatus = gameRoom.Status.Value
         };
     }

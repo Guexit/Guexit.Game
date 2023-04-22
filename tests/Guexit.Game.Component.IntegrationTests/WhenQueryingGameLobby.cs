@@ -24,7 +24,7 @@ public sealed class WhenQueryingGameLobby : ComponentTestBase
             .WithId(gameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined("player2", "player3")
-            .WithMinRequiredPlayers(4)
+            .WithMinRequiredPlayers(3)
             .Build());
         await Save(new[]
         {
@@ -41,8 +41,8 @@ public sealed class WhenQueryingGameLobby : ComponentTestBase
         var lobbyReadModel = await response.Content.ReadFromJsonAsync<GameLobbyReadModel>();
         lobbyReadModel.Should().NotBeNull();
         lobbyReadModel!.GameRoomId.Should().Be(gameRoomId.Value);
-        lobbyReadModel.CanStartGame.Should().BeFalse();
-        lobbyReadModel.RequiredMinPlayers.Should().Be(4);
+        lobbyReadModel.CanStartGame.Should().BeTrue();
+        lobbyReadModel.RequiredMinPlayers.Should().Be(3);
         lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo(new[] { "thanos", "hulk", "ironman" });
         lobbyReadModel.GameStatus.Should().Be(GameStatus.NotStarted.Value);
     }
