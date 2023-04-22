@@ -23,17 +23,18 @@ public sealed class ImageRepository : IImageRepository
         await _dbContext.Images.AddRangeAsync(images, ct);
     }
 
-    public async Task<int> CountAvailableImages(int logicalShard, CancellationToken ct = default)
+    public async Task<int> CountAvailableImages(CancellationToken ct = default)
     {
         return await _dbContext.Images.CountAsync(x => x.GameRoomId == GameRoomId.Empty, ct);
     }
 
-    public async Task<Image[]> GetAvailableImages(int amount, int logicalShard, CancellationToken cancellationToken = default)
+    public async Task<Image[]> GetAvailableImages(int amount, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Images
-            .Take(amount)
-            .Where(x => x.GameRoomId == GameRoomId.Empty && x.LogicalShard == logicalShard)
+        var images = await _dbContext.Images
+            .FromSqlInterpolated($$"""SELECT *, xmin FROM public."Images" i FOR UPDATE SKIP LOCKED LIMIT {{amount}}""")
             .ToArrayAsync(cancellationToken);
+
+        return images;
     }
 
     public async Task<Image?> GetBy(ImageId id, CancellationToken ct = default)

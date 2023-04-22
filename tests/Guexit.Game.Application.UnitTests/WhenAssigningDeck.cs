@@ -1,5 +1,4 @@
-﻿using Guexit.Game.Application.CardAssigment;
-using Guexit.Game.Domain.Model.ImageAggregate;
+﻿using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Application.Services;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -16,24 +15,11 @@ public sealed class WhenAssigningDeck
     private const int CardsInHandPerPlayer = 4;
     private static readonly GameRoomId GameRoomId = new GameRoomId(Guid.Parse("8681c4a6-ee24-412a-93cd-2dd75c7b91cf"));
 
-    private readonly ILogicalShardProvider _logicalShardProvider = Substitute.For<ILogicalShardProvider>();
     private readonly IImageRepository _imageRepository = new FakeInMemoryImageRepository();
     private readonly IGameRoomRepository _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-    private readonly ILogicalShardDistributedLock _logicalShardDistributedLock = Substitute.For<ILogicalShardDistributedLock>();
     private readonly IDeckAssignmentService _deckAssignmentService;
 
-    public WhenAssigningDeck()
-    {
-        _logicalShardProvider.GetLogicalShard().Returns(LogicalShard);
-        _logicalShardDistributedLock.Acquire(LogicalShard).Returns(Task.CompletedTask);
-        _logicalShardDistributedLock.Release(LogicalShard).Returns(Task.CompletedTask);
-
-        _deckAssignmentService = new DeckAssignmentService(
-            _logicalShardDistributedLock, 
-            _logicalShardProvider,
-            _imageRepository, 
-            _gameRoomRepository);
-    }
+    public WhenAssigningDeck() => _deckAssignmentService = new DeckAssignmentService(_imageRepository, _gameRoomRepository);
 
     [Theory]
     [InlineData(3)]
@@ -49,7 +35,7 @@ public sealed class WhenAssigningDeck
             .WithMinRequiredPlayers(3)
             .Build());
 
-        var imageBuilder = new ImageBuilder().WithLogicalShard(LogicalShard);
+        var imageBuilder = new ImageBuilder();
         await _imageRepository.AddRange(Enumerable.Range(0, insufficientAvailableCardsCount)
             .Select(i => imageBuilder.WithId(Guid.NewGuid()).WithUrl(new Uri($"https://pablocompany/image/{i}")).Build())
             .ToArray());
@@ -82,7 +68,7 @@ public sealed class WhenAssigningDeck
 
         var playersInGameRoom = 4;
         var requiredCardsInDeck = playersInGameRoom * CardsPerPlayer;
-        var imageBuilder = new ImageBuilder().WithLogicalShard(LogicalShard);
+        var imageBuilder = new ImageBuilder();
         await _imageRepository.AddRange(Enumerable.Range(0, requiredCardsInDeck)
             .Select(i => imageBuilder.WithId(Guid.NewGuid()).WithUrl(new Uri($"https://pablocompany/image/{i}")).Build())
             .ToArray());

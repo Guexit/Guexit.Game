@@ -13,7 +13,7 @@ public sealed class FakeInMemoryImageRepository : IImageRepository
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask AddRange(IEnumerable<Image> images, CancellationToken cancellationToken = default)
+    public ValueTask AddRange(IEnumerable<Image> images, CancellationToken _ = default)
     {
         foreach (var image in images)
         {
@@ -23,15 +23,15 @@ public sealed class FakeInMemoryImageRepository : IImageRepository
         return ValueTask.CompletedTask;
     }
 
-    public Task<int> CountAvailableImages(int logicalShard, CancellationToken cancellationToken = default)
+    public Task<int> CountAvailableImages(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(_imagesById.Values.Where(x => x.LogicalShard == logicalShard).Count());
+        return Task.FromResult(_imagesById.Values.Where(x => x.GameRoomId == GameRoomId.Empty).Count());
     }
 
-    public Task<Image[]> GetAvailableImages(int take, int logicalShard, CancellationToken cancellationToken = default)
+    public Task<Image[]> GetAvailableImages(int take, CancellationToken _ = default)
     {
         return Task.FromResult(_imagesById.Values.Take(take)
-            .Where(x => x.GameRoomId == GameRoomId.Empty && x.LogicalShard == logicalShard).ToArray());
+            .Where(x => x.GameRoomId == GameRoomId.Empty).ToArray());
     }
 
     public Task<Image?> GetBy(ImageId imageId, CancellationToken ct = default)

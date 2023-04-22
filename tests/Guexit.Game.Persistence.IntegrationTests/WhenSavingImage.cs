@@ -18,14 +18,13 @@ public sealed class WhenSavingImage : DatabaseMappingIntegrationTest
         var createdAt = new DateTimeOffset(2023, 3, 4, 9, 38, 5, TimeSpan.Zero);
         var repository = new ImageRepository(DbContext);
 
-        await repository.Add(new Image(imageId, url, logicalShard, createdAt));
+        await repository.Add(new Image(imageId, url, createdAt));
         await SaveChangesAndClearChangeTracking();
 
         var image = await repository.GetBy(imageId);
         image.Should().NotBeNull();
         image!.Id.Should().Be(imageId);
         image.Url.Should().Be(url);
-        image.LogicalShard.Should().Be(logicalShard);
         image.CreatedAt.Should().Be(createdAt);
     }
 }

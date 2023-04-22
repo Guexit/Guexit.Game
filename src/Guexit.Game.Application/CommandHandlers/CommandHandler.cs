@@ -14,8 +14,19 @@ public abstract class CommandHandler<TCommand> : IRequestHandler<TCommand, Unit>
 
     public async ValueTask<Unit> Handle(TCommand command, CancellationToken cancellationToken = default)
     {
-        await Process(command, cancellationToken);
-        await _unitOfWork.Commit(cancellationToken);
+        await _unitOfWork.BeginTransaction(cancellationToken);
+
+        try
+        {
+            await Process(command, cancellationToken);
+            await _unitOfWork.Commit(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await _unitOfWork.Rollback(cancellationToken);
+            throw;
+        }
+       
         return Unit.Value;
     }
 

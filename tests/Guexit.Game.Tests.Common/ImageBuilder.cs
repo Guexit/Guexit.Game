@@ -6,12 +6,11 @@ public sealed class ImageBuilder
 {
     private ImageId _id = new(Guid.NewGuid());
     private Uri _url = new("https://example.com/image.png");
-    private int _logicalShard = 0;
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
 
     public Image Build()
     {
-        var image = new Image(_id, _url, _logicalShard, _createdAt);
+        var image = new Image(_id, _url, _createdAt);
 
         return image;
     }
@@ -26,12 +25,6 @@ public sealed class ImageBuilder
     public ImageBuilder WithUrl(Uri url)
     {
         _url = url;
-        return this;
-    }
-
-    public ImageBuilder WithLogicalShard(int logicalShard)
-    {
-        _logicalShard = logicalShard;
         return this;
     }
 

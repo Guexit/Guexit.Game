@@ -32,7 +32,7 @@ public sealed class WhenReceivingGameStarted : ComponentTestBase
             .WithPlayersThatJoined(playerId2, playerId3)
             .Build());
 
-        var imageBuilder = new ImageBuilder().WithLogicalShard(1);
+        var imageBuilder = new ImageBuilder();
         await Save(Enumerable.Range(0, 200)
             .Select(i => imageBuilder.WithId(Guid.NewGuid()).WithUrl(new Uri($"https://pablocompany/image/{i}")).Build())
             .ToArray());
