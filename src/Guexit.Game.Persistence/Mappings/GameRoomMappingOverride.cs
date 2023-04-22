@@ -23,7 +23,14 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.Property(x => x.RequiredMinPlayers)
             .HasConversion(to => to.Count, from => new RequiredMinPlayers(from))
             .IsRequired();
-        
+
+        builder.OwnsOne(x => x.CurrentStoryTeller, st =>
+        {
+            st.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
+            st.Property(x => x.SelectedCardId).HasConversion(to => to.Value, from => new CardId(from));
+            st.Property(x => x.Story);
+        });
+            
         builder.Property(x => x.Status)
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();

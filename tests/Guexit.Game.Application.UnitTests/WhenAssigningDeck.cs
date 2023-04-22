@@ -59,9 +59,10 @@ public sealed class WhenAssigningDeck
     [Fact]
     public async Task AssignsDeckToGameRoomAndDispatchesInitialCardsToPlayers()
     {
+        var creatorId = new PlayerId("creator");
         await _gameRoomRepository.Add(new GameRoomBuilder()
             .WithId(GameRoomId)
-            .WithCreator(new PlayerId("creator"))
+            .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
             .WithMinRequiredPlayers(3)
             .Build());
@@ -81,6 +82,7 @@ public sealed class WhenAssigningDeck
         gameRoom.Deck.Should().HaveCount(requiredCardsInDeck - (CardsInHandPerPlayer * playersInGameRoom));
         gameRoom.Deck.Should().AllSatisfy(card => card.Url.ToString().Should().StartWith("https://pablocompany/image/"));
         gameRoom.Deck.Should().AllSatisfy(card => card.Url.ToString().Should().StartWith("https://pablocompany/image/"));
+
         gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("creator")).Cards.Should().NotBeEmpty();
         gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("2")).Cards.Should().HaveCount(CardsInHandPerPlayer);
         gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("3")).Cards.Should().HaveCount(CardsInHandPerPlayer);

@@ -15,6 +15,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
     public ICollection<Card> Deck { get; private set; } = new List<Card>();
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
+    public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
 
     private GameRoom()
     {
@@ -46,15 +47,17 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new PlayerJoinedGameRoom(Id, playerId));
     }
 
+    // TODO: the card assignation starts after the game is started, review naming carefully because I encounter it will lead to confusion
     public void Start()
     {
         if (Status != GameStatus.NotStarted)
             throw new CannotStartAlreadyStartedGameException(Id);
 
-        if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
+        if (!RequiredMinPlayers.AreSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
 
         Status = GameStatus.AssigningCards;
+        CurrentStoryTeller = StoryTeller.Create(PlayerIds.First());
 
         AddDomainEvent(new GameStarted(Id));
     }
@@ -67,9 +70,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         DealInitialPlayerHands();
         Status = GameStatus.InProgress;
 
-        AddDomainEvents(
-            new DeckAssigned(Id), 
-            new InitialCardsDealed(Id));
+        AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealed(Id));
     }
 
     private void DealInitialPlayerHands()
@@ -87,4 +88,21 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
         }
     }
+}
+
+public sealed class GameRoomId : ValueObject
+{
+    public static readonly GameRoomId Empty = new(Guid.Empty);
+
+    public Guid Value { get; }
+
+    public GameRoomId(Guid value) => Value = value;
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+
+    public static implicit operator GameRoomId(Guid value) => new(value);
+    public static implicit operator Guid(GameRoomId value) => value.Value;
 }

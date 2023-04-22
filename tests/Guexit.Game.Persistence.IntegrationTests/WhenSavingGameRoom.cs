@@ -39,5 +39,6 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         gameRoom.Status.Should().Be(GameStatus.InProgress);
         gameRoom.Deck.Should().NotBeEmpty();
         gameRoom.PlayerHands.Should().NotBeEmpty();
+        gameRoom.CurrentStoryTeller.Should().Be(StoryTeller.Empty);
     }
 }

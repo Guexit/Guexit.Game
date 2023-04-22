@@ -2,6 +2,8 @@
 
 public class PlayerId : ValueObject
 {
+    internal static readonly PlayerId Empty = new("Empty");
+
     public string Value { get; }
 
     public PlayerId(string value)

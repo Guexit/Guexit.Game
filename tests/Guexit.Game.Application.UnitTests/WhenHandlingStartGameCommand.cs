@@ -26,7 +26,7 @@ public sealed class WhenHandlingStartGameCommand
     }
 
     [Fact]
-    public async Task GameRoomChangesStatusToAssigningCards()
+    public async Task GameRoomChangesStatusToAssigningCardsAndAssignsFirstStoryTeller()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var creatorId = new PlayerId("1");
@@ -42,6 +42,9 @@ public sealed class WhenHandlingStartGameCommand
         var gameRoom = await _gameRoomRepository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
         gameRoom!.Status.Should().Be(GameStatus.AssigningCards);
+        gameRoom.CurrentStoryTeller.PlayerId.Should().Be(creatorId);
+        gameRoom.CurrentStoryTeller.SelectedCardId.Should().Be(CardId.Empty);
+        gameRoom.CurrentStoryTeller.Story.Should().Be(string.Empty);
     }
 
     [Fact]
