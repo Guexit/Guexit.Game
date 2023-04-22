@@ -21,12 +21,12 @@ public sealed class ImageRepository : IImageRepository
 
     public async Task<Image[]> GetAvailableImages(int amount, CancellationToken cancellationToken = default)
     {
-        FormattableString imagesWithRowLockQuery 
-            = $$"""SELECT *, xmin FROM public."Images" i FOR UPDATE SKIP LOCKED""";
+        FormattableString imagesWithRowLockQuery = $$"""
+            SELECT *, xmin FROM public."Images" i WHERE i."GameRoomId" = {{GameRoomId.Empty.Value}} 
+            FOR UPDATE SKIP LOCKED LIMIT {{amount}}
+            """;
 
         var images = await _dbContext.Images.FromSqlInterpolated(imagesWithRowLockQuery)
-            .Where(x => x.GameRoomId == GameRoomId.Empty)
-            .Take(amount)
             .ToArrayAsync(cancellationToken);
         return images;
     }
