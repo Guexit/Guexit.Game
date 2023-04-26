@@ -5,6 +5,7 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Microsoft.EntityFrameworkCore;
 using Guexit.Game.Application.Exceptions;
+using Guexit.Game.ReadModels.Exceptions;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
