@@ -11,22 +11,13 @@ public static class GameRoomEndpoints
 {
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
-        app.MapPost("game-rooms/{gameRoomId}", CreateGameRoom)
-            .WithApiVersionSet(versionSet).MapToApiVersion(1);
+        var group = app.MapGroup("game-rooms").WithApiVersionSet(versionSet).MapToApiVersion(1);
 
-        app.MapPost("game-rooms/{gameRoomId}/join", JoinGameRoom)
-            .WithApiVersionSet(versionSet).MapToApiVersion(1);
-
-        app.MapPost("game-rooms/{gameRoomId}/start", StartGame)
-            .WithApiVersionSet(versionSet).MapToApiVersion(1);
-
-        app.MapGet("game-rooms/{gameRoomId}/lobby", GetLobby)
-            .WithApiVersionSet(versionSet).MapToApiVersion(1)
-            .Produces<GameLobbyReadModel>();
-
-        app.MapGet("game-rooms/{gameRoomId}/board", GetBoard)
-            .WithApiVersionSet(versionSet).MapToApiVersion(1)
-            .Produces<GameBoardReadModel>();
+        group.MapPost("/{gameRoomId}", CreateGameRoom);
+        group.MapPost("/{gameRoomId}/join", JoinGameRoom);
+        group.MapPost("/{gameRoomId}/start", StartGame);
+        group.MapGet("/{gameRoomId}/lobby", GetLobby).Produces<GameLobbyReadModel>();
+        group.MapGet("/{gameRoomId}/board", GetBoard).Produces<GameBoardReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(
