@@ -20,11 +20,11 @@ public static class GameRoomEndpoints
         app.MapPost("game-rooms/{gameRoomId}/start", StartGame)
             .WithApiVersionSet(versionSet).MapToApiVersion(1);
 
-        app.MapGet("game-rooms/{gameRoomId}/lobby", GetGameRoomLobby)
+        app.MapGet("game-rooms/{gameRoomId}/lobby", GetLobby)
             .WithApiVersionSet(versionSet).MapToApiVersion(1)
             .Produces<GameLobbyReadModel>();
 
-        app.MapGet("game-rooms/{gameRoomId}/board", GetGameRoomBoard)
+        app.MapGet("game-rooms/{gameRoomId}/board", GetBoard)
             .WithApiVersionSet(versionSet).MapToApiVersion(1)
             .Produces<GameBoardReadModel>();
     }
@@ -59,7 +59,7 @@ public static class GameRoomEndpoints
         return Results.Ok();
     }
 
-    private static async Task<IResult> GetGameRoomLobby(
+    private static async Task<IResult> GetLobby(
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
@@ -68,7 +68,7 @@ public static class GameRoomEndpoints
         return Results.Ok(readModel);
     }
 
-    private static async Task<IResult> GetGameRoomBoard(
+    private static async Task<IResult> GetBoard(
         [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
