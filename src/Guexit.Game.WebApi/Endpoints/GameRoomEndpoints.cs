@@ -24,9 +24,9 @@ public static class GameRoomEndpoints
         [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        await sender.Send(new CreateGameRoomCommand(gameRoomId, userId), cancellationToken);
+        await sender.Send(new CreateGameRoomCommand(gameRoomId, userId), ct);
         return Results.Ok();
     }
 
@@ -34,9 +34,9 @@ public static class GameRoomEndpoints
         [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        await sender.Send(new JoinGameRoomCommand(userId, gameRoomId), cancellationToken);
+        await sender.Send(new JoinGameRoomCommand(userId, gameRoomId), ct);
         return Results.Ok();
     }
 
@@ -44,18 +44,18 @@ public static class GameRoomEndpoints
         [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        await sender.Send(new StartGameCommand(gameRoomId, userId), cancellationToken);
+        await sender.Send(new StartGameCommand(gameRoomId, userId), ct);
         return Results.Ok();
     }
 
     private static async Task<IResult> GetLobby(
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId), cancellationToken);
+        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId), ct);
         return Results.Ok(readModel);
     }
 
@@ -63,9 +63,9 @@ public static class GameRoomEndpoints
         [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameBoardQuery(gameRoomId, userId), cancellationToken);
+        var readModel = await sender.Send(new GameBoardQuery(gameRoomId, userId), ct);
         return Results.Ok(readModel);
     }
 }
