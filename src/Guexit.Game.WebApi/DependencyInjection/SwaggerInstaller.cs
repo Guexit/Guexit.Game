@@ -17,10 +17,7 @@ public static class SwaggerInstaller
                 options.DefaultApiVersion = new ApiVersion(1);
                 options.AssumeDefaultVersionWhenUnspecified = true;
             })
-            .AddApiExplorer(options =>
-            {
-                options.GroupNameFormat = "'v'VVV";
-            });
+            .AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
 
         return services;
     }

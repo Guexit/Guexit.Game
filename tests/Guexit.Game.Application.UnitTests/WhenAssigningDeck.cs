@@ -10,7 +10,6 @@ namespace Guexit.Game.Application.UnitTests;
 
 public sealed class WhenAssigningDeck
 {
-    private const int LogicalShard = 27;
     private const int CardsPerPlayer = 8;
     private const int CardsInHandPerPlayer = 4;
     private static readonly GameRoomId GameRoomId = new GameRoomId(Guid.Parse("8681c4a6-ee24-412a-93cd-2dd75c7b91cf"));

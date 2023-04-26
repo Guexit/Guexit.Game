@@ -6,8 +6,8 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
-    private const int TotalCardsPerPlayer = 8;
-    private const int CardsInHandPerPlayer = 4;
+    public const int TotalCardsPerPlayer = 8;
+    public const int CardsInHandPerPlayer = 4;
 
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }

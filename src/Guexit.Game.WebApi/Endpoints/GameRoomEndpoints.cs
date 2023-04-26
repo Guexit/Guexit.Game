@@ -2,8 +2,8 @@
 using Guexit.Game.Application.Commands;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
-using Guexit.Game.ReadModels.Queries;
 using Guexit.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.QueryHandlers;
 
 namespace Guexit.Game.WebApi.Endpoints;
 
@@ -23,6 +23,10 @@ public static class GameRoomEndpoints
         app.MapGet("game-rooms/{gameRoomId}/lobby", GetGameRoomLobby)
             .WithApiVersionSet(versionSet).MapToApiVersion(1)
             .Produces<GameLobbyReadModel>();
+
+        app.MapGet("game-rooms/{gameRoomId}/board", GetGameRoomBoard)
+            .WithApiVersionSet(versionSet).MapToApiVersion(1)
+            .Produces<GameBoardReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(
@@ -61,6 +65,16 @@ public static class GameRoomEndpoints
         CancellationToken cancellationToken)
     {
         var readModel = await sender.Send(new GameLobbyQuery(gameRoomId), cancellationToken);
+        return Results.Ok(readModel);
+    }
+
+    private static async Task<IResult> GetGameRoomBoard(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId, 
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var readModel = await sender.Send(new GameBoardQuery(gameRoomId, userId), cancellationToken);
         return Results.Ok(readModel);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace Guexit.Game.ReadModels;
 
 public abstract class QueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
-    where TQuery : Queries.IQuery<TResponse>
+    where TQuery : IQuery<TResponse>
     where TResponse : notnull
 {
     private readonly ILogger<QueryHandler<TQuery, TResponse>> _logger;

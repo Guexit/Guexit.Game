@@ -4,10 +4,16 @@ namespace Guexit.Game.Tests.Common;
 
 public class CardBuilder
 {
-    private CardId _id = new(Guid.NewGuid());
-    private Uri _url = new("https://pablocompany.com");
+    private CardId _id;
+    private Uri _url;
 
-    public Card Build() => new Card(_id, _url);
+    public CardBuilder()
+    {
+        _id = new(Guid.NewGuid());
+        _url = new($"https://pablocompany.com/{_id}");
+    }
+
+    public Card Build() => new(_id, _url);
 
     public CardBuilder WithId(CardId id)
     {

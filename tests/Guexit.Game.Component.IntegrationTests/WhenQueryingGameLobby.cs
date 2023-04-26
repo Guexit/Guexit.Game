@@ -10,10 +10,7 @@ namespace Guexit.Game.Component.IntegrationTests;
 public sealed class WhenQueryingGameLobby : ComponentTestBase
 {
     public WhenQueryingGameLobby(GameWebApplicationFactory factory) : base(factory)
-    {
-        
-    }
-
+    { }
 
     [Fact]
     public async Task ReturnsLobbyReadModel()

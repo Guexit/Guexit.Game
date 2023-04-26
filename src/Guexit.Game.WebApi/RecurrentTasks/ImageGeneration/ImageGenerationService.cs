@@ -10,25 +10,25 @@ public sealed class ImageGenerationService
 {
     private static readonly (string PositivePrompt, string NegativePrompt)[] Prompts = new[]
     {
-        ("A serene lakeside landscape at sunset, photorealistic, vibrant colors, intricate reflections, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A lakeside scene with two silhouettes sharing a secret as the sun sets, casting vibrant colors across the sky.",
         "A bland, uninteresting landscape with dull colors."),
-        ("An underwater coral reef scene, full of life and color, cinematic lighting, photorealistic, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A curious octopus exploring a treasure chest amidst a lively underwater coral reef, teeming with colorful marine life.",
         "A barren underwater environment with minimal life."),
-        ("A majestic mountain range during sunrise, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("An adventurer standing atop a majestic mountain peak, gazing upon a hidden valley bathed in the warm glow of sunrise.",
         "A flat, featureless landscape with no mountains."),
-        ("A bustling cityscape during twilight, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A cityscape where a mysterious figure in a trench coat dashes through rain-soaked streets, neon signs reflecting in puddles.",
         "A deserted city with no activity or life."),
-        ("A tranquil Japanese Zen garden with cherry blossoms, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A Japanese Zen garden where an elderly monk tenderly sweeps the ground beneath blooming cherry blossoms, contemplating the passage of time.",
         "A messy, disorganized garden with no sense of tranquility."),
-        ("A lush tropical rainforest teeming with life, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A tropical rainforest where a vibrant and lively parade of animals and insects celebrate the harmony of nature.",
         "A barren, lifeless forest with no greenery."),
-        ("A futuristic cityscape with cutting-edge architecture, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A futuristic cityscape where a group of diverse individuals come together to marvel at the unveiling of a groundbreaking invention.",
         "A dated, rundown city with old architecture."),
-        ("A breathtaking view of the cosmos, featuring nebulas, planets, and stars, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("An astronaut floating through a vibrant cosmic landscape, reaching out to touch a celestial entity that seems to be alive and aware.",
         "An empty, uninteresting view of space with no celestial bodies."),
-        ("An idyllic European village nestled in rolling hills, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A European village where the annual festival brings together rival families, setting aside their differences to celebrate love and unity.",
         "A bland, monotonous village with no charm or character."),
-        ("A mesmerizing aurora borealis display over a snowy landscape, cinematic lighting, photorealistic, ornate, intricate, realistic, detailed, volumetric light and shadow, hyper HD, octane render, unreal engine, insanely detailed and intricate, hyper-realistic, super detailed.",
+        ("A traveler lost in a snowy landscape, captivated by the dazzling aurora borealis display, as a mysterious figure appears on the horizon.",
         "A dark, featureless night sky with no aurora.")
     };
 
@@ -55,15 +55,15 @@ public sealed class ImageGenerationService
 
         _logger.LogInformation("Sending {commandName}...", nameof(GenerateImagesCommand));
 
-        var prompts = Prompts[Random.Shared.Next(Prompts.Length)];
+        var prompt = Prompts[Random.Shared.Next(Prompts.Length)];
         await _bus.Send(new GenerateImagesCommand
         {
             TextToImage = new TextToImage
             {
                 Prompt = new Prompt
                 {
-                    Positive = prompts.PositivePrompt,
-                    Negative = prompts.NegativePrompt
+                    Positive = prompt.PositivePrompt,
+                    Negative = prompt.NegativePrompt
                 },
                 NumImages = 1
             }
