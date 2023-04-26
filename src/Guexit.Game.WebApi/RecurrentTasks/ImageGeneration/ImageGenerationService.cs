@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Messages;
+﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Messages;
 using Guexit.Game.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,7 @@ public sealed class ImageGenerationService
 
     public async Task GenerateImages(CancellationToken cancellationToken = default)
     {
-        var availableImagesCount = await _dbContext.Images.CountAsync(x => x.GameRoomId == null, cancellationToken);
+        var availableImagesCount = await _dbContext.Images.CountAsync(x => x.GameRoomId == GameRoomId.Empty, cancellationToken);
 
         _logger.LogInformation("Actual available images count {availableImagesCount}. Target pool size {targetPoolSize}",
             availableImagesCount, _options.Value.TargetAvailableImagePoolSize);
