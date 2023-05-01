@@ -40,6 +40,7 @@ public sealed class WhenQueryingGameBoard : ComponentTestBase
         responseContent!.GameRoomId.Should().Be(gameRoomId);
         responseContent.CurrentStoryTeller.PlayerId.Should().Be(playerId1);
         responseContent.CurrentStoryTeller.Story.Should().BeEmpty();
+        responseContent.CurrentStoryTeller.Username.Should().BeEmpty();
         responseContent.PlayerHand.Should().NotBeEmpty();
         responseContent.PlayerHand.Should().BeEquivalentTo(gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
             .Select(x => new GameBoardReadModel.CardDto { Id = x.Id, Url = x.Url }));

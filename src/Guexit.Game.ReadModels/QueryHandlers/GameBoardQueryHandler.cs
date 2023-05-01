@@ -41,12 +41,16 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, GameBoa
         if (gameRoom.Status != GameStatus.InProgress)
             throw new CannotReadBoardIfGameIsNotInProgressException(gameRoom.Id, gameRoom.Status);
 
+        var currentStoryTeller = await DbContext.Players.AsNoTracking()
+            .SingleAsync(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId, ct);
+
         var readModel = new GameBoardReadModel()
         {
             GameRoomId = gameRoom.Id,
             CurrentStoryTeller = new GameBoardReadModel.StoryTellerDto 
             { 
-                PlayerId = gameRoom.CurrentStoryTeller.PlayerId.Value, 
+                PlayerId = currentStoryTeller.Id.Value, 
+                Username = currentStoryTeller.Username, 
                 Story = gameRoom.CurrentStoryTeller.Story
             },
             PlayerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == query.PlayerId).Cards.Select(x => new GameBoardReadModel.CardDto

@@ -11,26 +11,26 @@ public sealed class ImageGenerationService
 {
     private static readonly (string PositivePrompt, string NegativePrompt)[] Prompts = new[]
     {
-        ("A lakeside scene with two silhouettes sharing a secret as the sun sets, casting vibrant colors across the sky.",
-        "A bland, uninteresting landscape with dull colors."),
-        ("A curious octopus exploring a treasure chest amidst a lively underwater coral reef, teeming with colorful marine life.",
-        "A barren underwater environment with minimal life."),
-        ("An adventurer standing atop a majestic mountain peak, gazing upon a hidden valley bathed in the warm glow of sunrise.",
-        "A flat, featureless landscape with no mountains."),
-        ("A cityscape where a mysterious figure in a trench coat dashes through rain-soaked streets, neon signs reflecting in puddles.",
-        "A deserted city with no activity or life."),
-        ("A Japanese Zen garden where an elderly monk tenderly sweeps the ground beneath blooming cherry blossoms, contemplating the passage of time.",
-        "A messy, disorganized garden with no sense of tranquility."),
-        ("A tropical rainforest where a vibrant and lively parade of animals and insects celebrate the harmony of nature.",
-        "A barren, lifeless forest with no greenery."),
-        ("A futuristic cityscape where a group of diverse individuals come together to marvel at the unveiling of a groundbreaking invention.",
-        "A dated, rundown city with old architecture."),
-        ("An astronaut floating through a vibrant cosmic landscape, reaching out to touch a celestial entity that seems to be alive and aware.",
-        "An empty, uninteresting view of space with no celestial bodies."),
-        ("A European village where the annual festival brings together rival families, setting aside their differences to celebrate love and unity.",
-        "A bland, monotonous village with no charm or character."),
-        ("A traveler lost in a snowy landscape, captivated by the dazzling aurora borealis display, as a mysterious figure appears on the horizon.",
-        "A dark, featureless night sky with no aurora.")
+        ("A giraffe wearing a top hat and monocle, playing a grand piano in a lush, sunlit meadow.",
+        "An empty meadow with no animals, objects, or instruments."),
+        ("A squirrel wearing a cape, conducting a symphony orchestra of various animals in a vibrant forest.",
+        "A quiet forest with no animals, objects, or instruments."),
+        ("An elephant using its trunk to paint an abstract masterpiece on a canvas, surrounded by a group of admiring animals.",
+        "An empty room with blank walls and no animals, objects, or instruments."),
+        ("A kangaroo playing the guitar while standing on its tail, performing a lively concert for an audience of enthusiastic animals.",
+        "A silent, deserted stage with no animals, objects, or instruments."),
+        ("A raccoon wearing a chef's hat, expertly preparing a gourmet meal using various kitchen utensils in a bustling animal café.",
+        "An empty, unoccupied kitchen with no animals, objects, or instruments."),
+        ("A group of animals dressed in elaborate costumes, performing a strange and whimsical play using bizarre props and instruments.",
+        "An empty theater with no animals, objects, or instruments."),
+        ("A monkey dressed as a scientist, using intricate contraptions and devices to create a groundbreaking invention in a jungle laboratory.",
+        "An empty lab with no animals, objects, or instruments."),
+        ("A penguin in a spacesuit, floating through a vibrant cosmic landscape, playing a saxophone that emits a trail of glowing stardust.",
+        "An empty, uninteresting view of space with no animals, objects, or instruments."),
+        ("A llama wearing a bowtie, serving as a master of ceremonies at a grand animal ball, where various creatures dance and socialize with elegant attire.",
+        "An empty, silent ballroom with no animals, objects, or instruments."),
+        ("A group of animals ice-skating on a frozen lake, using various instruments to create an impromptu winter symphony under the dazzling aurora borealis display.",
+        "A frozen, deserted lake with no animals, objects, or instruments, and a featureless night sky.")
     };
 
     private readonly IBus _bus;
@@ -66,7 +66,8 @@ public sealed class ImageGenerationService
                     Positive = prompt.PositivePrompt,
                     Negative = prompt.NegativePrompt
                 },
-                NumImages = 1
+                NumImages = 1,
+                Seed = -1
             }
         }, cancellationToken);
     }

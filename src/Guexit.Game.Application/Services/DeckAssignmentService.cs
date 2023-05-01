@@ -29,12 +29,12 @@ public sealed class DeckAssignmentService : IDeckAssignmentService
         if (gameRoom is null)
             throw new GameRoomNotFoundException(gameRoomId);
 
-        var count = await _imageRepository.CountAvailableImages(cancellationToken);
-        if (count < gameRoom.GetRequiredNumberOfCardsInDeck())
-            throw new InsufficientImagesToAssignDeckException(count, gameRoomId);
-
         var images = await _imageRepository.GetAvailableImages(gameRoom.GetRequiredNumberOfCardsInDeck(), cancellationToken);
         var cards = images.Select(x => new Card(Guid.NewGuid(), x.Url)).ToArray();
+        
         gameRoom.AssignDeck(cards);
+
+        foreach (var image in images)
+            image.AssignToGame(gameRoom.Id);
     }
 }

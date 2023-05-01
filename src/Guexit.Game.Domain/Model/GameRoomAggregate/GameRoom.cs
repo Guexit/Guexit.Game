@@ -66,6 +66,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void AssignDeck(IEnumerable<Card> cards)
     {
+        if (cards.Count() < GetRequiredNumberOfCardsInDeck())
+            throw new InsufficientImagesToAssignDeckException(cards.Count(), Id);
+
         Deck = new List<Card>(cards);
         DealInitialPlayerHands();
         Status = GameStatus.InProgress;

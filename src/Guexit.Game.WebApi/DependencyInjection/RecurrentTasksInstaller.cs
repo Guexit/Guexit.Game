@@ -7,7 +7,7 @@ public static class RecurrentTasksInstaller
     public static IServiceCollection AddRecurrentTasks(this IServiceCollection services, IConfigurationRoot configuration)
     {
         services.AddScoped<ImageGenerationService>()
-            .AddHostedService<ImageGenerationBackgroundService>();
+            .AddHostedService<ImageGenerationRecurrentTask>();
 
         services.AddOptions<ImageGenerationBackgroundServiceOptions>()
             .BindConfiguration(ImageGenerationBackgroundServiceOptions.SectionName)
