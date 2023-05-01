@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenReceivingGameStarted : ComponentTestBase
+public sealed class WhenReceivingGameStarted : ComponentTest
 {
     public WhenReceivingGameStarted(GameWebApplicationFactory factory) : base(factory)
     {

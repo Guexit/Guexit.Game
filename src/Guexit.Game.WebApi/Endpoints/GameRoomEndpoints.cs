@@ -1,9 +1,10 @@
 ﻿using Asp.Versioning.Builder;
 using Guexit.Game.Application.Commands;
+using Guexit.Game.ReadModels.QueryHandlers;
+using Guexit.Game.ReadModels.ReadModels;
+using Guexit.Game.WebApi.Requests;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
-using Guexit.Game.ReadModels.ReadModels;
-using Guexit.Game.ReadModels.QueryHandlers;
 
 namespace Guexit.Game.WebApi.Endpoints;
 
@@ -16,6 +17,7 @@ public static class GameRoomEndpoints
         group.MapPost("/{gameRoomId}", CreateGameRoom);
         group.MapPost("/{gameRoomId}/join", JoinGameRoom);
         group.MapPost("/{gameRoomId}/start", StartGame);
+        group.MapPost("/{gameRoomId}/submit-card-story", SubmitCardStory);
         group.MapGet("/{gameRoomId}/lobby", GetLobby).Produces<GameLobbyReadModel>();
         group.MapGet("/{gameRoomId}/board", GetBoard).Produces<GameBoardReadModel>();
     }
@@ -47,6 +49,17 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         await sender.Send(new StartGameCommand(gameRoomId, userId), ct);
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> SubmitCardStory(
+       [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+       [FromRoute] Guid gameRoomId,
+       [FromBody] SubmitCardStoryRequest body,
+       [FromServices] ISender sender,
+       CancellationToken ct)
+    {
+        await sender.Send(new SubmitCardStoryCommand(userId, gameRoomId, body.CardId, body.Story), ct);
         return Results.Ok();
     }
 

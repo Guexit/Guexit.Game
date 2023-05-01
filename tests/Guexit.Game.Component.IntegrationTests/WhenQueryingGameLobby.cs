@@ -7,7 +7,7 @@ using Guexit.Game.Tests.Common;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenQueryingGameLobby : ComponentTestBase
+public sealed class WhenQueryingGameLobby : ComponentTest
 {
     public WhenQueryingGameLobby(GameWebApplicationFactory factory) : base(factory)
     { }

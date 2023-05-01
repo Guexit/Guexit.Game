@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenCreatingGameRoom : ComponentTestBase
+public sealed class WhenCreatingGameRoom : ComponentTest
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
