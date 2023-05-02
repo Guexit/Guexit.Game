@@ -17,6 +17,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
 
+    private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
+
     private GameRoom()
     {
         // Entity Framework required parameterless ctor
@@ -29,10 +31,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
-    public void DefineMinRequiredPlayers(int count)
-    {
-        RequiredMinPlayers = new RequiredMinPlayers(count);
-    }
+    public void DefineMinRequiredPlayers(int count) => RequiredMinPlayers = new RequiredMinPlayers(count);
 
     public void Join(PlayerId playerId)
     {
@@ -44,10 +43,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         PlayerIds.Add(playerId);
 
-        AddDomainEvent(new PlayerJoinedGameRoom(Id, playerId));
+        AddDomainEvent(new PlayerJoined(Id, playerId));
     }
 
-    // TODO: the card assignation starts after the game is started, review naming carefully because I encounter it will lead to confusion
     public void Start()
     {
         if (Status != GameStatus.NotStarted)
@@ -74,6 +72,25 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         Status = GameStatus.InProgress;
 
         AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealed(Id));
+    }
+
+    public void SubmitCardStory(PlayerId storyTellerId, CardId cardId, string story)
+    {
+        if (Status != GameStatus.InProgress)
+            throw new CannotSubmitCardStoryIfGameRoomIsNotInProgressException(Id);
+
+        if (CurrentStoryTeller.PlayerId != storyTellerId)
+            throw new CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException(Id, storyTellerId);
+
+        if (CurrentStoryTeller.HasSubmittedCardStory())
+            throw new CardStoryAlreadySubmittedException(Id, storyTellerId);
+
+        var card = CurrentStoryTellerHand.Cards.SingleOrDefault(x => x.Id == cardId) 
+            ?? throw new CardNotFoundInPlayerHandException(Id, storyTellerId, cardId);
+
+        CurrentStoryTeller = CurrentStoryTeller.SubmitCardWithStory(card, story);
+
+        AddDomainEvent(new CardStorySubmitted(Id, storyTellerId, cardId, story));
     }
 
     private void DealInitialPlayerHands()

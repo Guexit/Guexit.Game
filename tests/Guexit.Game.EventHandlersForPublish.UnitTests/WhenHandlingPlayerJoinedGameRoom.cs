@@ -23,7 +23,7 @@ public sealed class WhenHandlingPlayerJoinedGameRoom
     {
         var gameRoomId = new GameRoomId(Guid.Parse("0FF76CA8-1A45-4DC7-B426-8AFC0B1F0AE3"));
         var playerId = new PlayerId("F91981DC-017D-47A9-B7F6-CD8563118627");
-        var playerJoined = new PlayerJoinedGameRoom(gameRoomId, playerId);
+        var playerJoined = new PlayerJoined(gameRoomId, playerId);
 
         await _eventHandler.Handle(playerJoined);
 

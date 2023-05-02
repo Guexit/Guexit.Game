@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Exceptions;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
@@ -6,9 +7,9 @@ public sealed class StoryTeller : ValueObject
 {
     public static readonly StoryTeller Empty = new(PlayerId.Empty, CardId.Empty, string.Empty);
 
-    public PlayerId PlayerId { get; private set; } = default!;
-    public CardId SelectedCardId { get; private set; } = default!;
-    public string Story { get; private set; } = default!;
+    public PlayerId PlayerId { get; private init; } = default!;
+    public CardId SelectedCardId { get; private init; } = default!;
+    public string Story { get; private init; } = default!;
 
     public StoryTeller()
     {
@@ -24,14 +25,12 @@ public sealed class StoryTeller : ValueObject
 
     public static StoryTeller Create(PlayerId playerId) => new(playerId, CardId.Empty, string.Empty);
 
-    public StoryTeller SubmitCardWithStory(CardId cardId, string story)
+    public StoryTeller SubmitCardWithStory(Card card, string story)
     {
         if (string.IsNullOrWhiteSpace(story))
-        { 
-            // Todo: throw exception
-        }
+            throw new EmptyCardStoryException();
 
-        return new(PlayerId, cardId, story);
+        return new(PlayerId, card.Id, story);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
@@ -40,4 +39,6 @@ public sealed class StoryTeller : ValueObject
         yield return SelectedCardId;
         yield return Story;
     }
+
+    public bool HasSubmittedCardStory() => SelectedCardId != CardId.Empty && Story != string.Empty;
 }
