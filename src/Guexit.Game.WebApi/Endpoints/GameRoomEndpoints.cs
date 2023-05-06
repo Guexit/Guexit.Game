@@ -55,11 +55,11 @@ public static class GameRoomEndpoints
     private static async Task<IResult> SubmitCardStory(
        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
        [FromRoute] Guid gameRoomId,
-       [FromBody] SubmitCardStoryRequest body,
+       [FromBody] SubmitCardStoryRequest request,
        [FromServices] ISender sender,
        CancellationToken ct)
     {
-        await sender.Send(new SubmitCardStoryCommand(userId, gameRoomId, body.CardId, body.Story), ct);
+        await sender.Send(new SubmitCardStoryCommand(userId, gameRoomId, request.CardId, request.Story), ct);
         return Results.Ok();
     }
 

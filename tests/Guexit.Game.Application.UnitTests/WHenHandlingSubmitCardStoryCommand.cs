@@ -27,7 +27,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var storyTellerId = new PlayerId("nonStoryTellerId");
         var story = "La tipica adolescente abuela";
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { new PlayerId("player2"), new PlayerId("player3") }).Build();
-        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id;
+        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id.Value;
         await _gameRoomRepository.Add(gameRoom);
 
         await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
@@ -45,7 +45,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var nonExistingGameRoomId = new GameRoomId(Guid.NewGuid());
 
         var action = async () => await _commandHandler.Handle(
-            new SubmitCardStoryCommand("anyPlayerId", nonExistingGameRoomId, new CardId(Guid.NewGuid()), "anyStory"));
+            new SubmitCardStoryCommand("anyPlayerId", nonExistingGameRoomId, Guid.NewGuid(), "anyStory"));
 
         await action.Should().ThrowAsync<GameRoomNotFoundException>();
     }
@@ -73,7 +73,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var nonStoryTellerId = new PlayerId("nonStoryTellerId");
-        var anyCardId = new CardId(Guid.NewGuid());
+        var anyCardId = Guid.NewGuid();
         await _gameRoomRepository.Add(
             GameRoomBuilder.CreateStarted(gameRoomId, new PlayerId("player1"), new[] { new PlayerId("player2"), nonStoryTellerId })
             .Build());
@@ -91,7 +91,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var story = "La tipica adolescente abuela";
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { new PlayerId("player2"), new PlayerId("player3") }).Build();
-        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id;
+        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id.Value;
         await _gameRoomRepository.Add(gameRoom);
 
         await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
@@ -108,7 +108,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var story = "La tipica adolescente abuela";
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { new PlayerId("player2"), new PlayerId("player3") }).Build();
-        var nonExistingCardId = new CardId(Guid.NewGuid());
+        var nonExistingCardId = Guid.NewGuid();
         await _gameRoomRepository.Add(gameRoom);
 
         var action = async () 
@@ -124,7 +124,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var emptyStory = string.Empty;
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { new PlayerId("player2"), new PlayerId("player3") }).Build();
-        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id;
+        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id.Value;
         await _gameRoomRepository.Add(gameRoom);
 
         var action = async () 
