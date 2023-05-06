@@ -2,17 +2,17 @@
 
 namespace Guexit.Game.WebApi.RecurrentTasks.ImageGeneration;
 
-public sealed class ImageGenerationBackgroundService : BackgroundService
+public sealed class ImageGenerationRecurrentTask : BackgroundService
 {
     private readonly IOptions<ImageGenerationBackgroundServiceOptions> _options;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly PeriodicTimer _timer;
 
-    public ImageGenerationBackgroundService(IOptions<ImageGenerationBackgroundServiceOptions> options, IServiceScopeFactory scopeFactory)
+    public ImageGenerationRecurrentTask(IOptions<ImageGenerationBackgroundServiceOptions> options, IServiceScopeFactory scopeFactory)
     {
         _options = options;
         _scopeFactory = scopeFactory;
-        _timer = new PeriodicTimer(TimeSpan.FromMilliseconds(_options.Value.PeriodInMilliseconds));
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(_options.Value.PeriodInSeconds));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

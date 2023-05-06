@@ -1,10 +1,20 @@
 ﻿using Guexit.Game.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Guexit.Game.ReadModels.Queries;
 using Guexit.Game.ReadModels.ReadModels;
+using Guexit.Game.Domain.Model.GameRoomAggregate;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
+
+public sealed class GameLobbyQuery : IQuery<GameLobbyReadModel>
+{
+    public GameRoomId GameRoomId { get; }
+
+    public GameLobbyQuery(Guid gameRoomId)
+    {
+        GameRoomId = new GameRoomId(gameRoomId);
+    }
+}
 
 public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLobbyReadModel>
 {

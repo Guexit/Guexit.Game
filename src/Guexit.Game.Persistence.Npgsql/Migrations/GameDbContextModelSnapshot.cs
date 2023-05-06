@@ -322,6 +322,36 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                         .HasForeignKey("PlayerHandId");
                 });
 
+            modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", b =>
+                {
+                    b.OwnsOne("Guexit.Game.Domain.Model.GameRoomAggregate.StoryTeller", "CurrentStoryTeller", b1 =>
+                        {
+                            b1.Property<Guid>("GameRoomId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("PlayerId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<Guid>("SelectedCardId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Story")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("GameRoomId");
+
+                            b1.ToTable("GameRooms");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GameRoomId");
+                        });
+
+                    b.Navigation("CurrentStoryTeller")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.PlayerHand", b =>
                 {
                     b.HasOne("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", null)

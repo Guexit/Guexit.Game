@@ -2,12 +2,12 @@
 
 namespace Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 
-public sealed class PlayerJoinedGameRoom : IDomainEvent
+public sealed class PlayerJoined : IDomainEvent
 {
     public Guid GameRoomId { get; }
     public string PlayerId { get; }
 
-    public PlayerJoinedGameRoom(GameRoomId gameRoomId, PlayerId playerId)
+    public PlayerJoined(GameRoomId gameRoomId, PlayerId playerId)
     {
         GameRoomId = gameRoomId.Value;
         PlayerId = playerId.Value;

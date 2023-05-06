@@ -15,7 +15,7 @@ public sealed class GameWebApplicationFactory : WebApplicationFactory<IAssemblyM
         {
             services.AddMassTransitTestHarness();
 
-            var imageGenerationBackgroundService = services.Single(d => d.ImplementationType == typeof(ImageGenerationBackgroundService));
+            var imageGenerationBackgroundService = services.Single(d => d.ImplementationType == typeof(ImageGenerationRecurrentTask));
             services.Remove(imageGenerationBackgroundService);
         });
     }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenReceivingUserCreated : ComponentTestBase
+public sealed class WhenReceivingUserCreated : ComponentTest
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 

@@ -13,12 +13,12 @@ public sealed class ComponentTestCollectionDefinition : IClassFixture<GameWebApp
 }
 
 [Collection(nameof(ComponentTestCollectionDefinition))]
-public abstract class ComponentTestBase : IAsyncLifetime
+public abstract class ComponentTest : IAsyncLifetime
 {
     private readonly ITestDataCleaner[] _testDataCleaners;
     protected GameWebApplicationFactory WebApplicationFactory { get; }
 
-    protected ComponentTestBase(GameWebApplicationFactory webApplicationFactory)
+    protected ComponentTest(GameWebApplicationFactory webApplicationFactory)
     {
         WebApplicationFactory = webApplicationFactory;
         _ = WebApplicationFactory.CreateClient();

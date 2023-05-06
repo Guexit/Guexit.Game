@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
+﻿using System.Linq;
+using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Tests.Common;
@@ -22,14 +23,31 @@ public sealed class GameRoomBuilder
 
         gameRoom.DefineMinRequiredPlayers(_minRequiredPlayers.Count);
 
-        if (_cards.Any())
-            gameRoom.AssignDeck(_cards.Select(x => x.Build()));
-
         if (_isStarted)
             gameRoom.Start();
+
+        if (_cards.Any())
+            gameRoom.AssignDeck(_cards.Select(x => x.Build()));
         
         gameRoom.ClearDomainEvents();
         return gameRoom;
+    }
+
+    public static GameRoomBuilder CreateStarted(GameRoomId gameRoomId, PlayerId creator, PlayerId[] playersThatJoined)
+    {
+        var allPlayers = playersThatJoined.Concat(new[] { creator }).ToArray();
+        if (!RequiredMinPlayers.Default.AreSatisfiedBy(allPlayers.Length))
+        {
+            throw new InvalidOperationException($"Cannot build a game room with {allPlayers.Length} players. Minimum are {RequiredMinPlayers.Default.Count}");
+        }
+
+        var gameRoomBuilder = new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creator)
+            .WithPlayersThatJoined(playersThatJoined)
+            .WithDeck(Enumerable.Range(0, allPlayers.Length * GameRoom.TotalCardsPerPlayer).Select(_ => new CardBuilder()).ToArray())
+            .Started();
+        return gameRoomBuilder;
     }
 
     public GameRoomBuilder WithId(GameRoomId id)

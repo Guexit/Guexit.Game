@@ -4,12 +4,13 @@ namespace Guexit.Game.WebApi.RecurrentTasks.ImageGeneration;
 
 public sealed class ImageGenerationBackgroundServiceOptions
 {
-    public const string SectionName = "ImageGenerationBackgroundService";
+    public const string SectionName = "ImageGenerationRecurrentTask";
 
     [Required]
     public int TargetAvailableImagePoolSize { get; init; }
     [Required]
-    public int PeriodInMilliseconds { get; init; }
+    [Range(0, 100000)]
+    public int PeriodInSeconds { get; init; }
     [Required]
     public bool Enabled { get; init; }
 }

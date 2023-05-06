@@ -1,5 +1,6 @@
 ﻿using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Exceptions;
+using Guexit.Game.ReadModels.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace Guexit.Game.WebApi.ErrorHandling;
@@ -33,6 +34,10 @@ public static class ErrorHandlingExtensions
                 statusCode: StatusCodes.Status400BadRequest,
                 detail: domainException.Message,
                 title: domainException.Title),
+            QueryException queryException => Results.Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: queryException.Message,
+                title: queryException.Title),
             _ => Results.Problem()
         };
     }

@@ -3,7 +3,7 @@ using Guexit.Game.ExternalMessageHandlers;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenReceivingImageGenerated : ComponentTestBase
+public sealed class WhenReceivingImageGenerated : ComponentTest
 {
     public WhenReceivingImageGenerated(GameWebApplicationFactory factory) : base(factory)
     {

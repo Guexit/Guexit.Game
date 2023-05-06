@@ -6,8 +6,8 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
-    private const int TotalCardsPerPlayer = 8;
-    private const int CardsInHandPerPlayer = 4;
+    public const int TotalCardsPerPlayer = 8;
+    public const int CardsInHandPerPlayer = 4;
 
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
@@ -15,6 +15,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
     public ICollection<Card> Deck { get; private set; } = new List<Card>();
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
+    public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
+
+    private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
 
     private GameRoom()
     {
@@ -28,10 +31,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
-    public void DefineMinRequiredPlayers(int count)
-    {
-        RequiredMinPlayers = new RequiredMinPlayers(count);
-    }
+    public void DefineMinRequiredPlayers(int count) => RequiredMinPlayers = new RequiredMinPlayers(count);
 
     public void Join(PlayerId playerId)
     {
@@ -43,7 +43,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         PlayerIds.Add(playerId);
 
-        AddDomainEvent(new PlayerJoinedGameRoom(Id, playerId));
+        AddDomainEvent(new PlayerJoined(Id, playerId));
     }
 
     public void Start()
@@ -51,10 +51,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (Status != GameStatus.NotStarted)
             throw new CannotStartAlreadyStartedGameException(Id);
 
-        if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
+        if (!RequiredMinPlayers.AreSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
 
         Status = GameStatus.AssigningCards;
+        CurrentStoryTeller = StoryTeller.Create(PlayerIds.First());
 
         AddDomainEvent(new GameStarted(Id));
     }
@@ -63,13 +64,33 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void AssignDeck(IEnumerable<Card> cards)
     {
+        if (cards.Count() < GetRequiredNumberOfCardsInDeck())
+            throw new InsufficientImagesToAssignDeckException(cards.Count(), Id);
+
         Deck = new List<Card>(cards);
         DealInitialPlayerHands();
         Status = GameStatus.InProgress;
 
-        AddDomainEvents(
-            new DeckAssigned(Id), 
-            new InitialCardsDealed(Id));
+        AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealed(Id));
+    }
+
+    public void SubmitCardStory(PlayerId storyTellerId, CardId cardId, string story)
+    {
+        if (Status != GameStatus.InProgress)
+            throw new CannotSubmitCardStoryIfGameRoomIsNotInProgressException(Id);
+
+        if (CurrentStoryTeller.PlayerId != storyTellerId)
+            throw new CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException(Id, storyTellerId);
+
+        if (CurrentStoryTeller.HasSubmittedCardStory())
+            throw new CardStoryAlreadySubmittedException(Id, storyTellerId);
+
+        var card = CurrentStoryTellerHand.Cards.SingleOrDefault(x => x.Id == cardId) 
+            ?? throw new CardNotFoundInPlayerHandException(Id, storyTellerId, cardId);
+
+        CurrentStoryTeller = CurrentStoryTeller.SubmitCardWithStory(card, story);
+
+        AddDomainEvent(new CardStorySubmitted(Id, storyTellerId, cardId, story));
     }
 
     private void DealInitialPlayerHands()
@@ -87,4 +108,21 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
         }
     }
+}
+
+public sealed class GameRoomId : ValueObject
+{
+    public static readonly GameRoomId Empty = new(Guid.Empty);
+
+    public Guid Value { get; }
+
+    public GameRoomId(Guid value) => Value = value;
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+
+    public static implicit operator GameRoomId(Guid value) => new(value);
+    public static implicit operator Guid(GameRoomId value) => value.Value;
 }

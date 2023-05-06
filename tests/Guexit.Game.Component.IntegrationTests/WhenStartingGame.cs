@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenStartingGame : ComponentTestBase
+public sealed class WhenStartingGame : ComponentTest
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
