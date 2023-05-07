@@ -45,7 +45,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         responseContent.PlayerHand.Should().BeEquivalentTo(gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
             .Select(x => new GameBoardReadModel.CardDto { Id = x.Id, Url = x.Url }));
         responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
-        responseContent.SelectedCard.Should().BeNull();
+        responseContent.SubmittedCard.Should().BeNull();
     }
 
     [Fact]

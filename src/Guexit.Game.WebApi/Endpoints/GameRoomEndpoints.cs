@@ -17,7 +17,8 @@ public static class GameRoomEndpoints
         group.MapPost("/{gameRoomId}", CreateGameRoom);
         group.MapPost("/{gameRoomId}/join", JoinGameRoom);
         group.MapPost("/{gameRoomId}/start", StartGame);
-        group.MapPost("/{gameRoomId}/submit-card-story", SubmitCardStory);
+        group.MapPost("/{gameRoomId}/storyteller/submit-card-story", SubmitStoryTellerCardStory);
+        group.MapPost("/{gameRoomId}/guessing-player/submit-card", SubmitGuessingPlayerCard);
         group.MapGet("/{gameRoomId}/lobby", GetLobby).Produces<GameLobbyReadModel>();
         group.MapGet("/{gameRoomId}/board", GetBoard).Produces<GameBoardReadModel>();
     }
@@ -52,14 +53,25 @@ public static class GameRoomEndpoints
         return Results.Ok();
     }
 
-    private static async Task<IResult> SubmitCardStory(
+    private static async Task<IResult> SubmitStoryTellerCardStory(
        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
        [FromRoute] Guid gameRoomId,
-       [FromBody] SubmitCardStoryRequest request,
+       [FromBody] SubmitStoryTellerCardStoryRequest request,
        [FromServices] ISender sender,
        CancellationToken ct)
     {
-        await sender.Send(new SubmitCardStoryCommand(userId, gameRoomId, request.CardId, request.Story), ct);
+        await sender.Send(new SubmitStoryTellerCardStoryCommand(userId, gameRoomId, request.CardId, request.Story), ct);
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> SubmitGuessingPlayerCard(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId,
+        [FromBody] SubmitCardForGuessingPlayerRequest request,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        await sender.Send(new SubmitGuessingPlayerCardCommand(userId, gameRoomId, request.CardId), ct);
         return Results.Ok();
     }
 

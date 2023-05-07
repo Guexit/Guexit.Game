@@ -36,9 +36,9 @@ public sealed class WhenStorytellerSubmitsCardStory : ComponentTest
         var selectedCardId = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First().Id;
 
         using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{gameRoom.Id.Value}/submit-card-story")
+        var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{gameRoom.Id.Value}/storyteller/submit-card-story")
         {
-            Content = JsonContent.Create(new SubmitCardStoryRequest(selectedCardId, story))
+            Content = JsonContent.Create(new SubmitStoryTellerCardStoryRequest(selectedCardId, story))
         };
         request.AddPlayerIdHeader(storyTellerId);
         var response = await client.SendAsync(request);
@@ -54,5 +54,7 @@ public sealed class WhenStorytellerSubmitsCardStory : ComponentTest
         responseContent!.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId);
         responseContent.CurrentStoryTeller.Story.Should().Be(story);
         responseContent.CurrentStoryTeller.Username.Should().Be("gamora");
+        responseContent.SubmittedCards.Should().HaveCount(1);
+        responseContent.SubmittedCards[0].Id.Should().Be(selectedCardId);
     }
 }

@@ -13,11 +13,14 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
+
     public ICollection<Card> Deck { get; private set; } = new List<Card>();
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
+    public ICollection<Card> SubmittedCards { get; private set; } = new List<Card>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
 
     private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
+    private HashSet<PlayerId> CurrentGuessingPlayerIds => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
 
     private GameRoom()
     {
@@ -77,7 +80,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void SubmitCardStory(PlayerId storyTellerId, CardId cardId, string story)
     {
         if (Status != GameStatus.InProgress)
-            throw new CannotSubmitCardStoryIfGameRoomIsNotInProgressException(Id);
+            throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
 
         if (CurrentStoryTeller.PlayerId != storyTellerId)
             throw new CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException(Id, storyTellerId);
@@ -85,12 +88,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (CurrentStoryTeller.HasSubmittedCardStory())
             throw new CardStoryAlreadySubmittedException(Id, storyTellerId);
 
-        var card = CurrentStoryTellerHand.Cards.SingleOrDefault(x => x.Id == cardId) 
-            ?? throw new CardNotFoundInPlayerHandException(Id, storyTellerId, cardId);
+
+        var card = CurrentStoryTellerHand.SubstractCard(cardId);
+        SubmittedCards.Add(card);
 
         CurrentStoryTeller = CurrentStoryTeller.SubmitCardWithStory(card, story);
 
-        AddDomainEvent(new CardStorySubmitted(Id, storyTellerId, cardId, story));
+        AddDomainEvent(new StoryTellerCardStorySubmitted(Id, storyTellerId, cardId, story));
     }
 
     private void DealInitialPlayerHands()
@@ -107,6 +111,22 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
             PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
         }
+    }
+
+    public void SubmitGuessingPlayerCard(PlayerId guessingPlayerId, CardId cardId)
+    {
+        if (Status != GameStatus.InProgress)
+            throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
+
+        if (!CurrentGuessingPlayerIds.Contains(guessingPlayerId))
+            throw new PlayerNotFoundInCurrentGuessingPlayersException(guessingPlayerId);
+
+        var playerHand = PlayerHands.Single(x => x.PlayerId == guessingPlayerId);
+
+        var card = playerHand.SubstractCard(cardId);
+        SubmittedCards.Add(card);
+
+        AddDomainEvent(new GuessingPlayerCardSubmitted(Id, guessingPlayerId, cardId));
     }
 }
 

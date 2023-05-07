@@ -5,13 +5,13 @@ using MassTransit;
 
 namespace Guexit.Game.EventHandlersForPublish;
 
-public sealed class CardStorySubmittedForPublish : IDomainEventHandler<CardStorySubmitted>
+public sealed class CardStorySubmittedForPublish : IDomainEventHandler<StoryTellerCardStorySubmitted>
 {
     private readonly IBus _bus;
 
     public CardStorySubmittedForPublish(IBus bus) => _bus = bus;
 
-    public async ValueTask Handle(CardStorySubmitted @event, CancellationToken ct = default)
+    public async ValueTask Handle(StoryTellerCardStorySubmitted @event, CancellationToken ct = default)
     {
         await _bus.Publish(new CardStorySubmittedIntegrationEvent(@event.GameRoomId, 
             @event.SelectedCardId, @event.StoryTellerId, @event.Story), ct);

@@ -59,7 +59,8 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, GameBoa
                 Url = x.Url
             }).ToArray(),
             IsCurrentUserStoryTeller = query.PlayerId == gameRoom.CurrentStoryTeller.PlayerId,
-            SelectedCard = null,
+            SubmittedCard = null,
+            SubmittedCards = Array.Empty<GameBoardReadModel.CardDto>()
         };
         return readModel;
     }
