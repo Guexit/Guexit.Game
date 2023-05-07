@@ -14,7 +14,6 @@ public sealed class WhenSavingImage : DatabaseMappingIntegrationTest
     {
         var imageId = new ImageId(Guid.NewGuid());
         var url = new Uri("https://pablocompany.com/images/2");
-        var logicalShard = 3;
         var createdAt = new DateTimeOffset(2023, 3, 4, 9, 38, 5, TimeSpan.Zero);
         var repository = new ImageRepository(DbContext);
 
