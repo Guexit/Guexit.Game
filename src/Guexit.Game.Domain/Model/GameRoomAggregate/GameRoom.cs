@@ -88,10 +88,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (CurrentStoryTeller.HasSubmittedCardStory())
             throw new CardStoryAlreadySubmittedException(Id, storyTellerId);
 
-
         var card = CurrentStoryTellerHand.SubstractCard(cardId);
         SubmittedCards.Add(card);
-
         CurrentStoryTeller = CurrentStoryTeller.SubmitCardWithStory(card, story);
 
         AddDomainEvent(new StoryTellerCardStorySubmitted(Id, storyTellerId, cardId, story));

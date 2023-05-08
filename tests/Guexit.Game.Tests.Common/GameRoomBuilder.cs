@@ -13,6 +13,7 @@ public sealed class GameRoomBuilder
     private CardBuilder[] _cards = Array.Empty<CardBuilder>();
     private bool _isStarted = false;
     private string _storyTellerCardStory = string.Empty;
+    private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
 
     public GameRoom Build()
     {
@@ -25,6 +26,7 @@ public sealed class GameRoomBuilder
 
         if (_isStarted)
             gameRoom.Start();
+
         if (_cards.Any())
             gameRoom.AssignDeck(_cards.Select(x => x.Build()));
 
@@ -34,6 +36,12 @@ public sealed class GameRoomBuilder
             var card = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First();
 
             gameRoom.SubmitCardStory(storyTellerId, card.Id, _storyTellerCardStory);
+        }
+
+        foreach (var guessingPlayerId in _guessingPlayersThatSubmittedCard)
+        {
+            var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
+            gameRoom.SubmitGuessingPlayerCard(guessingPlayerId, card.Id);
         }
 
         gameRoom.ClearDomainEvents();
@@ -101,6 +109,12 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithStoryTellerCardStory(string story)
     {
         _storyTellerCardStory = story;
+        return this;
+    }
+
+    public GameRoomBuilder WithGuessingPlayerThatSubmittedCard(params PlayerId[] playerIds)
+    {
+        _guessingPlayersThatSubmittedCard = playerIds;
         return this;
     }
 }
