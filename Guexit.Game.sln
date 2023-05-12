@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 		utilities\EntityFrameworkScriptsShorthand.txt = utilities\EntityFrameworkScriptsShorthand.txt
+		utilities\PublishMessagesNuGetShorthand.txt = utilities\PublishMessagesNuGetShorthand.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Persistence.Npgsql", "src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj", "{5A619641-57AC-47E4-B71F-0438FC5F4B8C}"
