@@ -21,6 +21,7 @@ public sealed class GameRoomRepository : IGameRoomRepository
     {
         return await _dbContext.GameRooms
             .Include(x => x.PlayerHands).ThenInclude(x => x.Cards)
+            .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
             .Include(x => x.Deck)
             .SingleOrDefaultAsync(g => g.Id == id, ct);
     }

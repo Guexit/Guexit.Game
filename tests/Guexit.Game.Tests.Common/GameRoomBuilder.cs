@@ -35,7 +35,7 @@ public sealed class GameRoomBuilder
             var storyTellerId = gameRoom.CurrentStoryTeller.PlayerId;
             var card = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First();
 
-            gameRoom.SubmitCardStory(storyTellerId, card.Id, _storyTellerCardStory);
+            gameRoom.SubmitStoryTellerCardStory(storyTellerId, card.Id, _storyTellerCardStory);
         }
 
         foreach (var guessingPlayerId in _guessingPlayersThatSubmittedCard)
@@ -106,7 +106,7 @@ public sealed class GameRoomBuilder
         return this;
     }
 
-    public GameRoomBuilder WithStoryTellerCardStory(string story)
+    public GameRoomBuilder WithStoryTellerStory(string story)
     {
         _storyTellerCardStory = story;
         return this;

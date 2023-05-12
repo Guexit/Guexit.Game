@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
@@ -20,10 +21,10 @@ public sealed class WhenStorytellerSubmitsCardStory : ComponentTest
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var storyTellerId = new PlayerId("storyTellerPlayerId");
-        const string story = "El tipico abuelo adolescente";
-
         var playerId2 = new PlayerId("player2");
         var playerId3 = new PlayerId("player3");
+        const string story = "El tipico abuelo adolescente";
+        
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { playerId2, playerId3 }).Build();
         await Save(gameRoom);
         await Save(new[]
@@ -42,12 +43,12 @@ public sealed class WhenStorytellerSubmitsCardStory : ComponentTest
         };
         request.AddPlayerIdHeader(storyTellerId);
         var response = await client.SendAsync(request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveSuccessStatusCode();
         
         var getBoardRequest = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
         getBoardRequest.AddPlayerIdHeader(storyTellerId);
         var getBoardResponse = await client.SendAsync(getBoardRequest);
+        await getBoardResponse.ShouldHaveSuccessStatusCode();
 
         var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<GameBoardReadModel>();
         responseContent.Should().NotBeNull();

@@ -41,7 +41,6 @@ public sealed class WhenHandlingStartGameCommand
         gameRoom.Should().NotBeNull();
         gameRoom!.Status.Should().Be(GameStatus.AssigningCards);
         gameRoom.CurrentStoryTeller.PlayerId.Should().Be(creatorId);
-        gameRoom.CurrentStoryTeller.SelectedCardId.Should().Be(CardId.Empty);
         gameRoom.CurrentStoryTeller.Story.Should().Be(string.Empty);
     }
 

@@ -16,7 +16,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public ICollection<Card> Deck { get; private set; } = new List<Card>();
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
-    public ICollection<Card> SubmittedCards { get; private set; } = new List<Card>();
+    public ICollection<SubmittedCard> SubmittedCards { get; private set; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
 
     private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
@@ -77,7 +77,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealed(Id));
     }
 
-    public void SubmitCardStory(PlayerId storyTellerId, CardId cardId, string story)
+    public void SubmitStoryTellerCardStory(PlayerId storyTellerId, CardId cardId, string story)
     {
         if (Status != GameStatus.InProgress)
             throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
@@ -89,10 +89,29 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new CardStoryAlreadySubmittedException(Id, storyTellerId);
 
         var card = CurrentStoryTellerHand.SubstractCard(cardId);
-        SubmittedCards.Add(card);
-        CurrentStoryTeller = CurrentStoryTeller.SubmitCardWithStory(card, story);
+        SubmittedCards.Add(new SubmittedCard(storyTellerId, card, Id));
+        CurrentStoryTeller = CurrentStoryTeller.SubmitStory(story);
 
         AddDomainEvent(new StoryTellerCardStorySubmitted(Id, storyTellerId, cardId, story));
+    }
+
+    public void SubmitGuessingPlayerCard(PlayerId guessingPlayerId, CardId cardId)
+    {
+        if (Status != GameStatus.InProgress)
+            throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
+
+        if (!CurrentGuessingPlayerIds.Contains(guessingPlayerId))
+            throw new PlayerNotFoundInCurrentGuessingPlayersException(guessingPlayerId);
+
+        if (!CurrentStoryTeller.HasSubmittedCardStory())
+            throw new GuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException(Id, guessingPlayerId);
+
+        var playerHand = PlayerHands.Single(x => x.PlayerId == guessingPlayerId);
+
+        var card = playerHand.SubstractCard(cardId);
+        SubmittedCards.Add(new SubmittedCard(guessingPlayerId, card, Id));
+
+        AddDomainEvent(new GuessingPlayerCardSubmitted(Id, guessingPlayerId, cardId));
     }
 
     private void DealInitialPlayerHands()
@@ -110,22 +129,6 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
         }
     }
-
-    public void SubmitGuessingPlayerCard(PlayerId guessingPlayerId, CardId cardId)
-    {
-        if (Status != GameStatus.InProgress)
-            throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
-
-        if (!CurrentGuessingPlayerIds.Contains(guessingPlayerId))
-            throw new PlayerNotFoundInCurrentGuessingPlayersException(guessingPlayerId);
-
-        var playerHand = PlayerHands.Single(x => x.PlayerId == guessingPlayerId);
-
-        var card = playerHand.SubstractCard(cardId);
-        SubmittedCards.Add(card);
-
-        AddDomainEvent(new GuessingPlayerCardSubmitted(Id, guessingPlayerId, cardId));
-    }
 }
 
 public sealed class GameRoomId : ValueObject
@@ -134,7 +137,10 @@ public sealed class GameRoomId : ValueObject
 
     public Guid Value { get; }
 
-    public GameRoomId(Guid value) => Value = value;
+    public GameRoomId(Guid value)
+    {
+        Value = value;
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

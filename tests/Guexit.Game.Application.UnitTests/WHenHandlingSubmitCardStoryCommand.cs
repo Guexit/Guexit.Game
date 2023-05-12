@@ -28,16 +28,19 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var story = "La tipica adolescente abuela";
 
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { new PlayerId("player2"), new PlayerId("player3") }).Build();
-        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id;
+        var selectedCard = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First();
         await _gameRoomRepository.Add(gameRoom);
 
-        await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCardId.Value, story));
+        await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCard.Id.Value, story));
 
         gameRoom.CurrentStoryTeller.PlayerId.Should().BeEquivalentTo(storyTellerId);
-        gameRoom.CurrentStoryTeller.SelectedCardId.Should().Be(selectedCardId);
         gameRoom.CurrentStoryTeller.Story.Should().BeEquivalentTo(story);
+        gameRoom.SubmittedCards.Should().HaveCount(1);
+        gameRoom.SubmittedCards.Single().PlayerId.Should().Be(storyTellerId);
+        gameRoom.SubmittedCards.Single().Card.Should().Be(selectedCard);
+        gameRoom.SubmittedCards.Single().GameRoomId.Should().Be(gameRoomId);
         gameRoom.DomainEvents.OfType<StoryTellerCardStorySubmitted>().Single().Should()
-            .BeEquivalentTo(new StoryTellerCardStorySubmitted(gameRoomId, storyTellerId, selectedCardId, story));
+            .BeEquivalentTo(new StoryTellerCardStorySubmitted(gameRoomId, storyTellerId, selectedCard.Id, story));
     }
 
     [Fact]

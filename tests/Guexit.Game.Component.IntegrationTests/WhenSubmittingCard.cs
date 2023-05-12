@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
@@ -20,9 +21,12 @@ public sealed class WhenSubmittingCard : ComponentTest
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var guessingPlayerId = new PlayerId("player2");
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, "storyTellerId", new PlayerId[] { guessingPlayerId, "player3" })
-            .WithStoryTellerCardStory("Any card story")
+            .WithStoryTellerStory("Any card story")
             .Build();
         await Save(gameRoom);
+        await Save(
+            new PlayerBuilder().WithId("player2").Build(), 
+            new PlayerBuilder().WithId("storyTellerId").Build());
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
 
         var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{gameRoomId.Value}/guessing-player/submit-card")
@@ -38,10 +42,13 @@ public sealed class WhenSubmittingCard : ComponentTest
         var getBoardRequest = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
         getBoardRequest.AddPlayerIdHeader(guessingPlayerId);
         var getBoardResponse = await client.SendAsync(getBoardRequest);
+        await getBoardResponse.ShouldHaveSuccessStatusCode();
 
         var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<GameBoardReadModel>();
         responseContent.Should().NotBeNull();
-        responseContent!.SubmittedCard.Should().NotBeNull();
-        responseContent.SubmittedCard!.Id.Should().Be(card.Id);
+        responseContent!.CurrentUserSubmittedCard.Should().NotBeNull();
+        responseContent.CurrentUserSubmittedCard!.Id.Should().Be(card.Id);
+        responseContent.SubmittedCards.Should().HaveCount(2);
+        responseContent.SubmittedCards.Should().Contain(x => x.Id == card.Id.Value);
     }
 }

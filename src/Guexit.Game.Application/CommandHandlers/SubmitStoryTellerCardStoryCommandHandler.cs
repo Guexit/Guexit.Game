@@ -19,6 +19,6 @@ public sealed class SubmitStoryTellerCardStoryCommandHandler : CommandHandler<Su
         var gameRoom = await _gameRoomRepository.GetBy(command.GameRoomId, ct) 
             ?? throw new GameRoomNotFoundException(command.GameRoomId);
         
-        gameRoom.SubmitCardStory(command.PlayerId, command.CardId, command.Story);
+        gameRoom.SubmitStoryTellerCardStory(command.PlayerId, command.CardId, command.Story);
     }
 }

@@ -5,9 +5,9 @@ public sealed class GameBoardReadModel
     public required Guid GameRoomId { get; init; }
     public required StoryTellerDto CurrentStoryTeller { get; init; }
     public required CardDto[] PlayerHand { get; init; }
-    public CardDto? SubmittedCard { get; init; }
+    public CardDto? CurrentUserSubmittedCard { get; init; }
     public required CardDto[] SubmittedCards { get; init; }
-    public bool IsCurrentUserStoryTeller { get; init; }
+    public required bool IsCurrentUserStoryTeller { get; init; }
 
     public sealed class StoryTellerDto
     {

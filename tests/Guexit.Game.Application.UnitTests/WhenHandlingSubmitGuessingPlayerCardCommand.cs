@@ -27,7 +27,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     {
         var guessingPlayerId = new PlayerId("guessingPlayerId");
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
-            .WithStoryTellerCardStory("Any story")
+            .WithStoryTellerStory("Any story")
             .Build();
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
         await _gameRoomRepository.Add(gameRoom);
@@ -73,13 +73,30 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         var guessingPlayerId = new PlayerId("guessingPlayerId");
         var anyCardId = new CardId(Guid.NewGuid());
         await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayerId, new PlayerId("player3") })
-            .WithStoryTellerCardStory("Any story")
+            .WithStoryTellerStory("Any story")
             .Build());
 
         var action = async () =>
             await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(storyTellerId, GameRoomId, anyCardId));
 
         await action.Should().ThrowAsync<PlayerNotFoundInCurrentGuessingPlayersException>();
+    }
+
+
+    [Fact]
+    public async Task ThrowsGuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException()
+    {
+        var guessingPlayerId = new PlayerId("guessingPlayerId");
+        var gameRoom = GameRoomBuilder
+            .CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
+            .Build();
+        var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
+        await _gameRoomRepository.Add(gameRoom);
+
+        var action = async () =>
+            await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(guessingPlayerId, GameRoomId, card.Id.Value));
+
+        await action.Should().ThrowAsync<GuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException>();
     }
 
     private async Task AssertGuessingPlayerSubmittedCardAndItIsRemovedFromHisHand(PlayerId playerId, CardId cardId, Uri url)
@@ -89,9 +106,8 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         gameRoom.Should().NotBeNull();
         gameRoom!.SubmittedCards.Should().HaveCount(2);
 
-        var card = gameRoom.SubmittedCards.First(x => x.Id == cardId);
-        card.Id.Should().Be(cardId);
-        card.Url.Should().Be(url);
+        var submittedCard = gameRoom.SubmittedCards.First(x => x.Card.Id == cardId);
+        submittedCard.PlayerId.Should().Be(playerId);
 
         var playerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == playerId);
         playerHand.Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer - 1);
