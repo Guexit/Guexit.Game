@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Guexit.Game.EventHandlersForPublish\Guexit.Game.EventHandlersForPublish.csproj" />
+      <ProjectReference Include="..\..\src\Guexit.Game.Producers\Guexit.Game.Producers.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,21 +1,22 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Producers;
 using Guexit.Game.Messages;
 using MassTransit;
 using NSubstitute;
 
-namespace Guexit.Game.EventHandlersForPublish.UnitTests;
+namespace Guexit.Game.Producers.UnitTests;
 
 public sealed class WhenHandlingPlayerJoinedGameRoom
 {
-    private readonly PlayerJoinedGameRoomHandlerForPublish _eventHandler;
+    private readonly PlayerJoinedProducer _eventHandler;
     private readonly IBus _bus;
 
     public WhenHandlingPlayerJoinedGameRoom()
     {
         _bus = Substitute.For<IBus>();
-        _eventHandler = new PlayerJoinedGameRoomHandlerForPublish(_bus);
+        _eventHandler = new PlayerJoinedProducer(_bus);
     }
 
     [Fact]

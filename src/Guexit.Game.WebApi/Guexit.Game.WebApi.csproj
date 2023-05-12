@@ -25,10 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Guexit.Game.Application\Guexit.Game.Application.csproj" />
-    <ProjectReference Include="..\Guexit.Game.ExternalMessageHandlers\Guexit.Game.Consumers.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Consumers\Guexit.Game.Consumers.csproj" />
     <ProjectReference Include="..\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Producers\Guexit.Game.Producers.csproj" />
     <ProjectReference Include="..\Guexit.Game.ReadModels\Guexit.Game.ReadModels.csproj" />
-    <ProjectReference Include="..\Guexit.Game.EventHandlersForPublish\Guexit.Game.EventHandlersForPublish.csproj" />
   </ItemGroup>
 
 </Project>

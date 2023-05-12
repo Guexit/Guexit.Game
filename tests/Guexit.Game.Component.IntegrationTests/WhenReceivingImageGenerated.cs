@@ -1,5 +1,5 @@
 ﻿using Guexit.Game.Domain.Model.ImageAggregate;
-using Guexit.Game.Consumers;
+using Guexit.Game.Messages;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
