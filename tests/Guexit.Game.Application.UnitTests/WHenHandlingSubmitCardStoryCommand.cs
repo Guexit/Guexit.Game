@@ -12,31 +12,35 @@ namespace Guexit.Game.Application.UnitTests;
 public sealed class WhenHandlingSubmitCardStoryCommand
 {
     private readonly IGameRoomRepository _gameRoomRepository;
-    private readonly SubmitCardStoryCommandHandler _commandHandler;
+    private readonly SubmitStoryTellerCardStoryCommandHandler _commandHandler;
 
     public WhenHandlingSubmitCardStoryCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new SubmitCardStoryCommandHandler(Substitute.For<IUnitOfWork>(), _gameRoomRepository);
+        _commandHandler = new SubmitStoryTellerCardStoryCommandHandler(Substitute.For<IUnitOfWork>(), _gameRoomRepository);
     }
 
     [Fact]
     public async Task CardWithStoryIsSubmitted()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        var storyTellerId = new PlayerId("nonStoryTellerId");
+        var storyTellerId = new PlayerId("storyTellerId");
         var story = "La tipica adolescente abuela";
+
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { new PlayerId("player2"), new PlayerId("player3") }).Build();
-        var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id.Value;
+        var selectedCard = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First();
         await _gameRoomRepository.Add(gameRoom);
 
-        await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
+        await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCard.Id.Value, story));
 
         gameRoom.CurrentStoryTeller.PlayerId.Should().BeEquivalentTo(storyTellerId);
-        gameRoom.CurrentStoryTeller.SelectedCardId.Should().BeEquivalentTo(selectedCardId);
         gameRoom.CurrentStoryTeller.Story.Should().BeEquivalentTo(story);
-        gameRoom.DomainEvents.OfType<CardStorySubmitted>().Single().Should()
-            .BeEquivalentTo(new CardStorySubmitted(gameRoomId, storyTellerId, selectedCardId, story));
+        gameRoom.SubmittedCards.Should().HaveCount(1);
+        gameRoom.SubmittedCards.Single().PlayerId.Should().Be(storyTellerId);
+        gameRoom.SubmittedCards.Single().Card.Should().Be(selectedCard);
+        gameRoom.SubmittedCards.Single().GameRoomId.Should().Be(gameRoomId);
+        gameRoom.DomainEvents.OfType<StoryTellerCardStorySubmitted>().Single().Should()
+            .BeEquivalentTo(new StoryTellerCardStorySubmitted(gameRoomId, storyTellerId, selectedCard.Id, story));
     }
 
     [Fact]
@@ -45,7 +49,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var nonExistingGameRoomId = new GameRoomId(Guid.NewGuid());
 
         var action = async () => await _commandHandler.Handle(
-            new SubmitCardStoryCommand("anyPlayerId", nonExistingGameRoomId, Guid.NewGuid(), "anyStory"));
+            new SubmitStoryTellerCardStoryCommand("anyPlayerId", nonExistingGameRoomId, Guid.NewGuid(), "anyStory"));
 
         await action.Should().ThrowAsync<GameRoomNotFoundException>();
     }
@@ -63,9 +67,9 @@ public sealed class WhenHandlingSubmitCardStoryCommand
             .Build());
 
         var action = async () => 
-            await _commandHandler.Handle(new SubmitCardStoryCommand(playerId, gameRoomId, anyCardId, "anyStory"));
+            await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(playerId, gameRoomId, anyCardId, "anyStory"));
 
-        await action.Should().ThrowAsync<CannotSubmitCardStoryIfGameRoomIsNotInProgressException>();
+        await action.Should().ThrowAsync<CannotSubmitCardIfGameRoomIsNotInProgressException>();
     }
 
     [Fact]
@@ -79,7 +83,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
             .Build());
 
         var action = async () => 
-            await _commandHandler.Handle(new SubmitCardStoryCommand(nonStoryTellerId, gameRoomId, anyCardId, "anyStory"));
+            await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(nonStoryTellerId, gameRoomId, anyCardId, "anyStory"));
 
         await action.Should().ThrowAsync<CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException>();
     }
@@ -94,9 +98,9 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var selectedCardId = gameRoom.PlayerHands.First(x => x.PlayerId == storyTellerId).Cards.First().Id.Value;
         await _gameRoomRepository.Add(gameRoom);
 
-        await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
+        await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
         var action = async () 
-            => await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
+            => await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
 
         await action.Should().ThrowAsync<CardStoryAlreadySubmittedException>();
     }
@@ -112,7 +116,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         await _gameRoomRepository.Add(gameRoom);
 
         var action = async () 
-            => await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, nonExistingCardId, story));
+            => await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, nonExistingCardId, story));
 
         await action.Should().ThrowAsync<CardNotFoundInPlayerHandException>();
     } 
@@ -128,7 +132,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         await _gameRoomRepository.Add(gameRoom);
 
         var action = async () 
-            => await _commandHandler.Handle(new SubmitCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, emptyStory));
+            => await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, emptyStory));
 
         await action.Should().ThrowAsync<EmptyCardStoryException>();
     }

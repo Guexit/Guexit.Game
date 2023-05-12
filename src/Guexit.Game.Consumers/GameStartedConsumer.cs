@@ -3,14 +3,14 @@ using Guexit.Game.Application.Services;
 using Guexit.Game.Messages;
 using Microsoft.Extensions.Logging;
 
-namespace Guexit.Game.ExternalMessageHandlers;
+namespace Guexit.Game.Consumers;
 
-public sealed class GameStartedHandler : ExternalMessageHandler<GameStartedIntegrationEvent>
+public sealed class GameStartedConsumer : MessageConsumer<GameStartedIntegrationEvent>
 {
     private readonly IDeckAssignmentService _deckAssignmentService;
 
-    public GameStartedHandler(IDeckAssignmentService deckAssignmentService, IUnitOfWork unitOfWork, 
-        ILogger<GameStartedHandler> logger) : base(unitOfWork, logger)
+    public GameStartedConsumer(IDeckAssignmentService deckAssignmentService, IUnitOfWork unitOfWork, 
+        ILogger<GameStartedConsumer> logger) : base(unitOfWork, logger)
     {
         _deckAssignmentService = deckAssignmentService;
     }

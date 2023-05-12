@@ -27,7 +27,6 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.OwnsOne(x => x.CurrentStoryTeller, st =>
         {
             st.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
-            st.Property(x => x.SelectedCardId).HasConversion(to => to.Value, from => new CardId(from));
             st.Property(x => x.Story);
         });
             

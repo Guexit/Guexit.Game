@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Contracts\**" />
-    <Content Remove="Contracts\**" />
-    <EmbeddedResource Remove="Contracts\**" />
-    <None Remove="Contracts\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" Version="7.0.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0" />
     <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.0.15" />
@@ -32,10 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Guexit.Game.Application\Guexit.Game.Application.csproj" />
-    <ProjectReference Include="..\Guexit.Game.ExternalMessageHandlers\Guexit.Game.ExternalMessageHandlers.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Consumers\Guexit.Game.Consumers.csproj" />
     <ProjectReference Include="..\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj" />
+    <ProjectReference Include="..\Guexit.Game.Producers\Guexit.Game.Producers.csproj" />
     <ProjectReference Include="..\Guexit.Game.ReadModels\Guexit.Game.ReadModels.csproj" />
-    <ProjectReference Include="..\Guexit.Game.EventHandlersForPublish\Guexit.Game.EventHandlersForPublish.csproj" />
   </ItemGroup>
 
 </Project>

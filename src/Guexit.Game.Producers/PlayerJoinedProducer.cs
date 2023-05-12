@@ -3,13 +3,13 @@ using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Messages;
 using MassTransit;
 
-namespace Guexit.Game.EventHandlersForPublish;
+namespace Guexit.Game.Producers;
 
-public class PlayerJoinedGameRoomHandlerForPublish : IDomainEventHandler<PlayerJoined>
+public class PlayerJoinedProducer : IDomainEventHandler<PlayerJoined>
 {
     private readonly IBus _bus;
 
-    public PlayerJoinedGameRoomHandlerForPublish(IBus bus) => _bus = bus;
+    public PlayerJoinedProducer(IBus bus) => _bus = bus;
 
     public async ValueTask Handle(PlayerJoined @event, CancellationToken ct = default)
     {

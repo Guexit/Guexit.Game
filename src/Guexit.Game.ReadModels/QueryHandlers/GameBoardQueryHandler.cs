@@ -33,6 +33,7 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, GameBoa
         var gameRoom = await DbContext.GameRooms.AsNoTracking()
             .Include(x => x.Deck)
             .Include(x => x.PlayerHands).ThenInclude(x => x.Cards)
+            .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
             .SingleOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
 
         if (gameRoom is null) 
@@ -43,6 +44,9 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, GameBoa
 
         var currentStoryTeller = await DbContext.Players.AsNoTracking()
             .SingleAsync(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId, ct);
+
+        var allSubmittedCards = gameRoom.SubmittedCards.Select(x => new GameBoardReadModel.CardDto { Id = x.Card.Id, Url = x.Card.Url }).ToArray();
+        var submittedCardOfCurrentUser = gameRoom.SubmittedCards.FirstOrDefault(x => x.PlayerId == query.PlayerId);
 
         var readModel = new GameBoardReadModel()
         {
@@ -59,7 +63,10 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, GameBoa
                 Url = x.Url
             }).ToArray(),
             IsCurrentUserStoryTeller = query.PlayerId == gameRoom.CurrentStoryTeller.PlayerId,
-            SelectedCard = null,
+            CurrentUserSubmittedCard = submittedCardOfCurrentUser is null 
+                ? null 
+                : new GameBoardReadModel.CardDto { Id = submittedCardOfCurrentUser.Card.Id, Url = submittedCardOfCurrentUser.Card.Url },
+            SubmittedCards = allSubmittedCards
         };
         return readModel;
     }

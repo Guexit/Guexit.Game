@@ -14,6 +14,7 @@ public sealed class GameDbContext : DbContext
     public DbSet<Image> Images { get; set; } = default!;
     public DbSet<Card> Cards { get; set; } = default!;
     public DbSet<Card> PlayerHands { get; set; } = default!;
+    public DbSet<SubmittedCard> SubmittedCards { get; set; } = default!;
 
     public GameDbContext(DbContextOptions<GameDbContext> contextOptions) : base(contextOptions)
     {
@@ -26,6 +27,7 @@ public sealed class GameDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ImageMappingOverride());
         modelBuilder.ApplyConfiguration(new CardMappingOverride());
         modelBuilder.ApplyConfiguration(new PlayerHandMappingOverride());
+        modelBuilder.ApplyConfiguration(new SubmittedCardMappingOverride());
 
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();

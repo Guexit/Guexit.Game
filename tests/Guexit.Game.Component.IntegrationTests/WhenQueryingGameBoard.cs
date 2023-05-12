@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
@@ -34,7 +35,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         request.AddPlayerIdHeader(playerId1);
         var response = await client.SendAsync(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveSuccessStatusCode();
         var responseContent = await response.Content.ReadFromJsonAsync<GameBoardReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.GameRoomId.Should().Be(gameRoomId);
@@ -45,7 +46,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         responseContent.PlayerHand.Should().BeEquivalentTo(gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
             .Select(x => new GameBoardReadModel.CardDto { Id = x.Id, Url = x.Url }));
         responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
-        responseContent.SelectedCard.Should().BeNull();
+        responseContent.CurrentUserSubmittedCard.Should().BeNull();
     }
 
     [Fact]
@@ -84,7 +85,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         request.AddPlayerIdHeader(playerId3);
         var response = await client.SendAsync(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveSuccessStatusCode();
         var responseContent = await response.Content.ReadFromJsonAsync<GameBoardReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.IsCurrentUserStoryTeller.Should().BeFalse();

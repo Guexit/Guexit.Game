@@ -13,6 +13,7 @@ public sealed class PersistenceDataCleaner : ITestDataCleaner
 
         await dbContext.Cards.ExecuteDeleteAsync();
         await dbContext.PlayerHands.ExecuteDeleteAsync();
+        await dbContext.SubmittedCards.ExecuteDeleteAsync();
         await dbContext.GameRooms.ExecuteDeleteAsync();
         await dbContext.Players.ExecuteDeleteAsync();
         await dbContext.Images.ExecuteDeleteAsync();

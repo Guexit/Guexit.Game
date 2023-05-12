@@ -1,23 +1,21 @@
 ﻿using Guexit.Game.Application;
 using Guexit.Game.Application.Services;
 using Guexit.Game.Domain;
+using Guexit.Game.Messages;
 using Microsoft.Extensions.Logging;
 
-namespace Guexit.Game.ExternalMessageHandlers;
+namespace Guexit.Game.Consumers;
 
-// Important: DO NOT move to a different namespace or change name of the class, it's used by masstransit to match registered urn type name
-public sealed record ImageGenerated(string Url);
-
-public sealed class ImageGeneratedHandler : ExternalMessageHandler<ImageGenerated>
+public sealed class ImageGeneratedConsumer : MessageConsumer<ImageGenerated>
 {
     private readonly IImageManagementService _imageManagementService;
     private readonly IGuidProvider _guidProvider;
 
-    public ImageGeneratedHandler(
+    public ImageGeneratedConsumer(
         IImageManagementService imageManagementService, 
         IGuidProvider guidProvider,
         IUnitOfWork unitOfWork, 
-        ILogger<ImageGeneratedHandler> logger) : base(unitOfWork, logger)
+        ILogger<ImageGeneratedConsumer> logger) : base(unitOfWork, logger)
     {
         _imageManagementService = imageManagementService;
         _guidProvider = guidProvider;
