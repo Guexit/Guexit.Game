@@ -1,6 +1,5 @@
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
-using Guexit.Game.Producers;
 using Guexit.Game.Messages;
 using MassTransit;
 using NSubstitute;

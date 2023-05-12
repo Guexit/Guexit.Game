@@ -25,7 +25,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     [Fact]
     public async Task CardIsSubmitted()
     {
-        var guessingPlayerId = new PlayerId("guessingPlayerId");
+        var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
             .WithStoryTellerStory("Any story")
             .Build();
@@ -35,6 +35,39 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(guessingPlayerId.Value, GameRoomId.Value, card.Id.Value));
 
         await AssertGuessingPlayerSubmittedCardAndItIsRemovedFromHisHand(guessingPlayerId, card.Id, card.Url);
+    }
+
+    [Fact]
+    public async Task AllPlayerCardsSubmittedEventIsRaisedWhenAllPlayersSubmittedTheCard()
+    {
+        var lastPlayerPendingToSubmitCard = new PlayerId("lastPendingToSubmitCard");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { lastPlayerPendingToSubmitCard, new PlayerId("player3") })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard("player3")
+            .Build();
+        await _gameRoomRepository.Add(gameRoom);
+        var card = gameRoom.PlayerHands.Single(x => x.PlayerId == lastPlayerPendingToSubmitCard).Cards.First();
+
+        await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(lastPlayerPendingToSubmitCard.Value, GameRoomId.Value, card.Id.Value));
+
+        gameRoom.DomainEvents.OfType<AllPlayerCardsSubmitted>().Should().HaveCount(1);
+        gameRoom.DomainEvents.OfType<AllPlayerCardsSubmitted>().Single()
+            .Should().BeEquivalentTo(new AllPlayerCardsSubmitted(GameRoomId));
+    }
+
+    [Fact]
+    public async Task DoesNotRaiseAllPlayerCardsSubmittedEventIsRaisedIfAnyPlayerIsPendingToSubmitCard()
+    {
+        var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
+            .WithStoryTellerStory("Any story")
+            .Build();
+        var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(guessingPlayerId.Value, GameRoomId.Value, card.Id.Value));
+
+        gameRoom.DomainEvents.OfType<AllPlayerCardsSubmitted>().Should().HaveCount(0);
     }
 
     [Fact]
@@ -52,7 +85,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     public async Task ThrowsCannotSubmitCardStoryIfGameRoomIsNotInProgressException()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        var guessingPlayerId = new PlayerId("guessingPlayerId");
+        var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
         var anyCardId = new CardId(Guid.NewGuid());
         await _gameRoomRepository.Add(new GameRoomBuilder()
             .WithId(gameRoomId)
@@ -70,7 +103,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     public async Task ThrowsPlayerNotFoundInCurrentGuessingPlayersExceptionExceptionIfStoryTellerTriesToSubmitGuessingCard()
     {
         var storyTellerId = new PlayerId("storyTellerId");
-        var guessingPlayerId = new PlayerId("guessingPlayerId");
+        var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
         var anyCardId = new CardId(Guid.NewGuid());
         await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayerId, new PlayerId("player3") })
             .WithStoryTellerStory("Any story")
@@ -86,7 +119,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     [Fact]
     public async Task ThrowsGuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException()
     {
-        var guessingPlayerId = new PlayerId("guessingPlayerId");
+        var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
         var gameRoom = GameRoomBuilder
             .CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
             .Build();

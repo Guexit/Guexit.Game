@@ -110,8 +110,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         var card = playerHand.SubstractCard(cardId);
         SubmittedCards.Add(new SubmittedCard(guessingPlayerId, card, Id));
-
         AddDomainEvent(new GuessingPlayerCardSubmitted(Id, guessingPlayerId, cardId));
+
+        var allPlayersHaveSubmittedTheirCards = SubmittedCards.Count == PlayerIds.Count;
+        if (allPlayersHaveSubmittedTheirCards)
+            AddDomainEvent(new AllPlayerCardsSubmitted(Id));
     }
 
     private void DealInitialPlayerHands()
