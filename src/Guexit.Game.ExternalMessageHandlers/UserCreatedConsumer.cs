@@ -4,13 +4,13 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.IdentityProvider.Messages;
 using Microsoft.Extensions.Logging;
 
-namespace Guexit.Game.ExternalMessageHandlers;
+namespace Guexit.Game.Consumers;
 
-public sealed class UserCreatedHandler : ExternalMessageHandler<UserCreated>
+public sealed class UserCreatedConsumer : MessageConsumer<UserCreated>
 {
     private readonly IPlayerManagementService _playerManagementService;
 
-    public UserCreatedHandler(IPlayerManagementService playerManagementService, IUnitOfWork unitOfWork, ILogger<UserCreatedHandler> logger) 
+    public UserCreatedConsumer(IPlayerManagementService playerManagementService, IUnitOfWork unitOfWork, ILogger<UserCreatedConsumer> logger) 
         : base(unitOfWork, logger)
     {
         _playerManagementService = playerManagementService;

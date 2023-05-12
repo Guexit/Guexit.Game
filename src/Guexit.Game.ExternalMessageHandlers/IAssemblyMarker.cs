@@ -1,4 +1,4 @@
-﻿namespace Guexit.Game.ExternalMessageHandlers;
+﻿namespace Guexit.Game.Consumers;
 
 public interface IAssemblyMarker
 {

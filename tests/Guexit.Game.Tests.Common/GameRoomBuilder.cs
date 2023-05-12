@@ -24,10 +24,10 @@ public sealed class GameRoomBuilder
         foreach (var player in _playersThatJoined)
             gameRoom.Join(player);
 
-        if (_isStarted)
+        if (_isStarted) 
             gameRoom.Start();
-
-        if (_cards.Any())
+        
+        if (_cards.Any()) 
             gameRoom.AssignDeck(_cards.Select(x => x.Build()));
 
         if (!string.IsNullOrEmpty(_storyTellerCardStory))

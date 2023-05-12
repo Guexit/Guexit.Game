@@ -2,14 +2,14 @@ using Guexit.Game.Application;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Guexit.Game.ExternalMessageHandlers;
+namespace Guexit.Game.Consumers;
 
-public abstract class ExternalMessageHandler<TMessage> : IConsumer<TMessage> where TMessage : class
+public abstract class MessageConsumer<TMessage> : IConsumer<TMessage> where TMessage : class
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<IConsumer<TMessage>> _logger;
 
-    protected ExternalMessageHandler(IUnitOfWork unitOfWork, ILogger<IConsumer<TMessage>> logger)
+    protected MessageConsumer(IUnitOfWork unitOfWork, ILogger<IConsumer<TMessage>> logger)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;

@@ -1,4 +1,4 @@
-﻿using Guexit.Game.ExternalMessageHandlers;
+﻿using Guexit.Game.Consumers;
 using Guexit.Game.Messages;
 using Guexit.Game.Persistence;
 using MassTransit;
@@ -20,7 +20,7 @@ public static class ServiceBusInstaller
             
             config.SetKebabCaseEndpointNameFormatter();
 
-            config.AddConsumers(typeof(ExternalMessageHandlers.IAssemblyMarker).Assembly);
+            config.AddConsumers(typeof(Consumers.IAssemblyMarker).Assembly);
 
             EndpointConvention.Map<GenerateImagesCommand>(new Uri("queue:guexit-cron-generate-image-command"));
             EndpointConvention.Map<GenerateImagesCommandWithStyles>(new Uri("queue:guexit-cron-generate-image-command"));
@@ -31,7 +31,7 @@ public static class ServiceBusInstaller
                 serviceBusConfiguration.ConfigureEndpoints(context);
                 
                 serviceBusConfiguration.SubscriptionEndpoint("guexit-game", "guexit-imagegeneration", 
-                    endpoint => endpoint.ConfigureConsumer<ImageGeneratedHandler>(context));
+                    endpoint => endpoint.ConfigureConsumer<ImageGeneratedConsumer>(context));
 
                 serviceBusConfiguration.UseMessageRetry(r => r.Incremental(10, TimeSpan.Zero, TimeSpan.FromSeconds(1)));
             });

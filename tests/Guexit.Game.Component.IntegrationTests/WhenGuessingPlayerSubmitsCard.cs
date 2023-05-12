@@ -6,13 +6,13 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Tests.Common;
-using Guexit.Game.WebApi.Requests;
+using Guexit.Game.WebApi.Contracts.Requests;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenSubmittingCard : ComponentTest
+public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
 {
-    public WhenSubmittingCard(GameWebApplicationFactory factory) : base(factory)
+    public WhenGuessingPlayerSubmitsCard(GameWebApplicationFactory factory) : base(factory)
     { }
 
     [Fact]

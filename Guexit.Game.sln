@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Persistence.Npg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Domain", "src\Guexit.Game.Domain\Guexit.Game.Domain.csproj", "{4102E583-D410-439F-B363-F1475719442C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.ExternalMessageHandlers", "src\Guexit.Game.ExternalMessageHandlers\Guexit.Game.ExternalMessageHandlers.csproj", "{AD8BFD18-E703-4640-8665-CB486DBC6D2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Consumers", "src\Guexit.Game.ExternalMessageHandlers\Guexit.Game.Consumers.csproj", "{AD8BFD18-E703-4640-8665-CB486DBC6D2A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Component.IntegrationTests", "tests\Guexit.Game.Component.IntegrationTests\Guexit.Game.Component.IntegrationTests.csproj", "{EB40A044-4244-4E6B-B801-30D41F0CDD4D}"
 EndProject

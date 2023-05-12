@@ -1,12 +1,11 @@
-﻿using System.Net;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Tests.Common;
-using Guexit.Game.WebApi.Requests;
+using Guexit.Game.WebApi.Contracts.Requests;
 
 namespace Guexit.Game.Component.IntegrationTests;
 

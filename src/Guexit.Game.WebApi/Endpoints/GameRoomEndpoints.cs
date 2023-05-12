@@ -2,7 +2,7 @@
 using Guexit.Game.Application.Commands;
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
-using Guexit.Game.WebApi.Requests;
+using Guexit.Game.WebApi.Contracts.Requests;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
