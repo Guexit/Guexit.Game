@@ -5,7 +5,7 @@ namespace Guexit.Game.Domain.Exceptions;
 
 public sealed class CardStoryAlreadySubmittedException : DomainException
 {
-    public override string Title { get; } = "Storyteller already submitted card and story";
+    public override string Title => "Storyteller already submitted card and story";
 
     public CardStoryAlreadySubmittedException(GameRoomId gameRoomId, PlayerId playerId)
         : base(BuildExceptionMessage(gameRoomId, playerId))

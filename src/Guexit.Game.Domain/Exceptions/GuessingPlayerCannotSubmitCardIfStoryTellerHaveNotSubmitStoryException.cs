@@ -3,11 +3,11 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public sealed class GuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException : DomainException
+public sealed class GuessingPlayerCannotSubmitCardIfStoryTellerHaveNotSubmitStoryException : DomainException
 {
-    public override string Title { get; } = "Guessing player cannot submit card if story teller hasn't submitted story";
+    public override string Title => "Guessing player cannot submit card if story teller hasn't submitted story";
 
-    public GuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException(GameRoomId gameRoomId, PlayerId playerId)
+    public GuessingPlayerCannotSubmitCardIfStoryTellerHaveNotSubmitStoryException(GameRoomId gameRoomId, PlayerId playerId)
         : base(BuildExceptionMessage(gameRoomId, playerId))
     {
     }

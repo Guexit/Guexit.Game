@@ -1,9 +1,9 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Persistence.Mappings.ValueComparers;
+using Guexit.Game.Persistence.Mappings.ValueConverters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Guexit.Game.Persistence.Mappings;
 
@@ -15,9 +15,9 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.PlayerIds)
-            .HasConversion<PlayerIdsCollectionValueConverter>()
+            .HasConversion<PlayerIdsToCommaSeparatedTextCollectionValueConverter>()
             .Metadata
-            .SetValueComparer(new PlayerIdsCollectionValueComparer());
+            .SetValueComparer(new PlayerIdsCommaSeparatedTextCollectionValueComparer());
 
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RequiredMinPlayers)
@@ -29,7 +29,26 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             st.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
             st.Property(x => x.Story);
         });
-            
+
+        builder.OwnsMany(x => x.SubmittedCards, ownedBuilder =>
+        {
+            ownedBuilder.ToTable("SubmittedCards");
+
+            ownedBuilder.HasKey(x => x.Id);
+            ownedBuilder.Property(x => x.Id).HasConversion(x => x.Value, x => new SubmittedCardId(x));
+            ownedBuilder.Property(x => x.PlayerId).HasConversion(x => x.Value, x => new PlayerId(x));
+            ownedBuilder.Property(x => x.GameRoomId).HasConversion(x => x.Value, x => new GameRoomId(x));
+
+            ownedBuilder.Property(x => x.Voters)
+                .HasConversion<PlayerIdsToCommaSeparatedTextCollectionValueConverter>()
+                .Metadata
+                .SetValueComparer(new PlayerIdsCommaSeparatedTextCollectionValueComparer());
+
+            ownedBuilder.HasOne(x => x.Card);
+
+            ownedBuilder.HasIndex(x => new { x.GameRoomId, x.PlayerId }).IsUnique();
+        });
+        
         builder.Property(x => x.Status)
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();
@@ -39,42 +58,4 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
 
         builder.Property<uint>("Version").IsRowVersion();
     }
-
-    private sealed class PlayerIdsCollectionValueComparer : ValueComparer<ICollection<PlayerId>>
-    {
-        public PlayerIdsCollectionValueComparer()
-            : base(
-                (c1, c2) => c1!.SequenceEqual(c2!),
-                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                c => c.ToArray())
-        {
-
-        }
-    }
-
-    private sealed class PlayerIdsCollectionValueConverter : ValueConverter<ICollection<PlayerId>, string>
-    {
-        public PlayerIdsCollectionValueConverter()
-            : base(v => ToProvider(v), from => From(from))
-        {
-        }
-
-        private static string ToProvider(ICollection<PlayerId> playerIds)
-        {
-            var text = string.Join(',', playerIds.Select(x => x.Value));
-            return text;
-        }
-
-        private static ICollection<PlayerId> From(string playerIds)
-        {
-            var ids = playerIds.Split(',');
-            var playerIdsToReturn = new List<PlayerId>(ids.Length);
-            foreach (var id in ids)
-            {
-                playerIdsToReturn.Add(new PlayerId(id));
-            }
-            return playerIdsToReturn;
-        }
-    }
 }
-

@@ -1,5 +1,8 @@
 ﻿using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Messages;
+using Guexit.Game.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
@@ -17,7 +20,10 @@ public sealed class WhenReceivingImageGenerated : ComponentTest
 
         await ConsumeMessage(imageGenerated);
 
-        var image = GetSingle<Image>(x => x.Url == new Uri(imageUrl));
+        await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+
+        var image = await dbContext.Set<Image>().SingleAsync(x => x.Url == new Uri(imageUrl));
         image.Url.Should().Be(new Uri(imageUrl));
     }
 }

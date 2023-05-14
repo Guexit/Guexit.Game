@@ -4,7 +4,7 @@ namespace Guexit.Game.Domain.Exceptions;
 
 public sealed class InsufficientPlayersToStartGameException : DomainException
 {
-    public override string Title { get; } = "Insufficient number players to start game";
+    public override string Title => "Insufficient number players to start game";
 
 
     public InsufficientPlayersToStartGameException(GameRoomId gameRoomId, int playersCount, RequiredMinPlayers requiredMinPlayers) 

@@ -12,23 +12,23 @@ public abstract class CommandHandler<TCommand> : IRequestHandler<TCommand, Unit>
         _unitOfWork = unitOfWork;
     }
 
-    public async ValueTask<Unit> Handle(TCommand command, CancellationToken cancellationToken = default)
+    public async ValueTask<Unit> Handle(TCommand command, CancellationToken ct = default)
     {
-        await _unitOfWork.BeginTransaction(cancellationToken);
+        await _unitOfWork.BeginTransaction(ct);
 
         try
         {
-            await Process(command, cancellationToken);
-            await _unitOfWork.Commit(cancellationToken);
+            await Process(command, ct);
+            await _unitOfWork.Commit(ct);
         }
         catch (Exception)
         {
-            await _unitOfWork.Rollback(cancellationToken);
+            await _unitOfWork.Rollback(ct);
             throw;
         }
        
         return Unit.Value;
     }
 
-    protected abstract ValueTask Process(TCommand command, CancellationToken cancellationToken);
+    protected abstract ValueTask Process(TCommand command, CancellationToken ct);
 }

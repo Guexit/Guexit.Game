@@ -5,7 +5,7 @@ namespace Guexit.Game.Domain.Exceptions;
 
 public class CannotJoinStartedGameException : DomainException
 {
-    public override string Title { get; } = "Cannot join started game exception";
+    public override string Title => "Cannot join started game exception";
 
     public CannotJoinStartedGameException(PlayerId playerId, GameRoomId gameRoomId)
         : base(BuildExceptionMessage(playerId, gameRoomId))

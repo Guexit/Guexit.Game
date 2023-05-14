@@ -14,9 +14,9 @@ public sealed class StartGameCommandHandler : CommandHandler<StartGameCommand>
         _gameRoomRepository = gameRoomRepository;
     }
 
-    protected override async ValueTask Process(StartGameCommand command, CancellationToken cancellationToken)
+    protected override async ValueTask Process(StartGameCommand command, CancellationToken ct)
     {
-        var gameRoom = await _gameRoomRepository.GetBy(command.GameRoomId, cancellationToken);
+        var gameRoom = await _gameRoomRepository.GetBy(command.GameRoomId, ct);
         if (gameRoom is null)
             throw new GameRoomNotFoundException(command.GameRoomId);
 

@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Exceptions;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
@@ -7,6 +8,7 @@ public sealed class SubmittedCard : Entity<SubmittedCardId>
     public PlayerId PlayerId { get; private set; } = default!;
     public Card Card { get; private set; } = default!;
     public GameRoomId GameRoomId { get; private set; } = default!;
+    public ICollection<PlayerId> Voters { get; private set; } = new List<PlayerId>();
 
     private SubmittedCard()
     {
@@ -19,6 +21,17 @@ public sealed class SubmittedCard : Entity<SubmittedCardId>
         PlayerId = playerId;
         Card = cards;
         GameRoomId = gameRoomId;
+    }
+
+    public void Vote(PlayerId votingPlayerId)
+    {
+        if (PlayerId == votingPlayerId)
+            throw new PlayerCannotVoteTheirOwnSubmittedCardException(GameRoomId, votingPlayerId, Card.Id);
+
+        if (Voters.Contains(votingPlayerId))
+            return;
+        
+        Voters.Add(votingPlayerId);
     }
 }
 

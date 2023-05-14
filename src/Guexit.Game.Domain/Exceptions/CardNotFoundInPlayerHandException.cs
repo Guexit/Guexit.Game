@@ -5,7 +5,7 @@ namespace Guexit.Game.Domain.Exceptions;
 
 public sealed class CardNotFoundInPlayerHandException : DomainException
 {
-    public override string Title { get; } = "Card not found in player's hand";
+    public override string Title => "Card not found in player's hand";
 
     public CardNotFoundInPlayerHandException(PlayerId playerId, CardId cardId)
         : base(BuildExceptionMessage(playerId, cardId))

@@ -12,6 +12,6 @@ public sealed class CreatePlayerCommandHandler : CommandHandler<CreatePlayerComm
         _playerManagementService = playerManagementService;
     }
 
-    protected override async ValueTask Process(CreatePlayerCommand command, CancellationToken cancellationToken) 
-        => await _playerManagementService.CreatePlayer(command.PlayerId, command.Username, cancellationToken);
+    protected override async ValueTask Process(CreatePlayerCommand command, CancellationToken ct) 
+        => await _playerManagementService.CreatePlayer(command.PlayerId, command.Username, ct);
 }

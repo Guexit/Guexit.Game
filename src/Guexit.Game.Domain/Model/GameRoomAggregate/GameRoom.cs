@@ -100,11 +100,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (Status != GameStatus.InProgress)
             throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
 
-        if (!CurrentGuessingPlayerIds.Contains(guessingPlayerId))
-            throw new PlayerNotFoundInCurrentGuessingPlayersException(guessingPlayerId);
+        EnsurePlayerIsInCurrentGuessingPlayers(guessingPlayerId);
 
         if (!CurrentStoryTeller.HasSubmittedCardStory())
-            throw new GuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException(Id, guessingPlayerId);
+            throw new GuessingPlayerCannotSubmitCardIfStoryTellerHaveNotSubmitStoryException(Id, guessingPlayerId);
 
         var playerHand = PlayerHands.Single(x => x.PlayerId == guessingPlayerId);
 
@@ -131,6 +130,29 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
             PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
         }
+    }
+
+    public void VoteCard(PlayerId votingPlayerId, CardId submittedCardId)
+    {
+        if (Status != GameStatus.InProgress)
+            throw new CannotVoteCardIfGameRoomIsNotInProgressException(Id);
+
+        if (SubmittedCards.Count < PlayerIds.Count)
+            throw new CannotVoteIfAnyPlayerIsPendingToSubmitCardException(Id);
+        
+        EnsurePlayerIsInCurrentGuessingPlayers(votingPlayerId);
+
+        var submittedCard = SubmittedCards.SingleOrDefault(x => x.Card.Id == submittedCardId);
+        if (submittedCard is null)
+            throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
+
+        submittedCard.Vote(votingPlayerId);
+    }
+
+    private void EnsurePlayerIsInCurrentGuessingPlayers(PlayerId playerId)
+    {
+        if (!CurrentGuessingPlayerIds.Contains(playerId))
+            throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 }
 
