@@ -4,7 +4,7 @@ namespace Guexit.Game.Domain.Exceptions;
 
 public class InsufficientImagesToAssignDeckException : DomainException
 {
-    public override string Title { get; } = "Insufficient images to assign deck";
+    public override string Title => "Insufficient images to assign deck";
 
     public InsufficientImagesToAssignDeckException(int actualAvailableImages, GameRoomId gameRoomId)
         : base(BuildExceptionMessage(actualAvailableImages, gameRoomId))

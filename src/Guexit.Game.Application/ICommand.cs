@@ -2,11 +2,6 @@
 
 namespace Guexit.Game.Application;
 
-public interface ICommand : ICommand<Unit>
-{
-}
-
-public interface ICommand<out TCommandCompletion> : IRequest<TCommandCompletion>
-    where TCommandCompletion : notnull
+public interface ICommand : IRequest<Unit>
 {
 }

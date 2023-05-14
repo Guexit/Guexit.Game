@@ -12,15 +12,18 @@ public static class GameRoomEndpoints
 {
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
-        var group = app.MapGroup("game-rooms").WithApiVersionSet(versionSet).MapToApiVersion(1);
+        var group = app.MapGroup("game-rooms/{gameRoomId:guid}")
+            .WithApiVersionSet(versionSet).MapToApiVersion(1);
 
-        group.MapPost("/{gameRoomId}", CreateGameRoom);
-        group.MapPost("/{gameRoomId}/join", JoinGameRoom);
-        group.MapPost("/{gameRoomId}/start", StartGame);
-        group.MapPost("/{gameRoomId}/storyteller/submit-card-story", SubmitStoryTellerCardStory);
-        group.MapPost("/{gameRoomId}/guessing-player/submit-card", SubmitGuessingPlayerCard);
-        group.MapGet("/{gameRoomId}/lobby", GetLobby).Produces<GameLobbyReadModel>();
-        group.MapGet("/{gameRoomId}/board", GetBoard).Produces<GameBoardReadModel>();
+        group.MapPost("", CreateGameRoom);
+        group.MapPost("/join", JoinGameRoom);
+        group.MapPost("/start", StartGame);
+        group.MapPost("/storyteller/submit-card-story", SubmitStoryTellerCardStory);
+        group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
+        group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
+        
+        group.MapGet("/lobby", GetLobby).Produces<GameLobbyReadModel>();
+        group.MapGet("/board", GetBoard).Produces<GameBoardReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(
@@ -72,6 +75,17 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         await sender.Send(new SubmitGuessingPlayerCardCommand(userId, gameRoomId, request.CardId), ct);
+        return Results.Ok();
+    }
+    
+    private static async Task<IResult> VoteCard(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId,
+        [FromRoute] Guid cardId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        await sender.Send(new VoteCardCommand(userId, gameRoomId, cardId), ct);
         return Results.Ok();
     }
 

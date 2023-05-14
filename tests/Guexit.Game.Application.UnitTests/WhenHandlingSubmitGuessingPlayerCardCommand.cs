@@ -129,7 +129,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         var action = async () =>
             await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(guessingPlayerId, GameRoomId, card.Id.Value));
 
-        await action.Should().ThrowAsync<GuessingPlayerCannotSubmitCardIfStoryTellerHaventSubmitStoryException>();
+        await action.Should().ThrowAsync<GuessingPlayerCannotSubmitCardIfStoryTellerHaveNotSubmitStoryException>();
     }
 
     private async Task AssertGuessingPlayerSubmittedCardAndItIsRemovedFromHisHand(PlayerId playerId, CardId cardId, Uri url)

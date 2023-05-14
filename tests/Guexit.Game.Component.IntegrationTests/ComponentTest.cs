@@ -23,7 +23,7 @@ public abstract class ComponentTest : IAsyncLifetime
         WebApplicationFactory = webApplicationFactory;
         _ = WebApplicationFactory.CreateClient();
 
-        _testDataCleaners = new[] { new PersistenceDataCleaner() };
+        _testDataCleaners = new ITestDataCleaner[] { new PersistenceDataCleaner() };
     }
 
     protected async Task ConsumeMessage<TMessage>(TMessage message)
@@ -54,15 +54,6 @@ public abstract class ComponentTest : IAsyncLifetime
         await dbContext.SaveChangesAsync();
     }
 
-    protected TAggregate GetSingle<TAggregate>(Func<TAggregate, bool> predicate) where TAggregate : class, IAggregateRoot
-    {
-        using var scope = WebApplicationFactory.Services.CreateAsyncScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-    
-        return dbContext.Set<TAggregate>().Single(predicate);
-    }
-
-    
     public Task InitializeAsync() => Task.CompletedTask;
 
     public async Task DisposeAsync()

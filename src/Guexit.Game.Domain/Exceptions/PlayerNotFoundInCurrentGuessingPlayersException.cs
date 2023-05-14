@@ -4,7 +4,7 @@ namespace Guexit.Game.Domain.Exceptions;
 
 public sealed class PlayerNotFoundInCurrentGuessingPlayersException : DomainException
 {
-    public override string Title { get; } = "Player not found in the current guessing players";
+    public override string Title => "Player not found in the current guessing players";
 
     public PlayerNotFoundInCurrentGuessingPlayersException(PlayerId playerId)
         : base(BuildExceptionMessage(playerId))

@@ -9,9 +9,9 @@ using Guexit.Game.WebApi.Contracts.Requests;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-public sealed class WhenStorytellerSubmitsCardStory : ComponentTest
+public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
 {
-    public WhenStorytellerSubmitsCardStory(GameWebApplicationFactory factory) : base(factory)
+    public WhenStorytellerSubmitsCardAndStory(GameWebApplicationFactory factory) : base(factory)
     { }
 
 
