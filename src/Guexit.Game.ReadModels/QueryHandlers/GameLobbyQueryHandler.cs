@@ -6,7 +6,7 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
-public sealed class GameLobbyQuery : IQuery<GameLobbyReadModel>
+public sealed class GameLobbyQuery : IQuery<LobbyReadModel>
 {
     public GameRoomId GameRoomId { get; }
 
@@ -16,22 +16,22 @@ public sealed class GameLobbyQuery : IQuery<GameLobbyReadModel>
     }
 }
 
-public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, GameLobbyReadModel>
+public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyReadModel>
 {
-    public GameLobbyQueryHandler(GameDbContext dbContext, ILogger<QueryHandler<GameLobbyQuery, GameLobbyReadModel>> logger) 
+    public GameLobbyQueryHandler(GameDbContext dbContext, ILogger<QueryHandler<GameLobbyQuery, LobbyReadModel>> logger) 
         : base(dbContext, logger)
     {
     }
 
-    protected override async Task<GameLobbyReadModel> Process(GameLobbyQuery query, CancellationToken ct)
+    protected override async Task<LobbyReadModel> Process(GameLobbyQuery query, CancellationToken ct)
     {
         var gameRoom = await DbContext.GameRooms.AsNoTracking().SingleAsync(x => x.Id == query.GameRoomId, cancellationToken: ct);
         var playersInGame = await DbContext.Players.AsNoTracking().Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(ct);
 
-        return new GameLobbyReadModel
+        return new LobbyReadModel
         {
             GameRoomId = gameRoom.Id.Value,
-            Players = playersInGame.Select(x => new GameLobbyPlayerDto { Username = x.Username }).ToArray(),
+            Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Username }).ToArray(),
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
             CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length,
             GameStatus = gameRoom.Status.Value

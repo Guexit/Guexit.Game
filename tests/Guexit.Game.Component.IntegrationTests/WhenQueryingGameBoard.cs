@@ -36,7 +36,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var response = await client.SendAsync(request);
 
         await response.ShouldHaveSuccessStatusCode();
-        var responseContent = await response.Content.ReadFromJsonAsync<GameBoardReadModel>();
+        var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.GameRoomId.Should().Be(gameRoomId);
         responseContent.CurrentStoryTeller.PlayerId.Should().Be(playerId1);
@@ -44,7 +44,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         responseContent.CurrentStoryTeller.Username.Should().Be("gamora");
         responseContent.PlayerHand.Should().NotBeEmpty();
         responseContent.PlayerHand.Should().BeEquivalentTo(gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
-            .Select(x => new GameBoardReadModel.CardDto { Id = x.Id, Url = x.Url }));
+            .Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url }));
         responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
         responseContent.CurrentUserSubmittedCard.Should().BeNull();
     }
@@ -86,7 +86,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var response = await client.SendAsync(request);
 
         await response.ShouldHaveSuccessStatusCode();
-        var responseContent = await response.Content.ReadFromJsonAsync<GameBoardReadModel>();
+        var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.IsCurrentUserStoryTeller.Should().BeFalse();
     }

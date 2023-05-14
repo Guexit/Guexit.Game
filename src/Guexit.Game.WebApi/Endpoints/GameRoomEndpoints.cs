@@ -22,8 +22,8 @@ public static class GameRoomEndpoints
         group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
         group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
         
-        group.MapGet("/lobby", GetLobby).Produces<GameLobbyReadModel>();
-        group.MapGet("/board", GetBoard).Produces<GameBoardReadModel>();
+        group.MapGet("/lobby", GetLobby).Produces<LobbyReadModel>();
+        group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(

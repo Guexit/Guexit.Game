@@ -1,6 +1,6 @@
 ﻿namespace Guexit.Game.ReadModels.ReadModels;
 
-public sealed class GameBoardReadModel
+public sealed class BoardReadModel
 {
     public required Guid GameRoomId { get; init; }
     public required StoryTellerDto CurrentStoryTeller { get; init; }

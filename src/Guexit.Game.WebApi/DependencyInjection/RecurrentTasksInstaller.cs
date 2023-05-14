@@ -4,7 +4,7 @@ namespace Guexit.Game.WebApi.DependencyInjection;
 
 public static class RecurrentTasksInstaller
 {
-    public static IServiceCollection AddRecurrentTasks(this IServiceCollection services, IConfigurationRoot configuration)
+    public static IServiceCollection AddRecurrentTasks(this IServiceCollection services)
     {
         services.AddScoped<ImageGenerationService>()
             .AddHostedService<ImageGenerationRecurrentTask>();

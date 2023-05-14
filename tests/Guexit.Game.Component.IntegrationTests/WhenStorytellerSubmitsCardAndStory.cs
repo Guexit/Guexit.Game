@@ -49,7 +49,7 @@ public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
         var getBoardResponse = await client.SendAsync(getBoardRequest);
         await getBoardResponse.ShouldHaveSuccessStatusCode();
 
-        var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<GameBoardReadModel>();
+        var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<BoardReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId);
         responseContent.CurrentStoryTeller.Story.Should().Be(story);
