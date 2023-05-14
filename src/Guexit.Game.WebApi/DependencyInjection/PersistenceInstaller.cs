@@ -20,9 +20,15 @@ public static class PersistenceInstaller
             });
         });
 
+        services.AddOptions<DatabaseOptions>()
+            .BindConfiguration(DatabaseOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services.AddScoped<IGameRoomRepository, GameRoomRepository>()
             .AddScoped<IPlayerRepository, PlayerRepository>()
             .AddScoped<IImageRepository, ImageRepository>()
-            .AddScoped<IUnitOfWork, UnitOfWork>();
+            .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddScoped<GameDbContextMigrator>();
     }
 }

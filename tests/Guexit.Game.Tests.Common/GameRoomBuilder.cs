@@ -28,7 +28,7 @@ public sealed class GameRoomBuilder
             gameRoom.Start();
         
         if (_cards.Any()) 
-            gameRoom.AssignDeck(_cards.Select(x => x.Build()));
+            gameRoom.AssignDeck(_cards.Select(x => x.Build()).ToArray());
 
         if (!string.IsNullOrEmpty(_storyTellerCardStory))
         {

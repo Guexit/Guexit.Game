@@ -1,7 +1,10 @@
 using Asp.Versioning;
+using Guexit.Game.Persistence;
+using Guexit.Game.WebApi;
 using Guexit.Game.WebApi.DependencyInjection;
 using Guexit.Game.WebApi.Endpoints;
 using Guexit.Game.WebApi.ErrorHandling;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,4 +42,12 @@ app.MapExceptionsToProblemDetails();
 app.UseHttpsRedirection();
 app.MapGameRoomEndpoints(versionSet);
 
-app.Run();
+var databaseOptions = app.Services.GetRequiredService<IOptions<DatabaseOptions>>();
+if (databaseOptions.Value.MigrateOnStartup)
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    await scope.ServiceProvider.GetRequiredService<GameDbContextMigrator>()
+        .MigrateAsync();
+}
+
+await app.RunAsync();

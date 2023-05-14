@@ -65,10 +65,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public int GetRequiredNumberOfCardsInDeck() => PlayerIds.Count * TotalCardsPerPlayer;
 
-    public void AssignDeck(IEnumerable<Card> cards)
+    public void AssignDeck(Card[] cards)
     {
-        if (cards.Count() < GetRequiredNumberOfCardsInDeck())
-            throw new InsufficientImagesToAssignDeckException(cards.Count(), Id);
+        if (cards.Length < GetRequiredNumberOfCardsInDeck())
+            throw new InsufficientImagesToAssignDeckException(cards.Length, Id);
 
         Deck = new List<Card>(cards);
         DealInitialPlayerHands();
