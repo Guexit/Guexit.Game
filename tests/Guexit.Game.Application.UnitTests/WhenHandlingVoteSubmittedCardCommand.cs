@@ -3,6 +3,7 @@ using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common;
 
@@ -36,6 +37,28 @@ public sealed class WhenHandlingVoteSubmittedCardCommand
         
         var submittedCard = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId);
         submittedCard.Voters.Should().Contain(votingPlayerId);
+        gameRoom.DomainEvents.OfType<VotingScoresComputed>().Should().HaveCount(0);
+    }
+
+    [Fact]
+    public async Task VotingScoresComputedIsRaisedWhenAllGuessingPlayersHaveVoted()
+    {
+        var votingPlayerId1 = new PlayerId("votingPlayer1");
+        var votingPlayerId2 = new PlayerId("votingPlayer2");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId1, votingPlayerId2 })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
+            .Build();
+        var votedCardId = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId1).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, votedCardId));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, votedCardId));
+        
+        var submittedCard = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId);
+        submittedCard.Voters.Should().Contain(votingPlayerId1);
+        gameRoom.DomainEvents.OfType<VotingScoresComputed>().Should().HaveCount(1)
+            .And.Subject.Single().GameRoomId.Should().Be(GameRoomId);
     }
     
     [Fact]

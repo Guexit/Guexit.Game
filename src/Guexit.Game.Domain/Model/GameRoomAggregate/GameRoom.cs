@@ -151,6 +151,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
 
         submittedCard.Vote(votingPlayerId);
+
+        if (SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count)
+            AddDomainEvent(new VotingScoresComputed(Id));
     }
 
     private void EnsurePlayerIsInCurrentGuessingPlayers(PlayerId playerId)
