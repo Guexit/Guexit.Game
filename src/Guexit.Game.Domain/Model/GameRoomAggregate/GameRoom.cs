@@ -142,6 +142,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         
         EnsurePlayerIsInCurrentGuessingPlayers(votingPlayerId);
 
+        var voters = SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
+        if (voters.Contains(votingPlayerId))
+            throw new PlayerAlreadyVotedException(Id, votingPlayerId);
+        
         var submittedCard = SubmittedCards.SingleOrDefault(x => x.Card.Id == submittedCardId);
         if (submittedCard is null)
             throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
