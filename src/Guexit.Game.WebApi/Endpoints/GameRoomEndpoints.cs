@@ -22,8 +22,9 @@ public static class GameRoomEndpoints
         group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
         group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
         
-        group.MapGet("/lobby", GetLobby).Produces<GameLobbyReadModel>();
-        group.MapGet("/board", GetBoard).Produces<GameBoardReadModel>();
+        group.MapGet("/lobby", GetLobby).Produces<LobbyReadModel>();
+        group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
+        group.MapGet("/voting", GetVoting).Produces<VotingReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(
@@ -105,6 +106,16 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         var readModel = await sender.Send(new GameBoardQuery(gameRoomId, userId), ct);
+        return Results.Ok(readModel);
+    }
+
+    private static async Task<IResult> GetVoting(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId, 
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        var readModel = await sender.Send(new GameVotingQuery(gameRoomId, userId), ct);
         return Results.Ok(readModel);
     }
 }

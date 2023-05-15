@@ -4,7 +4,6 @@ public sealed class InitialCardsDealedIntegrationEvent
 {
     public Guid GameRoomId { get; init; }
 
-
     public InitialCardsDealedIntegrationEvent()
     {
     }

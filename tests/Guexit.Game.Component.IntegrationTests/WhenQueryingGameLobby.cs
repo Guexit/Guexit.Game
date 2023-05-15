@@ -35,7 +35,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         request.AddPlayerIdHeader(creatorId);
         var response = await client.SendAsync(request);
 
-        var lobbyReadModel = await response.Content.ReadFromJsonAsync<GameLobbyReadModel>();
+        var lobbyReadModel = await response.Content.ReadFromJsonAsync<LobbyReadModel>();
         lobbyReadModel.Should().NotBeNull();
         lobbyReadModel!.GameRoomId.Should().Be(gameRoomId.Value);
         lobbyReadModel.CanStartGame.Should().BeTrue();

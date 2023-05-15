@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Domain.Exceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 
@@ -151,12 +152,26 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
 
         submittedCard.Vote(votingPlayerId);
+
+        if (SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count)
+            ComputeVotingScore();
     }
 
     private void EnsurePlayerIsInCurrentGuessingPlayers(PlayerId playerId)
     {
         if (!CurrentGuessingPlayerIds.Contains(playerId))
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
+    }
+
+    private void ComputeVotingScore()
+    {
+        // 3 points to the storyteller if received more than one vote but not everybody voted the card
+        // 3 points if guessing player successfully vote the storyteller card
+        // 1 additional point to guessing players that received a vote
+
+        //var roundSnapshot = new RoundSnapshot(Id, playerScores);
+        //RoundSnapshots.Add(roundSnapshot);
+        AddDomainEvent(new VotingScoresComputed(Id));
     }
 }
 

@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Guexit.Game.Persistence;
-using Guexit.Game.WebApi;
 using Guexit.Game.WebApi.DependencyInjection;
 using Guexit.Game.WebApi.Endpoints;
 using Guexit.Game.WebApi.ErrorHandling;
@@ -13,7 +12,7 @@ builder.Services.AddDomain();
 builder.Services.AddApplication();
 builder.Services.AddServiceBus(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration);
-builder.Services.AddRecurrentTasks(builder.Configuration);
+builder.Services.AddRecurrentTasks();
 
 var app = builder.Build();
 

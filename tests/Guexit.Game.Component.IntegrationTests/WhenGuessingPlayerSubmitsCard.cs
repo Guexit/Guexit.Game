@@ -44,7 +44,7 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
         var getBoardResponse = await client.SendAsync(getBoardRequest);
         await getBoardResponse.ShouldHaveSuccessStatusCode();
 
-        var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<GameBoardReadModel>();
+        var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<BoardReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.CurrentUserSubmittedCard.Should().NotBeNull();
         responseContent.CurrentUserSubmittedCard!.Id.Should().Be(card.Id);
