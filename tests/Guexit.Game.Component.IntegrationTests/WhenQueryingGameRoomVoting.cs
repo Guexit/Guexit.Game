@@ -32,22 +32,26 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
             new PlayerBuilder().WithId(guessingPlayer1).WithUsername("spiderman").Build(),
             new PlayerBuilder().WithId(guessingPlayer2).WithUsername("fury").Build()
         });
-        var votedCardId1 = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId).Card.Id;
-        var votedCardId2 = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1).Card.Id;
-        await VoteCard(guessingPlayer1, votedCardId1);
-        await VoteCard(guessingPlayer2, votedCardId2);
+        var votedCard1 = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId);
+        var votedCard2 = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1);
+        await VoteCard(guessingPlayer1, votedCard1.Card.Id);
+        await VoteCard(guessingPlayer2, votedCard2.Card.Id);
 
         var response = await GetGameRoomVoting(storyTellerId, gameRoom);
 
         var responseContent = await response.Content.ReadFromJsonAsync<VotingReadModel>();
         responseContent.Should().NotBeNull();
-        responseContent!.Cards.Should().HaveCount(3);
+        responseContent!.IsCurrentUserStoryTeller.Should().BeTrue();
+        responseContent.CurrentUserHasAlreadyVoted.Should().BeFalse();
+        responseContent.Cards.Should().HaveCount(3);
+        responseContent.PlayersWhoHaveAlreadyVoted.Should().HaveCount(2);
 
-        responseContent.Cards.Single(x => x.Id == votedCardId1).Voters.Should().HaveCount(1);
-        responseContent.Cards.Single(x => x.Id == votedCardId1).Voters.Should().Contain(guessingPlayer1.Value);
-
-        responseContent.Cards.Single(x => x.Id == votedCardId2).Voters.Should().HaveCount(1);
-        responseContent.Cards.Single(x => x.Id == votedCardId2).Voters.Should().Contain(guessingPlayer2.Value);
+        responseContent.Cards.Should()
+            .Contain(x => x.Id == votedCard1.Card.Id && x.Url == votedCard1.Card.Url).And
+            .Contain(x => x.Id == votedCard2.Card.Id && x.Url == votedCard2.Card.Url);
+        responseContent.PlayersWhoHaveAlreadyVoted.Should()
+            .Contain(x => x.Username == "spiderman" && x.PlayerId == guessingPlayer1).And
+            .Contain(x => x.Username == "fury" && x.PlayerId == guessingPlayer2);
     }
 
     private async Task VoteCard(PlayerId votingPlayerId, CardId votedCardId)

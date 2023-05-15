@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Application.Exceptions;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
@@ -25,7 +26,9 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyRe
 
     protected override async Task<LobbyReadModel> Process(GameLobbyQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().SingleAsync(x => x.Id == query.GameRoomId, cancellationToken: ct);
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().SingleOrDefaultAsync(x => x.Id == query.GameRoomId, cancellationToken: ct) 
+            ?? throw new GameRoomNotFoundException(query.GameRoomId);
+
         var playersInGame = await DbContext.Players.AsNoTracking().Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(ct);
 
         return new LobbyReadModel

@@ -10,7 +10,7 @@ public class CardBuilder
     public CardBuilder()
     {
         _id = new(Guid.NewGuid());
-        _url = new($"https://pablocompany.com/{_id}");
+        _url = new($"https://pablocompany.com/{_id.Value}");
     }
 
     public Card Build() => new(_id, _url);
