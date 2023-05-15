@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Guexit.Game.Domain.Exceptions;
+﻿using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 
@@ -19,6 +18,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
     public ICollection<SubmittedCard> SubmittedCards { get; private set; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
+
+    public ICollection<FinishedRound> FinishedRounds { get; private set; } = new List<FinishedRound>();
 
     private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
     private HashSet<PlayerId> CurrentGuessingPlayerIds => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
@@ -101,7 +102,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (Status != GameStatus.InProgress)
             throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
 
-        EnsurePlayerIsInCurrentGuessingPlayers(guessingPlayerId);
+        EnsureCurrentGuessingPlayersContains(guessingPlayerId);
 
         if (!CurrentStoryTeller.HasSubmittedCardStory())
             throw new GuessingPlayerCannotSubmitCardIfStoryTellerHaveNotSubmitStoryException(Id, guessingPlayerId);
@@ -133,6 +134,16 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         }
     }
 
+    private void DealNextCards()
+    {
+        foreach (var player in PlayerIds)
+        {
+            var card = Deck.First();
+            PlayerHands.Single(x => x.PlayerId == player).AddCard(card);
+            Deck.Remove(card);
+        }
+    }
+
     public void VoteCard(PlayerId votingPlayerId, CardId submittedCardId)
     {
         if (Status != GameStatus.InProgress)
@@ -141,7 +152,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (SubmittedCards.Count < PlayerIds.Count)
             throw new CannotVoteIfAnyPlayerIsPendingToSubmitCardException(Id);
         
-        EnsurePlayerIsInCurrentGuessingPlayers(votingPlayerId);
+        EnsureCurrentGuessingPlayersContains(votingPlayerId);
 
         var voters = SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
         if (voters.Contains(votingPlayerId))
@@ -154,23 +165,35 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         submittedCard.Vote(votingPlayerId);
 
         if (SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count)
-            ComputeVotingScore();
+            ComputeVotingScoreAndFinishRound();
     }
 
-    private void EnsurePlayerIsInCurrentGuessingPlayers(PlayerId playerId)
+    private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
     {
         if (!CurrentGuessingPlayerIds.Contains(playerId))
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 
-    private void ComputeVotingScore()
+    private void ComputeVotingScoreAndFinishRound()
     {
-        // 3 points to the storyteller if received more than one vote but not everybody voted the card
-        // 3 points if guessing player successfully vote the storyteller card
-        // 1 additional point to guessing players that received a vote
+        var votingScore = PlayerIds.ToDictionary(x => x, v => Points.Zero);
 
-        //var roundSnapshot = new RoundSnapshot(Id, playerScores);
-        //RoundSnapshots.Add(roundSnapshot);
+        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId, v => v);
+
+        var playerCountWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
+        if (playerCountWhoVotedStoryTellerCard > 0 && playerCountWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
+            votingScore[CurrentStoryTeller.PlayerId] += new Points(3);
+
+        foreach (var guessingPlayerId in CurrentGuessingPlayerIds)
+        {
+            if (submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Contains(guessingPlayerId))
+                votingScore[guessingPlayerId] += new Points(3);
+
+            votingScore[guessingPlayerId] += new Points(submittedCardsByPlayerId[guessingPlayerId].Voters.Count);
+        }
+
+        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, votingScore, submittedCardsByPlayerId.ToDictionary(x => x.Key, x => x.Value.Card)));
+        DealNextCards();
         AddDomainEvent(new VotingScoresComputed(Id));
     }
 }

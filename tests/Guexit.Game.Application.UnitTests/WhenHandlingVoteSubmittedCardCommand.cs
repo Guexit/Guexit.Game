@@ -49,16 +49,20 @@ public sealed class WhenHandlingVoteSubmittedCardCommand
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
             .Build();
-        var votedCardId = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId1).Card.Id;
+        var votedCardId1 = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId1).Card.Id;
+        var votedCardId2 = gameRoom.SubmittedCards.First(x => x.PlayerId != gameRoom.CurrentStoryTeller.PlayerId).Card.Id;
         await _gameRoomRepository.Add(gameRoom);
 
-        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, votedCardId));
-        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, votedCardId));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, votedCardId1));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, votedCardId2));
         
-        var submittedCard = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId);
-        submittedCard.Voters.Should().Contain(votingPlayerId1);
-        gameRoom.DomainEvents.OfType<VotingScoresComputed>().Should().HaveCount(1)
-            .And.Subject.Single().GameRoomId.Should().Be(GameRoomId);
+        var card1 = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId1);
+        var card2 = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId2);
+        card1.Voters.Should().Contain(votingPlayerId1);
+        card2.Voters.Should().Contain(votingPlayerId2);
+        gameRoom.DomainEvents.OfType<VotingScoresComputed>().Should().HaveCount(1).And.Subject
+            .Single().GameRoomId.Should().Be(GameRoomId);
+
     }
     
     [Fact]
