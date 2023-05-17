@@ -30,31 +30,14 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             st.Property(x => x.Story);
         });
 
-        builder.OwnsMany(x => x.SubmittedCards, ownedBuilder =>
-        {
-            ownedBuilder.ToTable("SubmittedCards");
-
-            ownedBuilder.HasKey(x => x.Id);
-            ownedBuilder.Property(x => x.Id).HasConversion(x => x.Value, x => new SubmittedCardId(x));
-            ownedBuilder.Property(x => x.PlayerId).HasConversion(x => x.Value, x => new PlayerId(x));
-            ownedBuilder.Property(x => x.GameRoomId).HasConversion(x => x.Value, x => new GameRoomId(x));
-
-            ownedBuilder.Property(x => x.Voters)
-                .HasConversion<PlayerIdsToCommaSeparatedTextCollectionValueConverter>()
-                .Metadata
-                .SetValueComparer(new PlayerIdsCommaSeparatedTextCollectionValueComparer());
-
-            ownedBuilder.HasOne(x => x.Card);
-
-            ownedBuilder.HasIndex(x => new { x.GameRoomId, x.PlayerId }).IsUnique();
-        });
-        
         builder.Property(x => x.Status)
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();
 
-        builder.HasMany(x => x.PlayerHands);
-        builder.HasMany(x => x.Deck);
+        builder.HasMany(x => x.PlayerHands).WithOne().OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.Deck).WithOne().OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.SubmittedCards).WithOne().OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.FinishedRounds).WithOne().OnDelete(DeleteBehavior.Cascade);
 
         builder.Property<uint>("Version").IsRowVersion();
     }

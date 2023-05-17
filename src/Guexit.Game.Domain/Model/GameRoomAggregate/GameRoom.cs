@@ -134,16 +134,6 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         }
     }
 
-    private void DealNextCards()
-    {
-        foreach (var player in PlayerIds)
-        {
-            var card = Deck.First();
-            PlayerHands.Single(x => x.PlayerId == player).AddCard(card);
-            Deck.Remove(card);
-        }
-    }
-
     public void VoteCard(PlayerId votingPlayerId, CardId submittedCardId)
     {
         if (Status != GameStatus.InProgress)
@@ -158,13 +148,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (voters.Contains(votingPlayerId))
             throw new PlayerAlreadyVotedException(Id, votingPlayerId);
         
-        var submittedCard = SubmittedCards.SingleOrDefault(x => x.Card.Id == submittedCardId);
-        if (submittedCard is null)
-            throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
+        var submittedCard = SubmittedCards.SingleOrDefault(x => x.Card.Id == submittedCardId)
+            ?? throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
 
         submittedCard.Vote(votingPlayerId);
 
-        if (SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count)
+        var allPlayersHaveVoted = SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
+        if (allPlayersHaveVoted)
             ComputeVotingScoreAndFinishRound();
     }
 
@@ -192,9 +182,29 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             votingScore[guessingPlayerId] += new Points(submittedCardsByPlayerId[guessingPlayerId].Voters.Count);
         }
 
-        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, votingScore, submittedCardsByPlayerId.ToDictionary(x => x.Key, x => x.Value.Card)));
-        DealNextCards();
+        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, votingScore.AsReadOnly(), SubmittedCards));
+        ShiftTurn();
+
         AddDomainEvent(new VotingScoresComputed(Id));
+    }
+
+    private void ShiftTurn()
+    {
+        var playerIds = PlayerIds.ToList();
+
+        var currentStoryTellerIndex = playerIds.IndexOf(CurrentStoryTeller.PlayerId);
+        var nextStoryTellerIndex = (currentStoryTellerIndex + 1) % playerIds.Count;
+
+        CurrentStoryTeller = StoryTeller.Create(playerIds[nextStoryTellerIndex]);
+
+        foreach (var player in PlayerIds)
+        {
+            var card = Deck.First();
+            PlayerHands.Single(x => x.PlayerId == player).AddCard(card);
+            Deck.Remove(card);
+        }
+
+        SubmittedCards.Clear();
     }
 }
 

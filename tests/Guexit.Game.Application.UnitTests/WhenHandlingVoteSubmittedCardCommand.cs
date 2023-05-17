@@ -41,30 +41,124 @@ public sealed class WhenHandlingVoteSubmittedCardCommand
     }
 
     [Fact]
-    public async Task VotingScoresComputedIsRaisedWhenAllGuessingPlayersHaveVoted()
+    public async Task RoundScoreIsCalculated()
     {
+        var storyTellerId = new PlayerId("storyTellerId");
         var votingPlayerId1 = new PlayerId("votingPlayer1");
         var votingPlayerId2 = new PlayerId("votingPlayer2");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId1, votingPlayerId2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
             .Build();
-        var votedCardId1 = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId1).Card.Id;
-        var votedCardId2 = gameRoom.SubmittedCards.First(x => x.PlayerId != gameRoom.CurrentStoryTeller.PlayerId).Card.Id;
+        var cardSubmittedByPlayer2 = gameRoom.SubmittedCards.First(x => x.PlayerId == votingPlayerId2).Card.Id;
+        var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId).Card.Id;
         await _gameRoomRepository.Add(gameRoom);
 
-        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, votedCardId1));
-        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, votedCardId2));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, cardSubmittedByPlayer2));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, storyTellerCard));
+
+        gameRoom.FinishedRounds.Should().HaveCount(1);
+        var finishedRound = gameRoom.FinishedRounds.Single();
+        finishedRound.GetScoredPointsOf(storyTellerId).Should().Be(new Points(3));
+        finishedRound.GetScoredPointsOf(votingPlayerId1).Should().Be(new Points(0));
+        finishedRound.GetScoredPointsOf(votingPlayerId2).Should().Be(new Points(4));
+    }
+
+    [Fact]
+    public async Task StoryTellerDoNotReceiveAnyPointIfAllGuessersVotedTheirCard()
+    {
+        var storyTellerId = new PlayerId("storyTellerId");
+        var votingPlayerId1 = new PlayerId("votingPlayer1");
+        var votingPlayerId2 = new PlayerId("votingPlayer2");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
+            .Build();
+        var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, storyTellerCard));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, storyTellerCard));
+
+        gameRoom.FinishedRounds.Should().HaveCount(1);
+        var finishedRound = gameRoom.FinishedRounds.Single();
+        finishedRound.GetScoredPointsOf(storyTellerId).Should().Be(Points.Zero);
+        finishedRound.GetScoredPointsOf(votingPlayerId1).Should().Be(new Points(3));
+        finishedRound.GetScoredPointsOf(votingPlayerId2).Should().Be(new Points(3));
+    }
+
+    [Fact]
+    public async Task GuessingPlayersReceiveOnePointPerEachGuesserVoteAndStoryTellerDoNotReceiveIfNoOneVotedTheirs()
+    {
+        var storyTellerId = new PlayerId("storyTellerId");
+        var votingPlayerId1 = new PlayerId("votingPlayer1");
+        var votingPlayerId2 = new PlayerId("votingPlayer2");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
+            .Build();
+        var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId).Card.Id;
+        var guesser1Card = gameRoom.SubmittedCards.First(x => x.PlayerId == votingPlayerId1).Card.Id;
+        var guesser2Card = gameRoom.SubmittedCards.First(x => x.PlayerId == votingPlayerId2).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, guesser2Card));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, guesser1Card));
+
+        gameRoom.FinishedRounds.Should().HaveCount(1);
+        var finishedRound = gameRoom.FinishedRounds.Single();
+        finishedRound.GetScoredPointsOf(storyTellerId).Should().Be(Points.Zero);
+        finishedRound.GetScoredPointsOf(votingPlayerId1).Should().Be(new Points(1));
+        finishedRound.GetScoredPointsOf(votingPlayerId2).Should().Be(new Points(1));
+    }
+
+    [Fact]
+    public async Task VotingScoresComputedIsRaisedWhenAllGuessingPlayersHaveVoted()
+    {
+        var storyTellerId = new PlayerId("storyTellerId");
+        var votingPlayerId1 = new PlayerId("votingPlayer1");
+        var votingPlayerId2 = new PlayerId("votingPlayer2");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
+            .Build();
+        var cardSubmittedByPlayer2 = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId).Card.Id;
+        var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId != storyTellerId).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId1, GameRoomId, cardSubmittedByPlayer2));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, storyTellerCard));
         
-        var card1 = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId1);
-        var card2 = gameRoom.SubmittedCards.Single(x => x.Card.Id == votedCardId2);
-        card1.Voters.Should().Contain(votingPlayerId1);
-        card2.Voters.Should().Contain(votingPlayerId2);
         gameRoom.DomainEvents.OfType<VotingScoresComputed>().Should().HaveCount(1).And.Subject
             .Single().GameRoomId.Should().Be(GameRoomId);
-
     }
-    
+
+
+    [Fact]
+    public async Task ShiftToNextTurnOnLastVoteReceived()
+    {
+        var pastStoryTeller = new PlayerId("storyTellerId");
+        var nextStoryTeller = new PlayerId("votingPlayer1");
+
+        var votingPlayerId2 = new PlayerId("votingPlayer2");
+
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, pastStoryTeller, new[] { nextStoryTeller, votingPlayerId2 })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(nextStoryTeller, votingPlayerId2)
+            .Build();
+        var cardSubmittedByPlayer2 = gameRoom.SubmittedCards.First(x => x.PlayerId == pastStoryTeller).Card.Id;
+        var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId != pastStoryTeller).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(nextStoryTeller, GameRoomId, cardSubmittedByPlayer2));
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId2, GameRoomId, storyTellerCard));
+
+        gameRoom.CurrentStoryTeller.PlayerId.Should().Be(nextStoryTeller);
+        gameRoom.CurrentStoryTeller.Story.Should().Be(StoryTeller.Empty.Story);
+        gameRoom.SubmittedCards.Should().BeEmpty();
+        gameRoom.PlayerHands.Should().AllSatisfy(x => x.Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer));
+    }
+
     [Fact]
     public async Task ThrowsGameRoomNotFoundExceptionIfDoesNotExist()
     {

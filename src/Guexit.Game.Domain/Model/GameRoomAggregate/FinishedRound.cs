@@ -2,48 +2,31 @@
 
 namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
-public sealed class Points : ValueObject
-{
-    public static readonly Points Zero = new(0);
-
-    public int Value { get; }
-
-    public Points(int points)
-    {
-        if (points < 0)
-            throw new ArgumentOutOfRangeException(nameof(points));
-
-        Value = points;
-    }
-
-    public Points Sum(Points other) => new(Value + other.Value);
-
-    public static Points operator +(Points points1, Points points2) => points1.Sum(points2);
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
-    }
-}
-
 public sealed class FinishedRound : Entity<FinishedRoundId>
 {
     public GameRoomId GameRoomId { get; private init; } = default!;
     public DateTimeOffset FinishedAt { get; private init; }
-    public IReadOnlyDictionary<PlayerId, Points> Scores { get; private init; } = default!;
-    public IReadOnlyDictionary<PlayerId, Card> SubmittedCards { get; private init; } = default!;
+    public ICollection<Score> Scores { get; private init; } = default!;
+    public ICollection<SubmittedCard> SubmittedCards { get; private init; } = default!;
 
     public FinishedRound()
     {
         // EF required parameterless ctor
     }
 
-    public FinishedRound(GameRoomId gameRoomId, DateTimeOffset finishedAt, IDictionary<PlayerId, Points> scores, IDictionary<PlayerId, Card> submittedCards)
+    public FinishedRound(GameRoomId gameRoomId, DateTimeOffset finishedAt, IReadOnlyDictionary<PlayerId, Points> scores, IEnumerable<SubmittedCard> submittedCards)
     {
+        Id = new FinishedRoundId(Guid.NewGuid());
         GameRoomId = gameRoomId;
         FinishedAt = finishedAt;
-        Scores = scores.AsReadOnly();
-        SubmittedCards = submittedCards.AsReadOnly();
+        Scores = scores.Select(x => new Score(Id, x.Key, x.Value)).ToList();
+        SubmittedCards = submittedCards.ToList();
+    }
+
+    public Points GetScoredPointsOf(PlayerId playerId)
+    {
+        return Scores.SingleOrDefault(x => x.PlayerId == playerId)?.Points
+            ?? throw new InvalidOperationException($"Could not found score for player {playerId}");
     }
 }
 

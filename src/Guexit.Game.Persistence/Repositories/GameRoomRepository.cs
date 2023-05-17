@@ -23,6 +23,7 @@ public sealed class GameRoomRepository : IGameRoomRepository
             .Include(x => x.PlayerHands).ThenInclude(x => x.Cards)
             .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
             .Include(x => x.Deck)
+            .Include(x => x.FinishedRounds)
             .SingleOrDefaultAsync(g => g.Id == id, ct);
     }
 }
