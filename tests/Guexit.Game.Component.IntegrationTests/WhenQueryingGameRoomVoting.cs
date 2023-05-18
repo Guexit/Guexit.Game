@@ -39,6 +39,7 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
 
         var response = await GetGameRoomVoting(storyTellerId, gameRoom);
 
+        await response.ShouldHaveSuccessStatusCode();
         var responseContent = await response.Content.ReadFromJsonAsync<VotingReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.IsCurrentUserStoryTeller.Should().BeTrue();

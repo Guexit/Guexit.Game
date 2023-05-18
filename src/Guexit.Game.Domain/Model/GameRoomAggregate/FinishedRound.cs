@@ -7,7 +7,7 @@ public sealed class FinishedRound : Entity<FinishedRoundId>
     public GameRoomId GameRoomId { get; private init; } = default!;
     public DateTimeOffset FinishedAt { get; private init; }
     public ICollection<Score> Scores { get; private init; } = default!;
-    public ICollection<SubmittedCard> SubmittedCards { get; private init; } = default!;
+    public ICollection<SubmittedCardSnapshot> SubmittedCardSnapshots { get; private init; } = default!;
 
     public FinishedRound()
     {
@@ -20,7 +20,7 @@ public sealed class FinishedRound : Entity<FinishedRoundId>
         GameRoomId = gameRoomId;
         FinishedAt = finishedAt;
         Scores = scores.Select(x => new Score(Id, x.Key, x.Value)).ToList();
-        SubmittedCards = submittedCards.ToList();
+        SubmittedCardSnapshots = submittedCards.Select(x => new SubmittedCardSnapshot(x.PlayerId, x.Card, Id, x.Voters)).ToList();
     }
 
     public Points GetScoredPointsOf(PlayerId playerId)

@@ -34,10 +34,10 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();
 
-        builder.HasMany(x => x.PlayerHands).WithOne().OnDelete(DeleteBehavior.Cascade);
-        builder.HasMany(x => x.Deck).WithOne().OnDelete(DeleteBehavior.Cascade);
-        builder.HasMany(x => x.SubmittedCards).WithOne().OnDelete(DeleteBehavior.Cascade);
-        builder.HasMany(x => x.FinishedRounds).WithOne().OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.PlayerHands);
+        builder.HasMany(x => x.Deck);
+        builder.HasMany(x => x.SubmittedCards);
+        builder.HasMany(x => x.FinishedRounds);
 
         builder.Property<uint>("Version").IsRowVersion();
     }

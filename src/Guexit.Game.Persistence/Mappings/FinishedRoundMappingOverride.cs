@@ -25,6 +25,6 @@ internal sealed class FinishedRoundMappingOverride : IEntityTypeConfiguration<Fi
             b.Property(x => x.Points).HasConversion(x => x.Value, x => new Points(x));
         });
 
-        builder.HasMany(fr => fr.SubmittedCards);
+        builder.HasMany(fr => fr.SubmittedCardSnapshots);
     }
 }

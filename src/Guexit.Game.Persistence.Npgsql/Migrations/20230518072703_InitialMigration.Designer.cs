@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Guexit.Game.Persistence.Npgsql.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20230514100150_AddVotersToSubmittedCards")]
-    partial class AddVotersToSubmittedCards
+    [Migration("20230518072703_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,24 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     b.HasIndex("PlayerHandId");
 
                     b.ToTable("Cards", (string)null);
+                });
+
+            modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.FinishedRound", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("FinishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("GameRoomId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameRoomId");
+
+                    b.ToTable("FinishedRounds", (string)null);
                 });
 
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", b =>
@@ -126,6 +144,34 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                         .IsUnique();
 
                     b.ToTable("SubmittedCards", (string)null);
+                });
+
+            modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.SubmittedCardSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FinishedRoundId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PlayerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Voters")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CardId");
+
+                    b.HasIndex("FinishedRoundId");
+
+                    b.ToTable("SubmittedCardSnapshots", (string)null);
                 });
 
             modelBuilder.Entity("Guexit.Game.Domain.Model.ImageAggregate.Image", b =>
@@ -354,6 +400,45 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                         .HasForeignKey("PlayerHandId");
                 });
 
+            modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.FinishedRound", b =>
+                {
+                    b.HasOne("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", null)
+                        .WithMany("FinishedRounds")
+                        .HasForeignKey("GameRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Guexit.Game.Domain.Model.GameRoomAggregate.Score", "Scores", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("FinishedRoundId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("PlayerId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<int>("Points")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("FinishedRoundId");
+
+                            b1.ToTable("Scores", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("FinishedRoundId");
+                        });
+
+                    b.Navigation("Scores");
+                });
+
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", b =>
                 {
                     b.OwnsOne("Guexit.Game.Domain.Model.GameRoomAggregate.StoryTeller", "CurrentStoryTeller", b1 =>
@@ -407,9 +492,33 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     b.Navigation("Card");
                 });
 
+            modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.SubmittedCardSnapshot", b =>
+                {
+                    b.HasOne("Guexit.Game.Domain.Model.GameRoomAggregate.Card", "Card")
+                        .WithMany()
+                        .HasForeignKey("CardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Guexit.Game.Domain.Model.GameRoomAggregate.FinishedRound", null)
+                        .WithMany("SubmittedCardSnapshots")
+                        .HasForeignKey("FinishedRoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Card");
+                });
+
+            modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.FinishedRound", b =>
+                {
+                    b.Navigation("SubmittedCardSnapshots");
+                });
+
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", b =>
                 {
                     b.Navigation("Deck");
+
+                    b.Navigation("FinishedRounds");
 
                     b.Navigation("PlayerHands");
 
