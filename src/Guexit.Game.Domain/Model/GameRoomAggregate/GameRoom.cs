@@ -41,7 +41,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void Join(PlayerId playerId)
     {
         if (Status != GameStatus.NotStarted)
-            throw new CannotJoinStartedGameException(playerId, Id);
+            throw new JoinStartedGameException(playerId, Id);
 
         if (PlayerIds.Contains(playerId))
             throw new PlayerIsAlreadyInGameRoomException(playerId);
@@ -54,7 +54,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void Start()
     {
         if (Status != GameStatus.NotStarted)
-            throw new CannotStartAlreadyStartedGameException(Id);
+            throw new StartAlreadyStartedGameException(Id);
 
         if (!RequiredMinPlayers.AreSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
@@ -82,13 +82,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void SubmitStoryTellerCardStory(PlayerId storyTellerId, CardId cardId, string story)
     {
         if (Status != GameStatus.InProgress)
-            throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
+            throw new SubmittingCardToGameNotInProgressException(Id);
 
         if (CurrentStoryTeller.PlayerId != storyTellerId)
-            throw new CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException(Id, storyTellerId);
+            throw new InvalidCardStorySubmissionForNonStoryTellerException(Id, storyTellerId);
 
         if (CurrentStoryTeller.HasSubmittedCardStory())
-            throw new CardStoryAlreadySubmittedException(Id, storyTellerId);
+            throw new StoryAlreadySubmittedException(Id, storyTellerId);
 
         var card = CurrentStoryTellerHand.SubstractCard(cardId);
         SubmittedCards.Add(new SubmittedCard(storyTellerId, card, Id));
@@ -100,7 +100,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void SubmitGuessingPlayerCard(PlayerId guessingPlayerId, CardId cardId)
     {
         if (Status != GameStatus.InProgress)
-            throw new CannotSubmitCardIfGameRoomIsNotInProgressException(Id);
+            throw new SubmittingCardToGameNotInProgressException(Id);
 
         EnsureCurrentGuessingPlayersContains(guessingPlayerId);
 
@@ -137,7 +137,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void VoteCard(PlayerId votingPlayerId, CardId submittedCardId)
     {
         if (Status != GameStatus.InProgress)
-            throw new CannotVoteCardIfGameRoomIsNotInProgressException(Id);
+            throw new VoteCardToNotInProgressGameRoomException(Id);
 
         if (SubmittedCards.Count < PlayerIds.Count)
             throw new CannotVoteIfAnyPlayerIsPendingToSubmitCardException(Id);
@@ -149,7 +149,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new PlayerAlreadyVotedException(Id, votingPlayerId);
         
         var submittedCard = SubmittedCards.SingleOrDefault(x => x.Card.Id == submittedCardId)
-            ?? throw new CardNotFoundInSubmittedCardException(Id, submittedCardId);
+            ?? throw new CardNotFoundInSubmittedCardsException(Id, submittedCardId);
 
         submittedCard.Vote(votingPlayerId);
 

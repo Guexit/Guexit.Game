@@ -62,7 +62,7 @@ public sealed class WhenHandlingJoinGameRoomCommand
 
         var action = async () => await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
 
-        await action.Should().ThrowAsync<CannotJoinStartedGameException>();
+        await action.Should().ThrowAsync<JoinStartedGameException>();
     }
 
     [Fact]

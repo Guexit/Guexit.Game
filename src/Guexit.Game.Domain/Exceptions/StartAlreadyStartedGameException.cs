@@ -2,11 +2,11 @@
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public class CannotStartAlreadyStartedGameException : DomainException
+public class StartAlreadyStartedGameException : DomainException
 {
     public override string Title => "Cannot start already started game exception";
 
-    public CannotStartAlreadyStartedGameException(GameRoomId gameRoomId)
+    public StartAlreadyStartedGameException(GameRoomId gameRoomId)
         : base(BuildExceptionMessage(gameRoomId))
     {
     }

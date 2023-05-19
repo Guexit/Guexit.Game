@@ -185,7 +185,7 @@ public sealed class WhenHandlingVoteSubmittedCardCommand
         var action = async () => 
             await _commandHandler.Handle(new VoteCardCommand(votingPlayerId, gameRoomId, anyCardId));
 
-        await action.Should().ThrowAsync<CannotVoteCardIfGameRoomIsNotInProgressException>();
+        await action.Should().ThrowAsync<VoteCardToNotInProgressGameRoomException>();
     }
     
     [Fact]
@@ -218,7 +218,7 @@ public sealed class WhenHandlingVoteSubmittedCardCommand
         var action = async () =>
             await _commandHandler.Handle(new VoteCardCommand(votingPlayerId, GameRoomId, cardIdNonExistingInSubmittedCards));
         
-        await action.Should().ThrowAsync<CardNotFoundInSubmittedCardException>();
+        await action.Should().ThrowAsync<CardNotFoundInSubmittedCardsException>();
     }
     
     [Fact]

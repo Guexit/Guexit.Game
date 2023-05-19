@@ -3,11 +3,11 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public class CannotJoinStartedGameException : DomainException
+public class JoinStartedGameException : DomainException
 {
     public override string Title => "Cannot join started game exception";
 
-    public CannotJoinStartedGameException(PlayerId playerId, GameRoomId gameRoomId)
+    public JoinStartedGameException(PlayerId playerId, GameRoomId gameRoomId)
         : base(BuildExceptionMessage(playerId, gameRoomId))
     {
     }
