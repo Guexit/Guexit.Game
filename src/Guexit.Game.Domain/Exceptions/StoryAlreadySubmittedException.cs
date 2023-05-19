@@ -3,11 +3,11 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public sealed class CardStoryAlreadySubmittedException : DomainException
+public sealed class StoryAlreadySubmittedException : DomainException
 {
     public override string Title => "Storyteller already submitted card and story";
 
-    public CardStoryAlreadySubmittedException(GameRoomId gameRoomId, PlayerId playerId)
+    public StoryAlreadySubmittedException(GameRoomId gameRoomId, PlayerId playerId)
         : base(BuildExceptionMessage(gameRoomId, playerId))
     {
     }

@@ -2,11 +2,11 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public sealed class CannotVoteCardIfGameRoomIsNotInProgressException : DomainException
+public sealed class VoteCardToNotInProgressGameRoomException : DomainException
 {
     public override string Title => "Cannot vote submitted card to a not started game";
 
-    public CannotVoteCardIfGameRoomIsNotInProgressException(GameRoomId gameRoomId)
+    public VoteCardToNotInProgressGameRoomException(GameRoomId gameRoomId)
         : base(BuildExceptionMessage(gameRoomId))
     {
     }

@@ -3,11 +3,11 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public sealed class CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException : DomainException
+public sealed class InvalidCardStorySubmissionForNonStoryTellerException : DomainException
 {
     public override string Title => "Cannot submit card story because player is not the current story teller";
 
-    public CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException(GameRoomId gameRoomId, PlayerId playerId)
+    public InvalidCardStorySubmissionForNonStoryTellerException(GameRoomId gameRoomId, PlayerId playerId)
         : base(BuildExceptionMessage(gameRoomId, playerId))
     {
     }

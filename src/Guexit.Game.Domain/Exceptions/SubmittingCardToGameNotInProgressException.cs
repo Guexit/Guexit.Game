@@ -2,11 +2,11 @@
 
 namespace Guexit.Game.Domain.Exceptions;
 
-public sealed class CannotSubmitCardIfGameRoomIsNotInProgressException : DomainException
+public sealed class SubmittingCardToGameNotInProgressException : DomainException
 {
     public override string Title => "Cannot submit card to a not started game";
 
-    public CannotSubmitCardIfGameRoomIsNotInProgressException(GameRoomId gameRoomId)
+    public SubmittingCardToGameNotInProgressException(GameRoomId gameRoomId)
         : base(BuildExceptionMessage(gameRoomId))
     {
     }

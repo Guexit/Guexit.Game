@@ -26,6 +26,9 @@ public sealed class GameDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ImageMappingOverride());
         modelBuilder.ApplyConfiguration(new CardMappingOverride());
         modelBuilder.ApplyConfiguration(new PlayerHandMappingOverride());
+        modelBuilder.ApplyConfiguration(new SubmittedCardMappingOverride());
+        modelBuilder.ApplyConfiguration(new FinishedRoundMappingOverride());
+        modelBuilder.ApplyConfiguration(new SubmittedCardSnapshotMappingOverride());
 
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();

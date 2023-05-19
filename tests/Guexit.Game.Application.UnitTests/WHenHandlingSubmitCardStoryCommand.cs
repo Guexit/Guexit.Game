@@ -69,7 +69,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var action = async () => 
             await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(playerId, gameRoomId, anyCardId, "anyStory"));
 
-        await action.Should().ThrowAsync<CannotSubmitCardIfGameRoomIsNotInProgressException>();
+        await action.Should().ThrowAsync<SubmittingCardToGameNotInProgressException>();
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var action = async () => 
             await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(nonStoryTellerId, gameRoomId, anyCardId, "anyStory"));
 
-        await action.Should().ThrowAsync<CannotSubmitCardStoryIfPlayerIsNotCurrentStoryTellerException>();
+        await action.Should().ThrowAsync<InvalidCardStorySubmissionForNonStoryTellerException>();
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var action = async () 
             => await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(storyTellerId, gameRoomId, selectedCardId, story));
 
-        await action.Should().ThrowAsync<CardStoryAlreadySubmittedException>();
+        await action.Should().ThrowAsync<StoryAlreadySubmittedException>();
     }
 
     [Fact]
