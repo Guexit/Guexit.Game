@@ -2,6 +2,7 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence.Repositories;
 using Guexit.Game.Tests.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.Persistence.IntegrationTests;
 
