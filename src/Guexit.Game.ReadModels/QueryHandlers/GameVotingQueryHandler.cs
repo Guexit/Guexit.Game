@@ -41,7 +41,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
             .ToArrayAsync(ct);
 
         var submittedCards = gameRoom.SubmittedCards
-            .Select(x => new VotingReadModel.CardDto { Id = x.Card.Id, Url = x.Card.Url })
+            .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url })
             .ToArray();
         var playersWhoVoted = players
             .Select(x => new VotingReadModel.PlayerDto() { PlayerId = x.Id, Username = x.Username })
