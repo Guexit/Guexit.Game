@@ -37,6 +37,11 @@ public sealed class PlayerHand : Entity<PlayerHandId>
         return Cards.SingleOrDefault(x => x.Id == cardId) 
             ?? throw new CardNotFoundInPlayerHandException(PlayerId, cardId);
     }
+
+    public void AddCard(Card card)
+    {
+        Cards.Add(card);
+    }
 }
 
 public sealed class PlayerHandId : ValueObject

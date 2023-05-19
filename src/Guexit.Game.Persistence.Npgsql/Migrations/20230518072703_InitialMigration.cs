@@ -21,6 +21,8 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     RequiredMinPlayers = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
+                    CurrentStoryTeller_PlayerId = table.Column<string>(type: "text", nullable: false),
+                    CurrentStoryTeller_Story = table.Column<string>(type: "text", nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
@@ -35,7 +37,6 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     GameRoomId = table.Column<Guid>(type: "uuid", nullable: false),
                     Url = table.Column<string>(type: "text", nullable: false),
-                    LogicalShard = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
@@ -128,6 +129,25 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FinishedRounds",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FinishedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FinishedRounds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FinishedRounds_GameRooms_GameRoomId",
+                        column: x => x.GameRoomId,
+                        principalTable: "GameRooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PlayerHands",
                 columns: table => new
                 {
@@ -142,6 +162,27 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                         name: "FK_PlayerHands_GameRooms_GameRoomId",
                         column: x => x.GameRoomId,
                         principalTable: "GameRooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Scores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FinishedRoundId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlayerId = table.Column<string>(type: "text", nullable: false),
+                    Points = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Scores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Scores_FinishedRounds_FinishedRoundId",
+                        column: x => x.FinishedRoundId,
+                        principalTable: "FinishedRounds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -170,6 +211,60 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SubmittedCards",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlayerId = table.Column<string>(type: "text", nullable: false),
+                    CardId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Voters = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubmittedCards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SubmittedCards_Cards_CardId",
+                        column: x => x.CardId,
+                        principalTable: "Cards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SubmittedCards_GameRooms_GameRoomId",
+                        column: x => x.GameRoomId,
+                        principalTable: "GameRooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubmittedCardSnapshots",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlayerId = table.Column<string>(type: "text", nullable: false),
+                    CardId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FinishedRoundId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Voters = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubmittedCardSnapshots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SubmittedCardSnapshots_Cards_CardId",
+                        column: x => x.CardId,
+                        principalTable: "Cards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SubmittedCardSnapshots_FinishedRounds_FinishedRoundId",
+                        column: x => x.FinishedRoundId,
+                        principalTable: "FinishedRounds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_GameRoomId",
                 table: "Cards",
@@ -181,9 +276,14 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                 column: "PlayerHandId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_LogicalShard_CreatedAt",
+                name: "IX_FinishedRounds_GameRoomId",
+                table: "FinishedRounds",
+                column: "GameRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_CreatedAt",
                 table: "Images",
-                columns: new[] { "LogicalShard", "CreatedAt" });
+                column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InboxState_Delivered",
@@ -222,14 +322,37 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                 table: "PlayerHands",
                 columns: new[] { "GameRoomId", "PlayerId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Scores_FinishedRoundId",
+                table: "Scores",
+                column: "FinishedRoundId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubmittedCards_CardId",
+                table: "SubmittedCards",
+                column: "CardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubmittedCards_GameRoomId_PlayerId",
+                table: "SubmittedCards",
+                columns: new[] { "GameRoomId", "PlayerId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubmittedCardSnapshots_CardId",
+                table: "SubmittedCardSnapshots",
+                column: "CardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubmittedCardSnapshots_FinishedRoundId",
+                table: "SubmittedCardSnapshots",
+                column: "FinishedRoundId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Cards");
-
             migrationBuilder.DropTable(
                 name: "Images");
 
@@ -244,6 +367,21 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
             migrationBuilder.DropTable(
                 name: "Players");
+
+            migrationBuilder.DropTable(
+                name: "Scores");
+
+            migrationBuilder.DropTable(
+                name: "SubmittedCards");
+
+            migrationBuilder.DropTable(
+                name: "SubmittedCardSnapshots");
+
+            migrationBuilder.DropTable(
+                name: "Cards");
+
+            migrationBuilder.DropTable(
+                name: "FinishedRounds");
 
             migrationBuilder.DropTable(
                 name: "PlayerHands");

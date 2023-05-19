@@ -14,6 +14,8 @@ public sealed class GameRoomBuilder
     private bool _isStarted = false;
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
+    private List<(PlayerId VotingPlayerId, Func<IEnumerable<Card>, Card> VoteSelector)> _votes =
+        new();
 
     public GameRoom Build()
     {
@@ -117,4 +119,10 @@ public sealed class GameRoomBuilder
         _guessingPlayersThatSubmittedCard = playerIds;
         return this;
     }
+
+
+    //public GameRoomBuilder WithVoteFromPlayer(PlayerId playerId, Func<List<CardId>, CardId> voteSelector)
+    //{
+
+    //}
 }
