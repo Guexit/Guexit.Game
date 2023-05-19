@@ -8,25 +8,30 @@ public sealed class FinishedRound : Entity<FinishedRoundId>
     public DateTimeOffset FinishedAt { get; private init; }
     public ICollection<Score> Scores { get; private init; } = default!;
     public ICollection<SubmittedCardSnapshot> SubmittedCardSnapshots { get; private init; } = default!;
+    public StoryTeller StoryTeller { get; private init; } = default!;
 
     public FinishedRound()
     {
         // EF required parameterless ctor
     }
 
-    public FinishedRound(GameRoomId gameRoomId, DateTimeOffset finishedAt, IReadOnlyDictionary<PlayerId, Points> scores, IEnumerable<SubmittedCard> submittedCards)
+    public FinishedRound(GameRoomId gameRoomId, DateTimeOffset finishedAt, IReadOnlyDictionary<PlayerId, Points> scores, IEnumerable<SubmittedCard> submittedCards, StoryTeller storyTeller)
     {
         Id = new FinishedRoundId(Guid.NewGuid());
         GameRoomId = gameRoomId;
         FinishedAt = finishedAt;
         Scores = scores.Select(x => new Score(Id, x.Key, x.Value)).ToList();
         SubmittedCardSnapshots = submittedCards.Select(x => new SubmittedCardSnapshot(x.PlayerId, x.Card, Id, x.Voters)).ToList();
+        StoryTeller = storyTeller;
     }
 
     public Points GetScoredPointsOf(PlayerId playerId)
     {
-        return Scores.SingleOrDefault(x => x.PlayerId == playerId)?.Points
-            ?? throw new InvalidOperationException($"Could not found score for player {playerId}");
+        var score = Scores.SingleOrDefault(x => x.PlayerId == playerId);
+        if (score is null)
+            throw new InvalidOperationException($"Could not found score for player {playerId}");
+
+        return score.Points;
     }
 }
 

@@ -182,10 +182,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             votingScore[guessingPlayerId] += new Points(submittedCardsByPlayerId[guessingPlayerId].Voters.Count);
         }
 
-        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, votingScore.AsReadOnly(), SubmittedCards.ToArray()));
-        ShiftTurn();
-
         AddDomainEvent(new VotingScoresComputed(Id));
+        
+        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, votingScore.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
+        ShiftTurn();
     }
 
     private void ShiftTurn()
