@@ -2,6 +2,7 @@
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
+using Guexit.Game.ReadModels.Extensions;
 using Guexit.Game.ReadModels.ReadModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url })
             .ToArray();
+        submittedCards.Shuffle();
 
         var currentStoryTeller = players.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
 
