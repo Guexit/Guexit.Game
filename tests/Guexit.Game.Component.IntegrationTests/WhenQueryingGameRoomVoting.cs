@@ -19,16 +19,18 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
     public async Task ReturnsGameBoardReadModel()
     {
         var storyTellerId = new PlayerId("storyTellerId");
+        var storyTellerUsername = "antman";
+        var story = "El tipico adolescente abuelo";
         var guessingPlayer1 = new PlayerId("player2");
         var guessingPlayer2 = new PlayerId("player3");
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayer1, guessingPlayer2 })
-            .WithStoryTellerStory("El tipico adolescente abuelo")
+            .WithStoryTellerStory(story)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
             .Build();
         await Save(gameRoom);
         await Save(new[]
         {
-            new PlayerBuilder().WithId(storyTellerId).WithUsername("antman").Build(),
+            new PlayerBuilder().WithId(storyTellerId).WithUsername(storyTellerUsername).Build(),
             new PlayerBuilder().WithId(guessingPlayer1).WithUsername("spiderman").Build(),
             new PlayerBuilder().WithId(guessingPlayer2).WithUsername("fury").Build()
         });
@@ -46,6 +48,9 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         responseContent.CurrentUserHasAlreadyVoted.Should().BeFalse();
         responseContent.Cards.Should().HaveCount(3);
         responseContent.PlayersWhoHaveAlreadyVoted.Should().HaveCount(1);
+        responseContent.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId.Value);
+        responseContent.CurrentStoryTeller.Username.Should().Be(storyTellerUsername);
+        responseContent.CurrentStoryTeller.Story.Should().Be(story);
 
         responseContent.Cards.Should()
             .Contain(x => x.Id == storyTellerCard.Card.Id && x.Url == storyTellerCard.Card.Url)

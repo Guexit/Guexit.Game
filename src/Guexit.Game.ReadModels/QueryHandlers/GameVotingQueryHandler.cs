@@ -35,22 +35,30 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var allVoters = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
-        var playerWhoVoted = await DbContext.Players.AsNoTracking()
-            .Where(x => allVoters.Contains(x.Id))
-            .ToArrayAsync(ct);
+        var voterIds = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
+
+        var players = await DbContext.Players.AsNoTracking().ToArrayAsync(ct);
+        var playerWhoVoted = players.Where(x => voterIds.Contains(x.Id));
 
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url })
             .ToArray();
+
+        var currentStoryTeller = players.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
 
         return new VotingReadModel
         {
             Cards = submittedCards,
             PlayersWhoHaveAlreadyVoted = playerWhoVoted
                 .Select(x => new VotingReadModel.PlayerDto { PlayerId = x.Id, Username = x.Username }).ToArray(),
-            CurrentUserHasAlreadyVoted = allVoters.Contains(query.PlayerId),
+            CurrentUserHasAlreadyVoted = voterIds.Contains(query.PlayerId),
             IsCurrentUserStoryTeller = gameRoom.CurrentStoryTeller.PlayerId == query.PlayerId,
+            CurrentStoryTeller = new VotingReadModel.StoryTellerDto
+            {
+                PlayerId = currentStoryTeller.Id.Value,
+                Username = currentStoryTeller.Username,
+                Story = gameRoom.CurrentStoryTeller.Story
+            }
         };
     }
 }

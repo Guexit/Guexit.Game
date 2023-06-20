@@ -12,7 +12,6 @@ public sealed class BoardReadModel
     public sealed class StoryTellerDto
     {
         public required string  Username { get; init; }
-
         public required string PlayerId { get; init; }
         public required string? Story { get; init; }
     }
