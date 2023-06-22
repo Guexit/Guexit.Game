@@ -9,13 +9,6 @@ public sealed class BoardReadModel
     public required CardDto[] SubmittedCards { get; init; }
     public required bool IsCurrentUserStoryTeller { get; init; }
 
-    public sealed class StoryTellerDto
-    {
-        public required string  Username { get; init; }
-        public required string PlayerId { get; init; }
-        public required string? Story { get; init; }
-    }
-
     public sealed class CardDto
     {
         public required Guid Id { get; init; }

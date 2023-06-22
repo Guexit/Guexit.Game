@@ -166,25 +166,25 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     private void ComputeVotingScoreAndFinishRound()
     {
-        var votingScore = PlayerIds.ToDictionary(x => x, v => Points.Zero);
+        var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
 
         var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId, v => v);
 
         var playerCountWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
         if (playerCountWhoVotedStoryTellerCard > 0 && playerCountWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
-            votingScore[CurrentStoryTeller.PlayerId] += new Points(3);
+            pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 
         foreach (var guessingPlayerId in CurrentGuessingPlayerIds)
         {
             if (submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Contains(guessingPlayerId))
-                votingScore[guessingPlayerId] += new Points(3);
+                pointsByPlayer[guessingPlayerId] += new Points(3);
 
-            votingScore[guessingPlayerId] += new Points(submittedCardsByPlayerId[guessingPlayerId].Voters.Count);
+            pointsByPlayer[guessingPlayerId] += new Points(submittedCardsByPlayerId[guessingPlayerId].Voters.Count);
         }
 
         AddDomainEvent(new VotingScoresComputed(Id));
         
-        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, votingScore.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
+        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
         ShiftTurn();
     }
 

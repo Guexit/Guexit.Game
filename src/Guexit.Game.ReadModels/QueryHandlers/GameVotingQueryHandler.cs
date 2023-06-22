@@ -42,7 +42,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         var playerWhoVoted = players.Where(x => voterIds.Contains(x.Id));
 
         var submittedCards = gameRoom.SubmittedCards
-            .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url })
+            .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
             .ToArray();
         submittedCards.Shuffle();
 
@@ -55,7 +55,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
                 .Select(x => new VotingReadModel.PlayerDto { PlayerId = x.Id, Username = x.Username }).ToArray(),
             CurrentUserHasAlreadyVoted = voterIds.Contains(query.PlayerId),
             IsCurrentUserStoryTeller = gameRoom.CurrentStoryTeller.PlayerId == query.PlayerId,
-            CurrentStoryTeller = new VotingReadModel.StoryTellerDto
+            CurrentStoryTeller = new StoryTellerDto                                                              
             {
                 PlayerId = currentStoryTeller.Id.Value,
                 Username = currentStoryTeller.Username,

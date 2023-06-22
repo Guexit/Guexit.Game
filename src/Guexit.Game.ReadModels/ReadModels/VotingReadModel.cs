@@ -12,13 +12,7 @@ public sealed class VotingReadModel
     {
         public required Guid Id { get; init; }
         public required Uri Url { get; init; }
-    }
-
-    public sealed class StoryTellerDto
-    {
-        public required string Username { get; init; }
-        public required string PlayerId { get; init; }
-        public required string? Story { get; init; }
+        public required bool WasSubmittedByQueryingPlayer { get; init; }
     }
 
     public sealed class PlayerDto

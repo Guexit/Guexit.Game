@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using FluentAssertions.Execution;
 using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
@@ -41,6 +42,7 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
 
         var response = await GetGameRoomVoting(storyTellerId, gameRoom);
 
+        using var _ = new AssertionScope();
         await response.ShouldHaveSuccessStatusCode();
         var responseContent = await response.Content.ReadFromJsonAsync<VotingReadModel>();
         responseContent.Should().NotBeNull();
@@ -53,9 +55,9 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         responseContent.CurrentStoryTeller.Story.Should().Be(story);
 
         responseContent.Cards.Should()
-            .Contain(x => x.Id == storyTellerCard.Card.Id && x.Url == storyTellerCard.Card.Url)
-            .And.Contain(x => x.Id == guessingPlayer1Card.Card.Id && x.Url == guessingPlayer1Card.Card.Url)
-            .And.Contain(x => x.Id == guessingPlayer2Card.Card.Id && x.Url == guessingPlayer2Card.Card.Url);
+            .Contain(x => x.Id == storyTellerCard.Card.Id && x.Url == storyTellerCard.Card.Url && x.WasSubmittedByQueryingPlayer)
+            .And.Contain(x => x.Id == guessingPlayer1Card.Card.Id && x.Url == guessingPlayer1Card.Card.Url && !x.WasSubmittedByQueryingPlayer)
+            .And.Contain(x => x.Id == guessingPlayer2Card.Card.Id && x.Url == guessingPlayer2Card.Card.Url && !x.WasSubmittedByQueryingPlayer);
         responseContent.PlayersWhoHaveAlreadyVoted.Should()
             .Contain(x => x.Username == "spiderman" && x.PlayerId == guessingPlayer1);
     }

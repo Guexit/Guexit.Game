@@ -51,7 +51,7 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
         var readModel = new BoardReadModel()
         {
             GameRoomId = gameRoom.Id,
-            CurrentStoryTeller = new BoardReadModel.StoryTellerDto 
+            CurrentStoryTeller = new StoryTellerDto 
             { 
                 PlayerId = currentStoryTeller.Id.Value, 
                 Username = currentStoryTeller.Username, 
