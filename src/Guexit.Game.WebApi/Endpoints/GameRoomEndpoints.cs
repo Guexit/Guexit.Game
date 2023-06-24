@@ -12,8 +12,7 @@ public static class GameRoomEndpoints
 {
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
-        var group = app.MapGroup("game-rooms/{gameRoomId:guid}")
-            .WithApiVersionSet(versionSet).MapToApiVersion(1);
+        var group = app.MapGroup("game-rooms/{gameRoomId:guid}").WithApiVersionSet(versionSet).MapToApiVersion(1);
 
         group.MapPost("", CreateGameRoom);
         group.MapPost("/join", JoinGameRoom);
