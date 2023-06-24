@@ -68,10 +68,10 @@ public sealed class LastRoundSummaryQueryHandler : QueryHandler<LastRoundSummary
                 CardId = x.Card.Id,
                 CardUrl = x.Card.Url,
                 SubmittedBy = new PlayerDto { PlayerId = x.PlayerId, Username = players[x.PlayerId].Username },
-                Voters = x.Voters.Select(playerId => new PlayerDto 
+                Voters = x.Voters.Select(voterId => new PlayerDto 
                 { 
-                    PlayerId = playerId, 
-                    Username = players[x.PlayerId].Username 
+                    PlayerId = voterId, 
+                    Username = players[voterId].Username 
                 }).ToArray(),
             }).ToArray(),
         };
