@@ -14,10 +14,4 @@ public sealed class VotingReadModel
         public required Uri Url { get; init; }
         public required bool WasSubmittedByQueryingPlayer { get; init; }
     }
-
-    public sealed class PlayerDto
-    {
-        public required string PlayerId { get; init; }
-        public required string Username { get; init; }
-    }
 }

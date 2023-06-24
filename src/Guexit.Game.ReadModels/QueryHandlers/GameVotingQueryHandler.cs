@@ -52,7 +52,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         {
             Cards = submittedCards,
             PlayersWhoHaveAlreadyVoted = playerWhoVoted
-                .Select(x => new VotingReadModel.PlayerDto { PlayerId = x.Id, Username = x.Username }).ToArray(),
+                .Select(x => new PlayerDto { PlayerId = x.Id, Username = x.Username }).ToArray(),
             CurrentUserHasAlreadyVoted = voterIds.Contains(query.PlayerId),
             IsCurrentUserStoryTeller = gameRoom.CurrentStoryTeller.PlayerId == query.PlayerId,
             CurrentStoryTeller = new StoryTellerDto                                                              

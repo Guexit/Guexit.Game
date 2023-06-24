@@ -9,14 +9,14 @@ using Guexit.Game.Tests.Common;
 
 namespace Guexit.Game.Application.UnitTests;
 
-public sealed class WhenHandlingVoteSubmittedCardCommand
+public sealed class WhenHandlingVoteCardCommand
 {
     private static readonly GameRoomId GameRoomId = new(Guid.NewGuid());
 
     private readonly IGameRoomRepository _gameRoomRepository;
     private readonly VoteCardCommandHandler _commandHandler;
     
-    public WhenHandlingVoteSubmittedCardCommand()
+    public WhenHandlingVoteCardCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
         _commandHandler = new VoteCardCommandHandler(Substitute.For<IUnitOfWork>(), _gameRoomRepository);

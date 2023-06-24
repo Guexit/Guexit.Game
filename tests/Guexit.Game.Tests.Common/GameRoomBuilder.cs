@@ -14,8 +14,7 @@ public sealed class GameRoomBuilder
     private bool _isStarted = false;
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
-    private List<(PlayerId VotingPlayerId, Func<IEnumerable<Card>, Card> VoteSelector)> _votes =
-        new();
+    private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = new();
 
     public GameRoom Build()
     {
@@ -44,6 +43,12 @@ public sealed class GameRoomBuilder
         {
             var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
             gameRoom.SubmitGuessingPlayerCard(guessingPlayerId, card.Id);
+        }
+
+        foreach (var vote in _votes)
+        {
+            var cardId = gameRoom.SubmittedCards.Single(x => x.PlayerId == vote.VotedCardSubmitter).Card.Id;
+            gameRoom.VoteCard(vote.VotingPlayerId, cardId);
         }
 
         gameRoom.ClearDomainEvents();
@@ -120,9 +125,9 @@ public sealed class GameRoomBuilder
         return this;
     }
 
-
-    //public GameRoomBuilder WithVoteFromPlayer(PlayerId playerId, Func<List<CardId>, CardId> voteSelector)
-    //{
-
-    //}
+    public GameRoomBuilder WithVote(PlayerId votingPlayer, PlayerId cardSubmittedBy)
+    {
+        _votes.Add((votingPlayer, cardSubmittedBy));
+        return this;
+    }
 }
