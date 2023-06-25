@@ -50,7 +50,7 @@ public sealed class WhenQueryingRoundSummary : ComponentTest
         readModel.SubmittedCardSummaries.Single(x => x.SubmittedBy.PlayerId == storyTellerId.Value)
             .Voters.Should().HaveCount(2)
             .And.Subject.Should().Contain(x => x.PlayerId == guessingPlayer1.Value && x.Username == "ironman")
-            .And.Subject.Should().Contain(x => x.PlayerId == guessingPlayer2.Value && x.Username == "starlord");
+            .And.Subject.Should().Contain(x => x.PlayerId == guessingPlayer2.Value && x.Username == "starlord"); 
 
         readModel.Scores.Should().HaveCount(3);
         readModel.Scores.Single(x => x.Player.PlayerId == storyTellerId).Points.Should().Be(0);
