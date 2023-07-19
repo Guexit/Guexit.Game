@@ -133,7 +133,6 @@ public sealed class WhenHandlingVoteCardCommand
             .Single().GameRoomId.Should().Be(GameRoomId);
     }
 
-
     [Fact]
     public async Task ShiftToNextTurnOnLastVoteReceived()
     {
@@ -157,6 +156,29 @@ public sealed class WhenHandlingVoteCardCommand
         gameRoom.CurrentStoryTeller.Story.Should().Be(StoryTeller.Empty.Story);
         gameRoom.SubmittedCards.Should().BeEmpty();
         gameRoom.PlayerHands.Should().AllSatisfy(x => x.Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer));
+    }
+
+    [Fact]
+    public async Task GameIsFinishedIfThereAreNoMoreCardsToDealInDeck()
+    {
+        var player1 = new PlayerId("thanos");
+        var player2 = new PlayerId("spiderman");
+        var player3 = new PlayerId("ironman");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, new[] { player2, player3 })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(player2, player3)
+            .WithEmptyDeck()
+            .Build();
+        var cardVotedByPlayer2 = gameRoom.SubmittedCards.First(x => x.PlayerId == player1).Card.Id;
+        var cardVotedByPlayer3 = gameRoom.SubmittedCards.First(x => x.PlayerId != player2).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(player2, GameRoomId, cardVotedByPlayer2));
+        await _commandHandler.Handle(new VoteCardCommand(player3, GameRoomId, cardVotedByPlayer3));
+
+        gameRoom.Status.Should().Be(GameStatus.Finished);
+        gameRoom.DomainEvents.OfType<GameFinished>().Should().HaveCount(1);
+        gameRoom.DomainEvents.OfType<GameFinished>().Single().GameRoomId.Should().Be(GameRoomId);
     }
 
     [Fact]

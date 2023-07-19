@@ -154,8 +154,17 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         submittedCard.Vote(votingPlayerId);
 
         var allPlayersHaveVoted = SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
-        if (allPlayersHaveVoted)
-            ComputeVotingScoreAndFinishRound();
+        if (!allPlayersHaveVoted)
+            return;
+
+        if (!Deck.Any())
+        {
+            Status = GameStatus.Finished;
+            AddDomainEvent(new GameFinished(Id));
+            return;
+        }
+
+        ComputeVotingScoreAndFinishRound();
     }
 
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
@@ -166,11 +175,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     private void ComputeVotingScoreAndFinishRound()
     {
-        var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
-
-        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId, v => v);
-
+        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId);
         var playerCountWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
+
+        var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
         if (playerCountWhoVotedStoryTellerCard > 0 && playerCountWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
             pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 
@@ -185,10 +193,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new VotingScoresComputed(Id));
         
         FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
-        ShiftTurn();
+        ShiftToNextRound();
     }
 
-    private void ShiftTurn()
+    private void ShiftToNextRound()
     {
         var playerIds = PlayerIds.ToList();
 

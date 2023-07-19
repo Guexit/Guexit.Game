@@ -15,6 +15,7 @@ public sealed class GameRoomBuilder
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = new();
+    private bool _withEmptyDeck = false;
 
     public GameRoom Build()
     {
@@ -51,22 +52,20 @@ public sealed class GameRoomBuilder
             gameRoom.VoteCard(vote.VotingPlayerId, cardId);
         }
 
+        if (_withEmptyDeck)
+            gameRoom.Deck.Clear();
+
         gameRoom.ClearDomainEvents();
         return gameRoom;
     }
 
     public static GameRoomBuilder CreateStarted(GameRoomId gameRoomId, PlayerId creator, PlayerId[] playersThatJoined)
     {
-        var allPlayers = playersThatJoined.Concat(new[] { creator });
-        if (!RequiredMinPlayers.Default.AreSatisfiedBy(allPlayers.Count()))
-            throw new InvalidOperationException(
-                $"Cannot build a game room with {allPlayers.Count()} players. Minimum are {RequiredMinPlayers.Default.Count}");
-
         var gameRoomBuilder = new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(creator)
             .WithPlayersThatJoined(playersThatJoined)
-            .WithDeck(Enumerable.Range(0, allPlayers.Count() * GameRoom.TotalCardsPerPlayer).Select(_ => new CardBuilder()).ToArray())
+            .WithDeck(Enumerable.Range(0, playersThatJoined.Concat(new[] { creator }).Count() * GameRoom.TotalCardsPerPlayer).Select(_ => new CardBuilder()).ToArray())
             .Started();
         return gameRoomBuilder;
     }
@@ -128,6 +127,12 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithVote(PlayerId votingPlayer, PlayerId cardSubmittedBy)
     {
         _votes.Add((votingPlayer, cardSubmittedBy));
+        return this;
+    }
+
+    public GameRoomBuilder WithEmptyDeck()
+    {
+        _withEmptyDeck = true;
         return this;
     }
 }

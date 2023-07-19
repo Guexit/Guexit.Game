@@ -10,9 +10,9 @@ public sealed class FinishedRound : Entity<FinishedRoundId>
     public ICollection<SubmittedCardSnapshot> SubmittedCardSnapshots { get; private init; } = default!;
     public StoryTeller StoryTeller { get; private init; } = default!;
 
-    public FinishedRound()
+    public FinishedRound() 
     {
-        // EF required parameterless ctor
+        // Entity Framework required parameterless constructor
     }
 
     public FinishedRound(GameRoomId gameRoomId, DateTimeOffset finishedAt, IReadOnlyDictionary<PlayerId, Points> scores, IEnumerable<SubmittedCard> submittedCards, StoryTeller storyTeller)
