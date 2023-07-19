@@ -176,10 +176,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     private void ComputeVotingScoreAndFinishRound()
     {
         var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId);
-        var playerCountWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
+        var amountOfPlayersWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
 
         var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
-        if (playerCountWhoVotedStoryTellerCard > 0 && playerCountWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
+        if (amountOfPlayersWhoVotedStoryTellerCard > 0 && amountOfPlayersWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
             pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 
         foreach (var guessingPlayerId in CurrentGuessingPlayerIds)
