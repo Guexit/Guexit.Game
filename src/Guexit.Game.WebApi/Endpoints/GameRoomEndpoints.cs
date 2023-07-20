@@ -25,6 +25,7 @@ public static class GameRoomEndpoints
         group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
         group.MapGet("/voting", GetVoting).Produces<VotingReadModel>();
         group.MapGet("/round-summaries/last", GetLastRoundSummary).Produces<RoundSummaryReadModel>();
+        group.MapGet("/summary", GetSummary).Produces<RoundSummaryReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(
@@ -126,6 +127,16 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         var readModel = await sender.Send(new LastRoundSummaryQuery(gameRoomId, userId), ct);
+        return Results.Ok(readModel);
+    }
+
+    private static async Task<IResult> GetSummary(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        var readModel = await sender.Send(new GameRoomSummaryQuery(gameRoomId, userId), ct);
         return Results.Ok(readModel);
     }
 }

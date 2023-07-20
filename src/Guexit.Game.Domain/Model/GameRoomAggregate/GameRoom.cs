@@ -141,21 +141,25 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         if (SubmittedCards.Count < PlayerIds.Count)
             throw new CannotVoteIfAnyPlayerIsPendingToSubmitCardException(Id);
-        
+
         EnsureCurrentGuessingPlayersContains(votingPlayerId);
 
-        var voters = SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
-        if (voters.Contains(votingPlayerId))
+        var playersWhoAlreadyVoted = SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
+        if (playersWhoAlreadyVoted.Contains(votingPlayerId))
             throw new PlayerAlreadyVotedException(Id, votingPlayerId);
-        
+
         var submittedCard = SubmittedCards.SingleOrDefault(x => x.Card.Id == submittedCardId)
             ?? throw new CardNotFoundInSubmittedCardsException(Id, submittedCardId);
 
         submittedCard.Vote(votingPlayerId);
 
-        var allPlayersHaveVoted = SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
-        if (allPlayersHaveVoted)
-            ComputeVotingScoreAndFinishRound();
+        if (AllPlayersHaveVoted())
+            CompleteCurrentRound();
+    }
+
+    private bool AllPlayersHaveVoted()
+    {
+        return SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
     }
 
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
@@ -164,14 +168,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 
-    private void ComputeVotingScoreAndFinishRound()
+    private void CompleteCurrentRound()
     {
+        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId);
+        var amountOfPlayersWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
+
         var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
-
-        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId, v => v);
-
-        var playerCountWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
-        if (playerCountWhoVotedStoryTellerCard > 0 && playerCountWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
+        if (amountOfPlayersWhoVotedStoryTellerCard > 0 && amountOfPlayersWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
             pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 
         foreach (var guessingPlayerId in CurrentGuessingPlayerIds)
@@ -185,10 +188,21 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new VotingScoresComputed(Id));
         
         FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
-        ShiftTurn();
+
+        if (Deck.Count >= PlayerIds.Count)
+            ShiftToNextRound();
+        else
+            Finish();
     }
 
-    private void ShiftTurn()
+    private void Finish()
+    {
+
+        Status = GameStatus.Finished;
+        AddDomainEvent(new GameFinished(Id));
+    }
+
+    private void ShiftToNextRound()
     {
         var playerIds = PlayerIds.ToList();
 
