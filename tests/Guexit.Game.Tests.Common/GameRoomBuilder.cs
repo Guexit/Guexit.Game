@@ -46,14 +46,14 @@ public sealed class GameRoomBuilder
             gameRoom.SubmitGuessingPlayerCard(guessingPlayerId, card.Id);
         }
 
+        if (_withEmptyDeck)
+            gameRoom.Deck.Clear();
+
         foreach (var vote in _votes)
         {
             var cardId = gameRoom.SubmittedCards.Single(x => x.PlayerId == vote.VotedCardSubmitter).Card.Id;
             gameRoom.VoteCard(vote.VotingPlayerId, cardId);
         }
-
-        if (_withEmptyDeck)
-            gameRoom.Deck.Clear();
 
         gameRoom.ClearDomainEvents();
         return gameRoom;
