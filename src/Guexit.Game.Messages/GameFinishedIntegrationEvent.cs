@@ -4,7 +4,6 @@ public sealed class GameFinishedIntegrationEvent
 {
     public Guid GameRoomId { get; init; }
 
-
     public GameFinishedIntegrationEvent()
     {
     }

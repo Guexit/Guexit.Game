@@ -28,8 +28,6 @@ public static class GameRoomEndpoints
         group.MapGet("/summary", GetSummary).Produces<RoundSummaryReadModel>();
     }
 
-    
-
     private static async Task<IResult> CreateGameRoom(
         [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId,
