@@ -44,7 +44,6 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
             .ToArray();
-        submittedCards.Shuffle();
 
         var currentStoryTeller = players.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
 

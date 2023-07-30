@@ -113,7 +113,7 @@ public sealed class WhenHandlingVoteCardCommand
     }
 
     [Fact]
-    public async Task VotingScoresComputedIsRaisedWhenAllGuessingPlayersHaveVoted()
+    public async Task VotingScoresComputedEventIsRaisedIfAllGuessingPlayersHaveVoted()
     {
         var storyTellerId = new PlayerId("storyTellerId");
         var votingPlayerId1 = new PlayerId("votingPlayer1");
@@ -134,7 +134,7 @@ public sealed class WhenHandlingVoteCardCommand
     }
 
     [Fact]
-    public async Task ShiftToNextTurnOnLastVoteReceived()
+    public async Task ShiftsToNextRoundIfAllGuessingPlayersHaveVoted()
     {
         var pastStoryTeller = new PlayerId("storyTellerId");
         var nextStoryTeller = new PlayerId("votingPlayer1");
@@ -155,7 +155,10 @@ public sealed class WhenHandlingVoteCardCommand
         gameRoom.CurrentStoryTeller.PlayerId.Should().Be(nextStoryTeller);
         gameRoom.CurrentStoryTeller.Story.Should().Be(StoryTeller.Empty.Story);
         gameRoom.SubmittedCards.Should().BeEmpty();
-        gameRoom.PlayerHands.Should().AllSatisfy(x => x.Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer));
+        gameRoom.PlayerHands.Should().AllSatisfy(x => x.Cards.Should().HaveCount(GameRoom.PlayerHandSize));
+        gameRoom.DomainEvents.OfType<NewRoundStarted>().Should().HaveCount(1);
+        var newRoundStartedEvent = gameRoom.DomainEvents.OfType<NewRoundStarted>().Single();
+        newRoundStartedEvent.GameRoomId.Should().Be(GameRoomId);
     }
 
     [Fact]

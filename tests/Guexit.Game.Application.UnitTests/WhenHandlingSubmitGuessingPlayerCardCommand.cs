@@ -143,7 +143,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         submittedCard.PlayerId.Should().Be(playerId);
 
         var playerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == playerId);
-        playerHand.Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer - 1);
+        playerHand.Cards.Should().HaveCount(GameRoom.PlayerHandSize - 1);
 
         gameRoom.DomainEvents.OfType<GuessingPlayerCardSubmitted>().Should().HaveCount(1)
             .And.Subject.Single().Should().BeEquivalentTo(new GuessingPlayerCardSubmitted(GameRoomId, playerId, cardId));

@@ -77,14 +77,14 @@ public sealed class WhenAssigningDeck
         var gameRoom = await _gameRoomRepository.GetBy(GameRoomId);
         gameRoom.Should().NotBeNull();
         gameRoom!.Status.Should().Be(GameStatus.InProgress);
-        gameRoom.Deck.Should().HaveCount(requiredCardsInDeck - (GameRoom.CardsInHandPerPlayer * playersInGameRoom));
+        gameRoom.Deck.Should().HaveCount(requiredCardsInDeck - (GameRoom.PlayerHandSize * playersInGameRoom));
         gameRoom.Deck.Should().AllSatisfy(card => card.Url.ToString().Should().StartWith("https://pablocompany/image/"));
         gameRoom.Deck.Should().AllSatisfy(card => card.Url.ToString().Should().StartWith("https://pablocompany/image/"));
 
         gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("creator")).Cards.Should().NotBeEmpty();
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("2")).Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer);
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("3")).Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer);
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("4")).Cards.Should().HaveCount(GameRoom.CardsInHandPerPlayer);
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("2")).Cards.Should().HaveCount(GameRoom.PlayerHandSize);
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("3")).Cards.Should().HaveCount(GameRoom.PlayerHandSize);
+        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("4")).Cards.Should().HaveCount(GameRoom.PlayerHandSize);
     }
     
     [Fact]

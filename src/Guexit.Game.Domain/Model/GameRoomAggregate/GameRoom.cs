@@ -7,20 +7,17 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
     public const int TotalCardsPerPlayer = 8;
-    public const int CardsInHandPerPlayer = 4;
+    public const int PlayerHandSize = 4;
 
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
-
     public ICollection<Card> Deck { get; private set; } = new List<Card>();
     public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
     public ICollection<SubmittedCard> SubmittedCards { get; private set; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
-
     public ICollection<FinishedRound> FinishedRounds { get; private set; } = new List<FinishedRound>();
-
     private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
     private HashSet<PlayerId> CurrentGuessingPlayerIds => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
 
@@ -122,8 +119,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         foreach (var player in PlayerIds)
         {
-            var cardsToDeal = new List<Card>(CardsInHandPerPlayer);
-            for (int i = 0; i < CardsInHandPerPlayer; i++)
+            var cardsToDeal = new List<Card>(PlayerHandSize);
+            for (int i = 0; i < PlayerHandSize; i++)
             {
                 var card = Deck.First();
                 cardsToDeal.Add(card);
@@ -157,10 +154,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             CompleteCurrentRound();
     }
 
-    private bool AllPlayersHaveVoted()
-    {
-        return SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
-    }
+    private bool AllPlayersHaveVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
 
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
     {
@@ -192,12 +186,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (Deck.Count >= PlayerIds.Count)
             ShiftToNextRound();
         else
-            Finish();
+            End();
     }
 
-    private void Finish()
+    private void End()
     {
-
         Status = GameStatus.Finished;
         AddDomainEvent(new GameFinished(Id));
     }
@@ -205,20 +198,19 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     private void ShiftToNextRound()
     {
         var playerIds = PlayerIds.ToList();
-
         var currentStoryTellerIndex = playerIds.IndexOf(CurrentStoryTeller.PlayerId);
         var nextStoryTellerIndex = (currentStoryTellerIndex + 1) % playerIds.Count;
-
         CurrentStoryTeller = StoryTeller.Create(playerIds[nextStoryTellerIndex]);
 
-        foreach (var player in PlayerIds)
+        foreach (var playerId in PlayerIds)
         {
             var card = Deck.First();
-            PlayerHands.Single(x => x.PlayerId == player).AddCard(card);
+            PlayerHands.Single(x => x.PlayerId == playerId).AddCard(card);
             Deck.Remove(card);
         }
 
         SubmittedCards.Clear();
+        AddDomainEvent(new NewRoundStarted(Id));
     }
 }
 
