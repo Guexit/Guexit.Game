@@ -25,7 +25,7 @@ public static class GameRoomEndpoints
         group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
         group.MapGet("/voting", GetVoting).Produces<VotingReadModel>();
         group.MapGet("/round-summaries/last", GetLastRoundSummary).Produces<RoundSummaryReadModel>();
-        group.MapGet("/summary", GetSummary).Produces<RoundSummaryReadModel>();
+        group.MapGet("/summary", GetSummary).Produces<GameSummaryReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(

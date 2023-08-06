@@ -88,7 +88,7 @@ public sealed class WhenAssigningDeck
     }
     
     [Fact]
-    public async Task DeckAssignedAndInitialCardsDealedDomainEventsAreRaised()
+    public async Task DeckAssignedAndInitialCardsDealtDomainEventsAreRaised()
     {
         var creatorId = new PlayerId("creator");
         await _gameRoomRepository.Add(new GameRoomBuilder()
@@ -110,7 +110,7 @@ public sealed class WhenAssigningDeck
         var gameRoom = await _gameRoomRepository.GetBy(GameRoomId);
         gameRoom.Should().NotBeNull();
         gameRoom!.DomainEvents.Should().NotBeEmpty();
-        gameRoom.DomainEvents.OfType<InitialCardsDealed>().Should().HaveCount(1);
+        gameRoom.DomainEvents.OfType<InitialCardsDealt>().Should().HaveCount(1);
         gameRoom.DomainEvents.OfType<DeckAssigned>().Should().HaveCount(1);
     }
 

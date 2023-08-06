@@ -73,7 +73,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         DealInitialPlayerHands();
         Status = GameStatus.InProgress;
 
-        AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealed(Id));
+        AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealt(Id));
     }
 
     public void SubmitStoryTellerCardStory(PlayerId storyTellerId, CardId cardId, string story)
