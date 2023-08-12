@@ -105,6 +105,6 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
                 Points = points
             });
         }
-        return result.ToArray();
+        return result.OrderByDescending(x => x.Points).ToArray();
     }
 }

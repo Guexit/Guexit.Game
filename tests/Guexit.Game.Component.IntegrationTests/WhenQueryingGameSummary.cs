@@ -44,6 +44,7 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         readModel!.GameRoomId.Should().Be(GameRoomId);
         readModel.RoundSummaries.Should().HaveCount(1);
         readModel.Scores.Should().HaveCount(3);
+        readModel.Scores.Should().BeInDescendingOrder(x => x.Points);
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == storyTellerId);
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == guessingPlayer1);
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == guessingPlayer2);
