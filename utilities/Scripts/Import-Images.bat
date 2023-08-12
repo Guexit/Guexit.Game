@@ -1,3 +1,2 @@
 @echo off
-PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '.\Import-Images.ps1'"
-pause
+start PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '.\Import-Images.ps1'"
