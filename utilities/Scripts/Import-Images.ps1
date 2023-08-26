@@ -32,4 +32,6 @@ Invoke-Expression "$psqlCommand" | Out-Null
 
 Remove-Item -Path $tempFile
 
-Write-Host 'Images imported successfully' 
+Write-Host 'Images imported successfully'
+
+Read-Host -Prompt 'Press any key to close the command window...'
