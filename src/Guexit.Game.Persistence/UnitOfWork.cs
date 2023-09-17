@@ -28,7 +28,7 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
     public async Task Commit(CancellationToken cancellationToken = default)
     {
         if (_transaction is null)
-            throw new InvalidOperationException("Cannot rollback commit before begining a transaction");
+            throw new InvalidOperationException("Cannot commit before beginning a transaction");
 
         await PublishDomainEvents(cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -38,7 +38,7 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
     public async Task Rollback(CancellationToken cancellationToken = default)
     {
         if (_transaction is null)
-            throw new InvalidOperationException("Cannot rollback unit of work before begining a transaction");
+            throw new InvalidOperationException("Cannot rollback before beginning a transaction");
 
         await _transaction.RollbackAsync(cancellationToken);
     }
