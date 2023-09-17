@@ -43,6 +43,9 @@ jobs:
     - name: Run EntityFramework migrations
       run: |
         ./Guexit.Game.efbundle.exe --connection 'User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;'
+      env:
+        AzureKeyVault__Enabled: false
+        AzureKeyVault__Uri: ""
     - name: Run integration tests
       env: 
          ConnectionStrings__Guexit_Game_GameDb: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;
