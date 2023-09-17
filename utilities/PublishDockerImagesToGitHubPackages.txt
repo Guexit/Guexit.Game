@@ -1,0 +1,2 @@
+- On root directory, execute `docker build . --tag ghcr.io/guexit/guexit-game:0.2.0-alpha`
+- Then push to container registry with `docker push ghcr.io/guexit/guexit-game:0.2.0-alpha`
