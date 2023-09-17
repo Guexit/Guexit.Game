@@ -1,2 +1,3 @@
+- Log in to container registry with PAT: `echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin` (https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)
 - On root directory, execute `docker build . --tag ghcr.io/guexit/guexit-game:0.2.0-alpha`
 - Then push to container registry with `docker push ghcr.io/guexit/guexit-game:0.2.0-alpha`
