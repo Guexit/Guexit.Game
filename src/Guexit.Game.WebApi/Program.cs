@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddAzureKeyVault();
 builder.Services.AddSwagger();
 builder.Services.AddDomain();
 builder.Services.AddApplication();
@@ -30,9 +31,8 @@ if (app.Environment.IsDevelopment())
 
         foreach (var description in descriptions)
         {
-            var url = $"/swagger/{description.GroupName}/swagger.json";
             var name = description.GroupName.ToUpperInvariant();
-            options.SwaggerEndpoint(url, name);
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", name);
         }
     });
 }
