@@ -16,3 +16,4 @@ public sealed class GameFinishedProducer : IDomainEventHandler<GameFinished>
         await _bus.Publish(new GameFinishedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }
 }
+
