@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddAzureKeyVault();
 builder.Services.AddSwagger();
 builder.Services.AddDomain();
 builder.Services.AddApplication();

@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" Version="7.0.1" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.1" />
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.1.0" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
