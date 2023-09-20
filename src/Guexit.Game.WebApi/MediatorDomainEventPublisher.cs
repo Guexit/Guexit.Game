@@ -14,9 +14,6 @@ public sealed class MediatorDomainEventPublisher : IDomainEventPublisher
 
     public async ValueTask Publish(IEnumerable<IDomainEvent> domainEvents, CancellationToken ct = default)
     {
-        if (!domainEvents.Any())
-            return;
-
         foreach (var domainEvent in domainEvents)
             await _publisher.Publish(domainEvent, ct);
     }

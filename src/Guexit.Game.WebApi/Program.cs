@@ -45,8 +45,7 @@ var databaseOptions = app.Services.GetRequiredService<IOptions<DatabaseOptions>>
 if (databaseOptions.Value.MigrateOnStartup)
 {
     await using var scope = app.Services.CreateAsyncScope();
-    await scope.ServiceProvider.GetRequiredService<GameDbContextMigrator>()
-        .MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<GameDbContextMigrator>().MigrateAsync();
 }
 
 await app.RunAsync();
