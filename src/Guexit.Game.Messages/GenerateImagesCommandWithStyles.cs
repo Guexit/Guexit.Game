@@ -5,7 +5,7 @@ namespace Guexit.Game.Messages;
 public sealed class GenerateImagesCommandWithStyles
 {
     [JsonPropertyName("text_to_style")]
-    public TextToStyle TextToImage { get; init; } = new TextToStyle();
+    public TextToStyle TextToImage { get; init; } = new();
 }
 
 public sealed class TextToStyle

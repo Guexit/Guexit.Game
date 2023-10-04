@@ -2,6 +2,7 @@
 using Guexit.Game.Application.Services;
 using Guexit.Game.Domain;
 using Guexit.Game.Messages;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace Guexit.Game.Consumers;
@@ -24,5 +25,17 @@ public sealed class ImageGeneratedConsumer : MessageConsumer<ImageGenerated>
     protected override async Task Process(ImageGenerated imageGenerated, CancellationToken cancellationToken)
     {
         await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(imageGenerated.Url), cancellationToken);
+    }
+}
+
+public class ImageGeneratedConsumerDefinition : ConsumerDefinition<ImageGeneratedConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, 
+        IConsumerConfigurator<ImageGeneratedConsumer> consumerConfigurator, IRegistrationContext context)
+    {
+        endpointConfigurator.ConfigureConsumeTopology = false;
+        
+        endpointConfigurator.ClearSerialization();
+        endpointConfigurator.UseRawJsonSerializer();
     }
 }
