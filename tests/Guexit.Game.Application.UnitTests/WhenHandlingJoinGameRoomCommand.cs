@@ -56,6 +56,7 @@ public sealed class WhenHandlingJoinGameRoomCommand
             .WithId(gameRoomId)
             .WithCreator(creator)
             .WithPlayersThatJoined(playerThatJoined, "otherPlayerId")
+            .WithValidDeckAssigned()
             .Started()
             .Build();
         await _gameRoomRepository.Add(gameRoom);

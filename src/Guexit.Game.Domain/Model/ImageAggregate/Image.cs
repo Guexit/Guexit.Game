@@ -18,7 +18,7 @@ public sealed class Image : AggregateRoot<ImageId>
         CreatedAt = createdAt;
     }
 
-    public void AssignToGame(GameRoomId gameRoomId)
+    public void AssignTo(GameRoomId gameRoomId)
     {
         if (GameRoomId != GameRoomId.Empty)
         {

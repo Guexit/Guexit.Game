@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.Tests.Common;
@@ -19,32 +21,44 @@ public sealed class WhenStartingGame : ComponentTest
     }
 
     [Fact]
-    public async Task IsStartedAndInitiatesCardsAssignation()
+    public async Task AssignsDeckAndStartsFirstRound()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        var playerId = new PlayerId("1");
+        var playerId1 = new PlayerId("1");
+        var playerId2 = new PlayerId("2");
+        var playerId3 = new PlayerId("3");
         await Save(new GameRoomBuilder()
             .WithId(gameRoomId)
-            .WithCreator(playerId).WithPlayersThatJoined("2", "3", "4")
+            .WithCreator(playerId1).WithPlayersThatJoined(playerId2, playerId3)
             .WithMinRequiredPlayers(3)
             .Build());
-
+        await Save(new PlayerBuilder().WithId(playerId1).Build(),
+            new PlayerBuilder().WithId(playerId2).Build(),
+            new PlayerBuilder().WithId(playerId3).Build());
+        var images = Enumerable.Range(0, 200)
+            .Select(_ => ImageBuilder.CreateValid().Build())
+            .ToArray();
+        await Save(images);
+        
         using var client = WebApplicationFactory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start");
-        request.AddPlayerIdHeader(playerId);
+        request.AddPlayerIdHeader(playerId1);
         var response = await client.SendAsync(request);
         
-        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
-        await AssertGameRoomHasStarted(gameRoomId);
-    }
-
-    private async Task AssertGameRoomHasStarted(GameRoomId gameRoomId)
-    {
+        await response.ShouldHaveSuccessStatusCode();
+        
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
-        await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+        var repository = scope.ServiceProvider.GetRequiredService<IGameRoomRepository>();
 
-        var gameRoom = await dbContext.GameRooms.SingleAsync(x => x.Id == gameRoomId);
+        var gameRoom = await repository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
-        gameRoom!.Status.Should().Be(GameStatus.AssigningCards);
+        gameRoom.Status.Should().Be(GameStatus.InProgress);
+        gameRoom.Deck.Should().NotBeEmpty()
+            .And.Subject.Select(x => x.Url).Should().BeSubsetOf(images.Select(x => x.Url));
+        gameRoom.PlayerHands.Should().AllSatisfy(x =>
+        {
+            x.Cards.Should().HaveCount(GameRoom.PlayerHandSize);
+            x.Cards.Select(j => j.Url).Should().BeSubsetOf(images.Select(j => j.Url));
+        });
     }
 }

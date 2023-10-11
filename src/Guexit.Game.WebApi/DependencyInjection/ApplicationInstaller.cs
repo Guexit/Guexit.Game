@@ -12,7 +12,6 @@ public static class ApplicationInstaller
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
 
         return services.AddScoped<IPlayerManagementService, PlayerManagementService>()
-            .AddScoped<IImageManagementService, ImageManagementService>()
-            .AddScoped<IDeckAssignmentService, DeckAssignmentService>();
+            .AddScoped<IImageManagementService, ImageManagementService>();
     }
 }

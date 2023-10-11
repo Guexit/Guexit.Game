@@ -46,11 +46,11 @@ public abstract class ComponentTest : IAsyncLifetime
         }
     }
 
-    protected async Task Save<TAggregate>(params TAggregate[] aggregate) where TAggregate : class, IAggregateRoot
+    protected async Task Save<TAggregateRoot>(params TAggregateRoot[] aggregateRoots) where TAggregateRoot : class, IAggregateRoot
     {
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-        await dbContext.Set<TAggregate>().AddRangeAsync(aggregate);
+        await dbContext.Set<TAggregateRoot>().AddRangeAsync(aggregateRoots);
         await dbContext.SaveChangesAsync();
     }
 
