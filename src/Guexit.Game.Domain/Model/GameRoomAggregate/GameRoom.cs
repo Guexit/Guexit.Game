@@ -18,6 +18,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<SubmittedCard> SubmittedCards { get; private set; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
     public ICollection<FinishedRound> FinishedRounds { get; private set; } = new List<FinishedRound>();
+    public int PlayersCount => PlayerIds.Count;
     private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
     private HashSet<PlayerId> CurrentGuessingPlayerIds => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
 
@@ -33,8 +34,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
+    public int GetRequiredNumberOfCardsInDeck() => PlayerIds.Count * TotalCardsPerPlayer;
     public void DefineMinRequiredPlayers(int count) => RequiredMinPlayers = new RequiredMinPlayers(count);
-
+    
     public void Join(PlayerId playerId)
     {
         if (Status != GameStatus.NotStarted)
@@ -48,32 +50,31 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new PlayerJoined(Id, playerId));
     }
 
-    public void Start()
-    {
-        if (Status != GameStatus.NotStarted)
-            throw new StartAlreadyStartedGameException(Id);
-
-        if (!RequiredMinPlayers.AreSatisfiedBy(PlayerIds.Count))
-            throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
-
-        Status = GameStatus.AssigningCards;
-        CurrentStoryTeller = StoryTeller.Create(PlayerIds.First());
-
-        AddDomainEvent(new GameStarted(Id));
-    }
-
-    public int GetRequiredNumberOfCardsInDeck() => PlayerIds.Count * TotalCardsPerPlayer;
-
     public void AssignDeck(Card[] cards)
     {
         if (cards.Length < GetRequiredNumberOfCardsInDeck())
             throw new InsufficientImagesToAssignDeckException(cards.Length, Id);
 
         Deck = new List<Card>(cards);
-        DealInitialPlayerHands();
-        Status = GameStatus.InProgress;
+    }
 
-        AddDomainEvents(new DeckAssigned(Id), new InitialCardsDealt(Id));
+    public void Start(PlayerId playerId)
+    {
+        if (Status != GameStatus.NotStarted)
+            throw new StartAlreadyStartedGameException(Id);
+
+        if (!RequiredMinPlayers.AreSatisfiedBy(PlayerIds.Count))
+            throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
+        
+        if (!PlayerIds.Contains(playerId))
+            throw new PlayerNotInGameRoomException(Id, playerId);
+
+        DealInitialPlayerHands();
+        
+        CurrentStoryTeller = StoryTeller.Create(PlayerIds.First());
+        Status = GameStatus.InProgress;
+        
+        AddDomainEvent(new GameStarted(Id));
     }
 
     public void SubmitStoryTellerCardStory(PlayerId storyTellerId, CardId cardId, string story)

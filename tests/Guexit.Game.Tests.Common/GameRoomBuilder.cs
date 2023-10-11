@@ -26,11 +26,13 @@ public sealed class GameRoomBuilder
         foreach (var player in _playersThatJoined)
             gameRoom.Join(player);
 
-        if (_isStarted) 
-            gameRoom.Start();
-        
         if (_cards.Any()) 
             gameRoom.AssignDeck(_cards.Select(x => x.Build()).ToArray());
+        
+        if (_isStarted)
+        {
+            gameRoom.Start(_creatorId);
+        }
 
         if (!string.IsNullOrEmpty(_storyTellerCardStory))
         {
@@ -106,6 +108,14 @@ public sealed class GameRoomBuilder
         return this;
     }
 
+    public GameRoomBuilder WithValidDeckAssigned()
+    {
+        WithDeck(Enumerable.Range(0, (_playersThatJoined.Length + 1) * GameRoom.TotalCardsPerPlayer)
+            .Select(_ => new CardBuilder())
+            .ToArray());
+        return this;
+    }
+    
     public GameRoomBuilder Started()
     {
         _isStarted = true;

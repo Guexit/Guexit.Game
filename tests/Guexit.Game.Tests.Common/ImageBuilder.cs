@@ -8,6 +8,14 @@ public sealed class ImageBuilder
     private Uri _url = new("https://example.com/image.png");
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
 
+    public static ImageBuilder CreateValid()
+    {
+        var imageId = new ImageId(Guid.NewGuid());
+        return new ImageBuilder()
+            .WithId(imageId)
+            .WithUrl(new Uri($"https://guexit.io/images/{imageId.Value}"));
+    }
+    
     public Image Build()
     {
         var image = new Image(_id, _url, _createdAt);

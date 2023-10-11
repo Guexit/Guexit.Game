@@ -8,7 +8,7 @@ public sealed class InsufficientPlayersToStartGameException : DomainException
 
 
     public InsufficientPlayersToStartGameException(GameRoomId gameRoomId, int playersCount, RequiredMinPlayers requiredMinPlayers) 
-        : base($"Game room {gameRoomId} requires a minimum of {requiredMinPlayers.Count} players to start, but only {playersCount} players are present.")
+        : base($"Game room {gameRoomId.Value} requires a minimum of {requiredMinPlayers.Count} players to start, but only {playersCount} players are present.")
     {
     }
 }

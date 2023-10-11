@@ -35,7 +35,7 @@ public sealed class WhenJoiningGameRoom : ComponentTest
         var response = await client.SendAsync(request);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
 
         await AssertGameRoomHasPlayers(creatorId, playerJoiningId);
     }
@@ -55,7 +55,7 @@ public sealed class WhenJoiningGameRoom : ComponentTest
         var response = await client.SendAsync(request);
 
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
     }
 
     private async Task AssertGameRoomHasPlayers(PlayerId creator, PlayerId playerJoining)

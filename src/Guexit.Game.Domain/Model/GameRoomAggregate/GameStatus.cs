@@ -3,10 +3,9 @@
 public sealed class GameStatus : ValueObject
 {
     public static readonly GameStatus NotStarted = new("NotStarted");
-    public static readonly GameStatus AssigningCards = new("AssigningCards");
     public static readonly GameStatus InProgress = new("InProgress");
     public static readonly GameStatus Finished = new("Finished");
-    public static readonly GameStatus[] All = new[] { NotStarted, AssigningCards, InProgress, Finished };
+    public static readonly GameStatus[] All = new[] { NotStarted, InProgress, Finished };
 
     public string Value { get; }
 
