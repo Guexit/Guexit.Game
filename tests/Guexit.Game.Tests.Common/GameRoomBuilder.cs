@@ -108,6 +108,12 @@ public sealed class GameRoomBuilder
         return this;
     }
 
+    public GameRoomBuilder WithCardsInDeck(int count)
+    {
+        WithDeck(Enumerable.Range(0, count).Select(_ => new CardBuilder()).ToArray());
+        return this;
+    }
+    
     public GameRoomBuilder WithValidDeckAssigned()
     {
         WithDeck(Enumerable.Range(0, (_playersThatJoined.Length + 1) * GameRoom.TotalCardsPerPlayer)

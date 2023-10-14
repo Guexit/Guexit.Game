@@ -18,9 +18,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<SubmittedCard> SubmittedCards { get; private set; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
     public ICollection<FinishedRound> FinishedRounds { get; private set; } = new List<FinishedRound>();
-    public int PlayersCount => PlayerIds.Count;
-    private PlayerHand CurrentStoryTellerHand => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
-    private HashSet<PlayerId> CurrentGuessingPlayerIds => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
+
+    public IReadOnlySet<PlayerId> GetCurrentGuessingPlayerIds() => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
+    public int GetPlayersCount() => PlayerIds.Count;
 
     private GameRoom()
     {
@@ -36,7 +36,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public int GetRequiredNumberOfCardsInDeck() => PlayerIds.Count * TotalCardsPerPlayer;
     public void DefineMinRequiredPlayers(int count) => RequiredMinPlayers = new RequiredMinPlayers(count);
-    
+
     public void Join(PlayerId playerId)
     {
         if (Status != GameStatus.NotStarted)
@@ -88,7 +88,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (CurrentStoryTeller.HasSubmittedCardStory())
             throw new StoryAlreadySubmittedException(Id, storyTellerId);
 
-        var card = CurrentStoryTellerHand.SubstractCard(cardId);
+        var card = GetCurrentStoryTellerHand().SubstractCard(cardId);
         SubmittedCards.Add(new SubmittedCard(storyTellerId, card, Id));
         CurrentStoryTeller = CurrentStoryTeller.SubmitStory(story);
 
@@ -155,11 +155,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             CompleteCurrentRound();
     }
 
-    private bool AllPlayersHaveVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == CurrentGuessingPlayerIds.Count;
+    private PlayerHand GetCurrentStoryTellerHand() => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
+
+    private bool AllPlayersHaveVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == GetCurrentGuessingPlayerIds().Count;
 
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
     {
-        if (!CurrentGuessingPlayerIds.Contains(playerId))
+        if (!GetCurrentGuessingPlayerIds().Contains(playerId))
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 
@@ -169,10 +171,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         var amountOfPlayersWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
 
         var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
-        if (amountOfPlayersWhoVotedStoryTellerCard > 0 && amountOfPlayersWhoVotedStoryTellerCard < CurrentGuessingPlayerIds.Count)
+        if (amountOfPlayersWhoVotedStoryTellerCard > 0 && amountOfPlayersWhoVotedStoryTellerCard < GetCurrentGuessingPlayerIds().Count)
             pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 
-        foreach (var guessingPlayerId in CurrentGuessingPlayerIds)
+        foreach (var guessingPlayerId in GetCurrentGuessingPlayerIds())
         {
             if (submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Contains(guessingPlayerId))
                 pointsByPlayer[guessingPlayerId] += new Points(3);

@@ -67,7 +67,7 @@ public sealed class WhenHandlingStartGameCommand
 
         gameRoom.Should().NotBeNull();
 
-        int allCardsInDeckMinusAlreadyDealt = gameRoom.GetRequiredNumberOfCardsInDeck() - (GameRoom.PlayerHandSize * gameRoom.PlayersCount);
+        int allCardsInDeckMinusAlreadyDealt = gameRoom.GetRequiredNumberOfCardsInDeck() - (GameRoom.PlayerHandSize * gameRoom.GetPlayersCount());
         gameRoom.Deck.Should().HaveCount(allCardsInDeckMinusAlreadyDealt);
         gameRoom.Deck.Select(x => x.Url).Should().BeSubsetOf(imagesToAssign.Select(x => x.Url));
 

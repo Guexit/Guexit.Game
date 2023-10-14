@@ -86,7 +86,9 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
             });
         }
 
-        return result.ToArray();
+        return result
+            .OrderBy(x => x.RoundFinishedAt)
+            .ToArray();
     }
 
     private static GameSummaryReadModel.PlayerScoreDto[] GetScores(GameRoom gameRoom, Dictionary<PlayerId, Player> players)
