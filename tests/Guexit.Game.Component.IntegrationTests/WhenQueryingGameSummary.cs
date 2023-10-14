@@ -46,7 +46,7 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         var readModel = await response.Content.ReadFromJsonAsync<GameSummaryReadModel>();
         readModel.Should().NotBeNull();
         readModel!.GameRoomId.Should().Be(GameRoomId);
-        readModel.RoundSummaries.Should().HaveCount(2).And.BeInDescendingOrder(x => x.RoundFinishedAt);
+        readModel.RoundSummaries.Should().HaveCount(2).And.BeInAscendingOrder(x => x.RoundFinishedAt);
         readModel.Scores.Should().HaveCount(3);
         readModel.Scores.Should().BeInDescendingOrder(x => x.Points);
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == storyTellerId);
