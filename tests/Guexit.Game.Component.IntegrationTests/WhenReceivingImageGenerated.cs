@@ -23,7 +23,7 @@ public sealed class WhenReceivingImageGenerated : ComponentTest
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
 
-        var image = await dbContext.Set<Image>().SingleAsync(x => x.Url == new Uri(imageUrl));
+        var image = await dbContext.Images.SingleAsync(x => x.Url == new Uri(imageUrl));
         image.Url.Should().Be(new Uri(imageUrl));
     }
 }

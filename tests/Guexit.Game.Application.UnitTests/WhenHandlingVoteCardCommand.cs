@@ -170,7 +170,7 @@ public sealed class WhenHandlingVoteCardCommand
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, new[] { player2, player3 })
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(player2, player3)
-            .WithEmptyDeck()
+            .WithoutCardsLeftInDeck()
             .Build();
         var cardVotedByPlayer2 = gameRoom.SubmittedCards.First(x => x.PlayerId == player1).Card.Id;
         var cardVotedByPlayer3 = gameRoom.SubmittedCards.First(x => x.PlayerId != player2).Card.Id;

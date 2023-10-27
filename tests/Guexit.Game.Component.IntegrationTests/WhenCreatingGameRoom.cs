@@ -1,10 +1,8 @@
 ﻿using System.Net;
-using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.Tests.Common;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,10 +25,7 @@ public sealed class WhenCreatingGameRoom : ComponentTest
         var playerId = new PlayerId("player1");
         await Save(new PlayerBuilder().WithId(playerId).Build());
         
-        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId}");
-        request.AddPlayerIdHeader(playerId);
-        using var client = WebApplicationFactory.CreateClient();
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId}", playerId);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
@@ -41,12 +36,10 @@ public sealed class WhenCreatingGameRoom : ComponentTest
     [Fact]
     public async Task ReturnsNotFoundIfPlayerDoesNotExist()
     {
+        var gameRoomId = Guid.NewGuid();
         var nonExistingPlayerId = new PlayerId("nonExistingPlayer");
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "game-rooms");
-        request.AddPlayerIdHeader(nonExistingPlayerId);
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId}", authenticatedPlayerId: nonExistingPlayerId);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.NotFound, await response.Content.ReadAsStringAsync());

@@ -30,10 +30,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
         });
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby");
-        request.AddPlayerIdHeader(creatorId);
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby", creatorId);
 
         var lobbyReadModel = await response.Content.ReadFromJsonAsync<LobbyReadModel>();
         lobbyReadModel.Should().NotBeNull();

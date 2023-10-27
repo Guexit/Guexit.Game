@@ -4,6 +4,7 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.ReadModels.Exceptions;
 using Guexit.Game.ReadModels.ReadModels;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

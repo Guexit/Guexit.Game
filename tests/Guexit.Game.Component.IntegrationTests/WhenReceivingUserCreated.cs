@@ -1,5 +1,4 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Guexit.Game.Persistence;
 using Guexit.IdentityProvider.Messages;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,10 +26,9 @@ public sealed class WhenReceivingUserCreated : ComponentTest
     private async Task AssertPlayerWasCreated(UserCreated userCreatedEvent)
     {
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
+        var playerRepository = scope.ServiceProvider.GetRequiredService<IPlayerRepository>();
 
-        var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-
-        var player = await dbContext.Players.FindAsync(new PlayerId(userCreatedEvent.Id));
+        var player = await playerRepository.GetBy(new PlayerId(userCreatedEvent.Id));
         player.Should().NotBeNull();
         player!.Id.Should().NotBeNull(userCreatedEvent.Id);
         player.Username.Should().NotBeNull(userCreatedEvent.Username);

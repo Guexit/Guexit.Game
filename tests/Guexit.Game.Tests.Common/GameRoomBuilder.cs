@@ -15,7 +15,7 @@ public sealed class GameRoomBuilder
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = new();
-    private bool _withEmptyDeck = false;
+    private bool _withNoCardsLeftInDeck = false;
 
     public GameRoom Build()
     {
@@ -48,7 +48,7 @@ public sealed class GameRoomBuilder
             gameRoom.SubmitGuessingPlayerCard(guessingPlayerId, card.Id);
         }
 
-        if (_withEmptyDeck)
+        if (_withNoCardsLeftInDeck)
             gameRoom.Deck.Clear();
 
         foreach (var vote in _votes)
@@ -67,9 +67,21 @@ public sealed class GameRoomBuilder
             .WithId(gameRoomId)
             .WithCreator(creator)
             .WithPlayersThatJoined(playersThatJoined)
-            .WithDeck(Enumerable.Range(0, playersThatJoined.Concat(new[] { creator }).Count() * GameRoom.TotalCardsPerPlayer).Select(_ => new CardBuilder()).ToArray())
+            .WithAssignedDeck(Enumerable.Range(0, playersThatJoined.Concat(new[] { creator }).Count() * GameRoom.TotalCardsPerPlayer).Select(_ => new CardBuilder()).ToArray())
             .Started();
         return gameRoomBuilder;
+    }
+
+    public static GameRoomBuilder CreateFinished(GameRoomId gameRoomId, PlayerId creator, PlayerId[] playersThatJoined)
+    {
+        var gameRoomBuilder = GameRoomBuilder.CreateStarted(gameRoomId, creator, playersThatJoined)
+            .WithoutCardsLeftInDeck()
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(playersThatJoined[0], playersThatJoined[1])
+            .WithVote(playersThatJoined[0], creator)
+            .WithVote(playersThatJoined[1], creator);
+        return gameRoomBuilder;
+
     }
 
     public GameRoomBuilder WithId(GameRoomId id)
@@ -86,6 +98,11 @@ public sealed class GameRoomBuilder
 
     public GameRoomBuilder WithPlayersThatJoined(params PlayerId[] playersThatJoined)
     {
+        ArgumentNullException.ThrowIfNull(playersThatJoined);
+
+        if (playersThatJoined.Length < 2)
+            throw new ArgumentException($"Game room must have at least 2 invited players. Received {playersThatJoined.Length}");
+
         _playersThatJoined = playersThatJoined;
         return this;
     }
@@ -102,7 +119,7 @@ public sealed class GameRoomBuilder
         return this;
     }
 
-    public GameRoomBuilder WithDeck(params CardBuilder[] cards)
+    public GameRoomBuilder WithAssignedDeck(params CardBuilder[] cards)
     {
         _cards = cards;
         return this;
@@ -110,13 +127,13 @@ public sealed class GameRoomBuilder
 
     public GameRoomBuilder WithCardsInDeck(int count)
     {
-        WithDeck(Enumerable.Range(0, count).Select(_ => new CardBuilder()).ToArray());
+        WithAssignedDeck(Enumerable.Range(0, count).Select(_ => new CardBuilder()).ToArray());
         return this;
     }
     
     public GameRoomBuilder WithValidDeckAssigned()
     {
-        WithDeck(Enumerable.Range(0, (_playersThatJoined.Length + 1) * GameRoom.TotalCardsPerPlayer)
+        WithAssignedDeck(Enumerable.Range(0, (_playersThatJoined.Length + 1) * GameRoom.TotalCardsPerPlayer)
             .Select(_ => new CardBuilder())
             .ToArray());
         return this;
@@ -146,9 +163,9 @@ public sealed class GameRoomBuilder
         return this;
     }
 
-    public GameRoomBuilder WithEmptyDeck()
+    public GameRoomBuilder WithoutCardsLeftInDeck()
     {
-        _withEmptyDeck = true;
+        _withNoCardsLeftInDeck = true;
         return this;
     }
 }

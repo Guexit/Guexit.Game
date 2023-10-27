@@ -1,12 +1,7 @@
-﻿using System.Net;
-using Guexit.Game.Component.IntegrationTests.Builders;
-using Guexit.Game.Component.IntegrationTests.Extensions;
+﻿using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
-using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Guexit.Game.Persistence;
 using Guexit.Game.Tests.Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
@@ -40,19 +35,16 @@ public sealed class WhenStartingGame : ComponentTest
             .ToArray();
         await Save(images);
         
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start");
-        request.AddPlayerIdHeader(playerId1);
-        var response = await client.SendAsync(request);
-        
+        using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start", playerId1);
+
         await response.ShouldHaveSuccessStatusCode();
         
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IGameRoomRepository>();
+        var gameRoomRepository = scope.ServiceProvider.GetRequiredService<IGameRoomRepository>();
 
-        var gameRoom = await repository.GetBy(gameRoomId);
+        var gameRoom = await gameRoomRepository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
-        gameRoom.Status.Should().Be(GameStatus.InProgress);
+        gameRoom!.Status.Should().Be(GameStatus.InProgress);
         gameRoom.Deck.Should().NotBeEmpty()
             .And.Subject.Select(x => x.Url).Should().BeSubsetOf(images.Select(x => x.Url));
         gameRoom.PlayerHands.Should().AllSatisfy(x =>

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="8.1.0" />
+    <PackageReference Include="MassTransit" Version="8.1.1" />
 	<PackageReference Include="Guexit.IdentityProvider.Messages" Version="0.2.0" />
   </ItemGroup>
 

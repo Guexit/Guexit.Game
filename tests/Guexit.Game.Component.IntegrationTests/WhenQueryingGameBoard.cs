@@ -30,10 +30,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
             new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
         });
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
-        request.AddPlayerIdHeader(playerId1);
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId1);
 
         await response.ShouldHaveSuccessStatusCode();
         var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
@@ -53,13 +50,10 @@ public sealed class WhenQueryingGameBoard : ComponentTest
     public async Task ReturnsNotFoundIfGameRoomDoesNotExist()
     {
         var nonExistingGameRoomId = new GameRoomId(Guid.NewGuid());
-        var playerId1 = new PlayerId("storyTellerId"); 
-        await Save(new PlayerBuilder().WithId(playerId1).WithUsername("gamora").Build());
+        var playerId = new PlayerId("storyTellerId"); 
+        await Save(new PlayerBuilder().WithId(playerId).WithUsername("gamora").Build());
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{nonExistingGameRoomId.Value}/board");
-        request.AddPlayerIdHeader(playerId1);
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{nonExistingGameRoomId.Value}/board", playerId);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound, because: await response.Content.ReadAsStringAsync());
     }
@@ -80,10 +74,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
             new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
         });
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
-        request.AddPlayerIdHeader(playerId3);
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId3);
 
         await response.ShouldHaveSuccessStatusCode();
         var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
@@ -111,10 +102,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
             new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
         });
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
-        request.AddPlayerIdHeader(playerId1);
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId1);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, because: await response.Content.ReadAsStringAsync());
     }
