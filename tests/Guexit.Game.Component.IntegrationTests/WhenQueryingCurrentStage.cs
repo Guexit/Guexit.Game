@@ -22,7 +22,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
 
         await Save(gameRoom);
         
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stage/current", creatorId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<GameStageReadModel>();
@@ -38,7 +38,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
 
         await Save(gameRoom);
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stage/current", creatorId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<GameStageReadModel>();
@@ -57,7 +57,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
 
         await Save(gameRoom);
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stage/current", creatorId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<GameStageReadModel>();
@@ -73,7 +73,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
 
         await Save(gameRoom);
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stage/current", creatorId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<GameStageReadModel>();
