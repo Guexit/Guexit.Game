@@ -1,5 +1,7 @@
-﻿using Guexit.Game.Component.IntegrationTests.DataCleaners;
+﻿using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.DataCleaners;
 using Guexit.Game.Domain;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,9 +56,31 @@ public abstract class ComponentTest : IAsyncLifetime
         await dbContext.SaveChangesAsync();
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
+    protected async Task<HttpResponseMessage> Send(HttpMethod httpMethod, string requestUri, HttpContent content, 
+        PlayerId authenticatedPlayerId)
+    {
+        using var request = new HttpRequestMessage(httpMethod, requestUri) { Content = content };
+        request.AddPlayerIdHeader(authenticatedPlayerId);
+        return await Send(request);
+    }
 
-    public async Task DisposeAsync()
+    protected async Task<HttpResponseMessage> Send(HttpMethod httpMethod, string requestUri, PlayerId authenticatedPlayerId)
+    {
+        using var request = new HttpRequestMessage(httpMethod, requestUri);
+        request.AddPlayerIdHeader(authenticatedPlayerId);
+        return await Send(request);
+    }
+
+    private async Task<HttpResponseMessage> Send(HttpRequestMessage request)
+    {
+        using var client = WebApplicationFactory.CreateClient();
+        return await client.SendAsync(request);
+    }
+
+    public Task InitializeAsync() => CleanUp();
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    public async Task CleanUp()
     {
         foreach (var cleaner in _testDataCleaners)
             await cleaner.Clean(WebApplicationFactory);

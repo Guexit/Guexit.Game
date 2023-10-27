@@ -34,10 +34,7 @@ public sealed class WhenQueryingRoundSummary : ComponentTest
             .WithVote(guessingPlayer2, storyTellerId)
             .Build());
 
-        using var client = WebApplicationFactory.CreateClient();
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/round-summaries/last");
-        request.AddPlayerIdHeader(storyTellerId);
-        using var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/round-summaries/last", storyTellerId);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<RoundSummaryReadModel>();

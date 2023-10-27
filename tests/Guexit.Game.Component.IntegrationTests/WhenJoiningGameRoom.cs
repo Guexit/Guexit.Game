@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
@@ -28,14 +29,10 @@ public sealed class WhenJoiningGameRoom : ComponentTest
         await Save(new PlayerBuilder().WithId(playerJoiningId).Build());
         await Save(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join");
-        request.AddPlayerIdHeader(playerJoiningId);
-
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join", playerJoiningId);
 
         response.Should().NotBeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveSuccessStatusCode();
 
         await AssertGameRoomHasPlayers(creatorId, playerJoiningId);
     }
@@ -48,11 +45,7 @@ public sealed class WhenJoiningGameRoom : ComponentTest
         await Save(new PlayerBuilder().WithId(creatorId).Build());
         await Save(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join");
-        request.AddPlayerIdHeader(creatorId);
-
-        var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join", creatorId);
 
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());

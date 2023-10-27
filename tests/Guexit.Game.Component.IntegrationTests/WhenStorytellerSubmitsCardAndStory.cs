@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -22,7 +21,7 @@ public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
         var storyTellerId = new PlayerId("storyTellerPlayerId");
         var playerId2 = new PlayerId("player2");
         var playerId3 = new PlayerId("player3");
-        const string story = "El tipico abuelo adolescente";
+        var story = "El tipico abuelo adolescente";
         
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { playerId2, playerId3 }).Build();
         await Save(gameRoom);
@@ -35,18 +34,15 @@ public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
 
         var selectedCardId = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First().Id;
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{gameRoom.Id.Value}/storyteller/submit-card-story")
-        {
-            Content = JsonContent.Create(new SubmitStoryTellerCardStoryRequest(selectedCardId, story))
-        };
-        request.AddPlayerIdHeader(storyTellerId);
-        var response = await client.SendAsync(request);
+        using var response = await Send(
+            HttpMethod.Post, 
+            $"/game-rooms/{gameRoom.Id.Value}/storyteller/submit-card-story", 
+            JsonContent.Create(new SubmitStoryTellerCardStoryRequest(selectedCardId, story)), 
+            storyTellerId
+        );
         await response.ShouldHaveSuccessStatusCode();
         
-        var getBoardRequest = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
-        getBoardRequest.AddPlayerIdHeader(storyTellerId);
-        var getBoardResponse = await client.SendAsync(getBoardRequest);
+        using var getBoardResponse = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", storyTellerId);
         await getBoardResponse.ShouldHaveSuccessStatusCode();
 
         var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<BoardReadModel>();

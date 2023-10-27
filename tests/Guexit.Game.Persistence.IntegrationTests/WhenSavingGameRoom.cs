@@ -29,7 +29,7 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
             .WithCreatedAt(createdAt)
             .WithMinRequiredPlayers(requiredMinPlayers)
             .Started()
-            .WithDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
+            .WithAssignedDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
             .WithStoryTellerStory(submittedStory)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayerdIdsThatSubmittedCard)
             .Build();

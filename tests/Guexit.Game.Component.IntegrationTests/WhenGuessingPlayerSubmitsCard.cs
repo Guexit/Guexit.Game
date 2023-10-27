@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using Guexit.Game.Component.IntegrationTests.Builders;
+﻿using System.Net.Http.Json;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -29,19 +27,19 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
             new PlayerBuilder().WithId("storyTellerId").Build());
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
 
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{gameRoomId.Value}/guessing-player/submit-card")
-        {
-            Content = JsonContent.Create(new SubmitCardForGuessingPlayerRequest(card.Id.Value))
-        };
-        request.AddPlayerIdHeader(guessingPlayerId);
-        var client = WebApplicationFactory.CreateClient();
-        var response = await client.SendAsync(request);
+        var submitCardResponse = await Send(
+            HttpMethod.Post, 
+            $"/game-rooms/{gameRoomId.Value}/guessing-player/submit-card", 
+            JsonContent.Create(new SubmitCardForGuessingPlayerRequest(card.Id.Value)), 
+            guessingPlayerId
+        );
+        await submitCardResponse.ShouldHaveSuccessStatusCode();
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
-
-        var getBoardRequest = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board");
-        getBoardRequest.AddPlayerIdHeader(guessingPlayerId);
-        var getBoardResponse = await client.SendAsync(getBoardRequest);
+        var getBoardResponse = await Send(
+            HttpMethod.Get,
+            $"/game-rooms/{gameRoom.Id.Value}/board",
+            guessingPlayerId
+        );
         await getBoardResponse.ShouldHaveSuccessStatusCode();
 
         var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<BoardReadModel>();

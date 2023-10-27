@@ -1,4 +1,3 @@
-using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -26,10 +25,11 @@ public sealed class WhenVotingSubmittedCard : ComponentTest
         var votedCard = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId).Card;
         await Save(gameRoom);
 
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{gameRoomId.Value}/submitted-cards/{votedCard.Id.Value}/vote");
-        request.AddPlayerIdHeader(votingPlayerId);
-        var response = await client.SendAsync(request);
+        using var response = await Send(
+            HttpMethod.Post, 
+            $"/game-rooms/{gameRoomId.Value}/submitted-cards/{votedCard.Id.Value}/vote", 
+            votingPlayerId
+        );
 
         await response.ShouldHaveSuccessStatusCode();
         await AssertCardIsVotedByGuessingPlayer(gameRoomId, votingPlayerId, votedCard.Id);

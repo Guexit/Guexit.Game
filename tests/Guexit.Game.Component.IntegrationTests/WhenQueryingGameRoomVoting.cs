@@ -38,13 +38,14 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId);
         var guessingPlayer1Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1);
         var guessingPlayer2Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer2);
-        await VoteCard(guessingPlayer1, storyTellerCard.Card.Id);
 
-        var response = await GetGameRoomVoting(storyTellerId, gameRoom);
+        using var voteResponse = await Send(HttpMethod.Post, $"/game-rooms/{GameRoomId.Value}/submitted-cards/{storyTellerCard.Card.Id.Value}/vote", guessingPlayer1);
+        await voteResponse.ShouldHaveSuccessStatusCode();
 
-        using var _ = new AssertionScope();
-        await response.ShouldHaveSuccessStatusCode();
-        var responseContent = await response.Content.ReadFromJsonAsync<VotingReadModel>();
+        using var votingReadModelResponse = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", storyTellerId);
+        await votingReadModelResponse.ShouldHaveSuccessStatusCode();
+
+        var responseContent = await votingReadModelResponse.Content.ReadFromJsonAsync<VotingReadModel>();
         responseContent.Should().NotBeNull();
         responseContent!.IsCurrentUserStoryTeller.Should().BeTrue();
         responseContent.CurrentUserHasAlreadyVoted.Should().BeFalse();
@@ -60,25 +61,5 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
             .And.Contain(x => x.Id == guessingPlayer2Card.Card.Id && x.Url == guessingPlayer2Card.Card.Url && !x.WasSubmittedByQueryingPlayer);
         responseContent.PlayersWhoHaveAlreadyVoted.Should()
             .Contain(x => x.Username == "spiderman" && x.PlayerId == guessingPlayer1);
-    }
-
-    private async Task VoteCard(PlayerId votingPlayerId, CardId votedCardId)
-    {
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/game-rooms/{GameRoomId.Value}/submitted-cards/{votedCardId.Value}/vote");
-        request.AddPlayerIdHeader(votingPlayerId);
-        var response =  await client.SendAsync(request);
-        await response.ShouldHaveSuccessStatusCode();
-    }
-
-    private async Task<HttpResponseMessage> GetGameRoomVoting(PlayerId storyTellerId, GameRoom gameRoom)
-    {
-        var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting");
-        request.AddPlayerIdHeader(storyTellerId);
-        var response =  await client.SendAsync(request);
-
-        await response.ShouldHaveSuccessStatusCode();
-        return response;
     }
 }

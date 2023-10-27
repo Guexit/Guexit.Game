@@ -1,7 +1,5 @@
-using System.Net;
-using Guexit.Game.Component.IntegrationTests.Builders;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
-using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,10 +36,10 @@ public sealed class WhenReceivingGameStarted : ComponentTest
             .ToArray());
 
         await StartGame(gameRoomId, playerId1);
-        await ConsumeMessage(new GameStarted(gameRoomId));
 
-        var gameRoom = await WebApplicationFactory.Services.CreateScope().ServiceProvider
-            .GetRequiredService<IGameRoomRepository>().GetBy(gameRoomId);
+        await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
+        var gameRoom = await scope.ServiceProvider.GetRequiredService<IGameRoomRepository>().GetBy(gameRoomId);
+
         gameRoom!.Status.Should().Be(GameStatus.InProgress);
         gameRoom.Deck.Should().AllSatisfy(x => x.Url.ToString().StartsWith("https://pablocompany/image/"));
         gameRoom.PlayerHands.First(x => x.PlayerId == playerId1).Cards.Should().HaveCount(4);
@@ -49,12 +47,7 @@ public sealed class WhenReceivingGameStarted : ComponentTest
 
     private async Task StartGame(GameRoomId gameRoomId, PlayerId playerId1)
     {
-        using var client = WebApplicationFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start");
-        request.AddPlayerIdHeader(playerId1);
-        var response = await client.SendAsync(request);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK, because: await response.Content.ReadAsStringAsync());
+        using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start", playerId1);
+        await response.ShouldHaveSuccessStatusCode();
     }
-
 }

@@ -37,10 +37,7 @@ public sealed class WhenQueryingGameSummary : ComponentTest
             new PlayerBuilder().WithId(guessingPlayer1).WithUsername("ironman").Build(),
             new PlayerBuilder().WithId(guessingPlayer2).WithUsername("starlord").Build());
 
-        using var client = WebApplicationFactory.CreateClient();
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/summary");
-        request.AddPlayerIdHeader(storyTellerId);
-        using var response = await client.SendAsync(request);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/summary", storyTellerId);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<GameSummaryReadModel>();
