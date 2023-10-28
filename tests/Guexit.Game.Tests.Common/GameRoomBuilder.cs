@@ -39,7 +39,7 @@ public sealed class GameRoomBuilder
             var storyTellerId = gameRoom.CurrentStoryTeller.PlayerId;
             var card = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First();
 
-            gameRoom.SubmitStoryTellerCardStory(storyTellerId, card.Id, _storyTellerCardStory);
+            gameRoom.SubmitStory(storyTellerId, card.Id, _storyTellerCardStory);
         }
 
         foreach (var guessingPlayerId in _guessingPlayersThatSubmittedCard)
@@ -99,9 +99,6 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithPlayersThatJoined(params PlayerId[] playersThatJoined)
     {
         ArgumentNullException.ThrowIfNull(playersThatJoined);
-
-        if (playersThatJoined.Length < 2)
-            throw new ArgumentException($"Game room must have at least 2 invited players. Received {playersThatJoined.Length}");
 
         _playersThatJoined = playersThatJoined;
         return this;

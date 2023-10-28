@@ -39,11 +39,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Join(PlayerId playerId)
     {
+        if (PlayerIds.Contains(playerId))
+            return;
+
         if (Status != GameStatus.NotStarted)
             throw new JoinStartedGameException(playerId, Id);
-
-        if (PlayerIds.Contains(playerId))
-            throw new PlayerIsAlreadyInGameRoomException(playerId);
 
         PlayerIds.Add(playerId);
 
@@ -77,7 +77,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new GameStarted(Id));
     }
 
-    public void SubmitStoryTellerCardStory(PlayerId storyTellerId, CardId cardId, string story)
+    public void SubmitStory(PlayerId storyTellerId, CardId cardId, string story)
     {
         if (Status != GameStatus.InProgress)
             throw new SubmittingCardToGameNotInProgressException(Id);
