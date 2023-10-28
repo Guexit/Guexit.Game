@@ -67,7 +67,7 @@ public sealed class WhenHandlingJoinGameRoomCommand
     }
 
     [Fact]
-    public async Task ThrowsPlayerIsAlreadyInGameRoomExceptionIfPlayerAlreadyJoined()
+    public async Task DoesNotRaisePlayerJoinedEventIfPlayerWasAlreadyInGame()
     {
         var creator = new PlayerId("player1");
         var playerJoining = new PlayerId("player2");
@@ -77,10 +77,11 @@ public sealed class WhenHandlingJoinGameRoomCommand
         await AssumePlayerInRepository(playerJoining);
         await AssumeGameInRepositoryWithPlayersThatJoined(gameRoomId, creator, playersThatJoined: playerJoining);
 
-        var action = async () => await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
+        await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
 
-        await action.Should().ThrowAsync<PlayerIsAlreadyInGameRoomException>()
-            .WithMessage("Player with id player2 is already in game room.");
+        var gameRoom = await _gameRoomRepository.GetBy(gameRoomId);
+        gameRoom.Should().NotBeNull();
+        gameRoom!.DomainEvents.Should().BeEmpty();
     }
 
     [Fact]
@@ -115,13 +116,13 @@ public sealed class WhenHandlingJoinGameRoomCommand
 
     private async Task AssumeGameInRepositoryWithPlayersThatJoined(GameRoomId gameRoomId, PlayerId creatorId, params PlayerId[] playersThatJoined)
     {
-        var game = new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 1, 2, 3, TimeSpan.Zero));
-        foreach(var playerId in playersThatJoined)
-        {
-            game.Join(playerId);
-        }
+        var gameRoom = new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creatorId)
+            .WithPlayersThatJoined(playersThatJoined)
+            .Build();
 
-        await _gameRoomRepository.Add(game);
+        await _gameRoomRepository.Add(gameRoom);
     }
 
     private async Task AssumePlayerInRepository(PlayerId creatorId)

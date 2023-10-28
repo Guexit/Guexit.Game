@@ -56,7 +56,7 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         var storyTellerId = gameRoom.CurrentStoryTeller.PlayerId;
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First();
 
-        gameRoom.SubmitStoryTellerCardStory(storyTellerId, card.Id, "Any story");
+        gameRoom.SubmitStory(storyTellerId, card.Id, "Any story");
     }
 
     private static void AssumeAllPlayersSubmittedCard(GameRoom gameRoom)

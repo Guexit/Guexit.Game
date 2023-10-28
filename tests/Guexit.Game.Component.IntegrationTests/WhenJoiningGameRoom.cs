@@ -38,7 +38,7 @@ public sealed class WhenJoiningGameRoom : ComponentTest
     }
 
     [Fact]
-    public async Task ReturnsErrorIfPlayerIsAlreadyInGameRoom()
+    public async Task ReturnsOkEvenIfPlayerIsAlreadyInGameRoom()
     {
         var creatorId = new PlayerId("player1");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
@@ -47,8 +47,7 @@ public sealed class WhenJoiningGameRoom : ComponentTest
 
         using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join", creatorId);
 
-        response.Should().NotBeNull();
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveSuccessStatusCode();
     }
 
     private async Task AssertGameRoomHasPlayers(PlayerId creator, PlayerId playerJoining)
