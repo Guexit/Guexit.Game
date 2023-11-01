@@ -21,8 +21,6 @@ public sealed class GameRoomBuilder
     {
         var gameRoom = new GameRoom(_id, _creatorId, _createdAt);
 
-        gameRoom.DefineMinRequiredPlayers(_minRequiredPlayers.Count);
-
         foreach (var player in _playersThatJoined)
             gameRoom.Join(player);
 
@@ -67,14 +65,16 @@ public sealed class GameRoomBuilder
             .WithId(gameRoomId)
             .WithCreator(creator)
             .WithPlayersThatJoined(playersThatJoined)
-            .WithAssignedDeck(Enumerable.Range(0, playersThatJoined.Concat(new[] { creator }).Count() * GameRoom.TotalCardsPerPlayer).Select(_ => new CardBuilder()).ToArray())
+            .WithAssignedDeck(Enumerable.Range(0, new TotalNumberOfCardsRequired(playersThatJoined.Length + 1).RequiredCardCount)
+                .Select(_ => new CardBuilder())
+                .ToArray())
             .Started();
         return gameRoomBuilder;
     }
 
     public static GameRoomBuilder CreateFinished(GameRoomId gameRoomId, PlayerId creator, PlayerId[] playersThatJoined)
     {
-        var gameRoomBuilder = GameRoomBuilder.CreateStarted(gameRoomId, creator, playersThatJoined)
+        var gameRoomBuilder = CreateStarted(gameRoomId, creator, playersThatJoined)
             .WithoutCardsLeftInDeck()
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(playersThatJoined[0], playersThatJoined[1])
@@ -130,7 +130,7 @@ public sealed class GameRoomBuilder
     
     public GameRoomBuilder WithValidDeckAssigned()
     {
-        WithAssignedDeck(Enumerable.Range(0, (_playersThatJoined.Length + 1) * GameRoom.TotalCardsPerPlayer)
+        WithAssignedDeck(Enumerable.Range(0, new TotalNumberOfCardsRequired(_playersThatJoined.Length + 1).RequiredCardCount)
             .Select(_ => new CardBuilder())
             .ToArray());
         return this;
