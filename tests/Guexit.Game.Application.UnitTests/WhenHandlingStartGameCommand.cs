@@ -37,7 +37,6 @@ public sealed class WhenHandlingStartGameCommand
             .WithId(GameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
-            .WithMinRequiredPlayers(3)
             .Build();
         await _gameRoomRepository.Add(gameRoom);
         await _imageRepository.AddRange(CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck()));
@@ -64,7 +63,6 @@ public sealed class WhenHandlingStartGameCommand
             .WithId(GameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined(Enumerable.Range(0, totalPlayers - 1).Select(x => new PlayerId(x.ToString())).ToArray())
-            .WithMinRequiredPlayers(3)
             .Build();
         var imagesToAssign = CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck());
 
@@ -92,7 +90,6 @@ public sealed class WhenHandlingStartGameCommand
             .WithId(GameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
-            .WithMinRequiredPlayers(3)
             .Build();
         await _gameRoomRepository.Add(gameRoom);
         await _imageRepository.AddRange(CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck()));
@@ -112,7 +109,6 @@ public sealed class WhenHandlingStartGameCommand
             .WithId(GameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
-            .WithMinRequiredPlayers(3)
             .Build();
         await _imageRepository.AddRange(CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck()));
         await _gameRoomRepository.Add(gameRoom);
@@ -162,7 +158,6 @@ public sealed class WhenHandlingStartGameCommand
         var gameRoom = new GameRoomBuilder()
             .WithId(GameRoomId)
             .WithCreator(creatorId)
-            .WithMinRequiredPlayers(3)
             .Build();
         await _gameRoomRepository.Add(gameRoom);
         await _imageRepository.AddRange(CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck()));
@@ -181,7 +176,6 @@ public sealed class WhenHandlingStartGameCommand
             .WithId(GameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
-            .WithMinRequiredPlayers(3)
             .Build();
         await _gameRoomRepository.Add(gameRoom);
 

@@ -21,7 +21,6 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .WithId(gameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined("player2", "player3")
-            .WithMinRequiredPlayers(3)
             .Build());
         await Save(new[]
         {
