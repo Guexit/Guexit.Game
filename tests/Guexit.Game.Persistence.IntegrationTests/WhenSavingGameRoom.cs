@@ -2,7 +2,6 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence.Repositories;
 using Guexit.Game.Tests.Common;
-using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.Persistence.IntegrationTests;
 
@@ -19,22 +18,19 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         var initialStoryTeller = new PlayerId("creatorPlayerId");
         var createdAt = new DateTimeOffset(2022, 1, 2, 3, 5, 6, TimeSpan.Zero);
         var repository = new GameRoomRepository(DbContext);
-        var requiredMinPlayers = 4;
         var submittedStory = "Some story";
         var guessingPlayerdIdsThatSubmittedCard = new PlayerId[] { "invitedPlayer1", "invitedPlayer2" };
-        var game = new GameRoomBuilder()
+
+        await repository.Add(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(initialStoryTeller)
             .WithPlayersThatJoined("invitedPlayer1", "invitedPlayer2", "invitedPlayer3")
             .WithCreatedAt(createdAt)
-            .WithMinRequiredPlayers(requiredMinPlayers)
             .Started()
             .WithAssignedDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
             .WithStoryTellerStory(submittedStory)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayerdIdsThatSubmittedCard)
-            .Build();
-
-        await repository.Add(game);
+            .Build());
         await SaveChangesAndClearChangeTracking();
 
         var gameRoom = await repository.GetBy(gameRoomId);
@@ -42,7 +38,6 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         gameRoom!.Id.Should().Be(gameRoomId);
         gameRoom.CreatedAt.Should().Be(createdAt);
         gameRoom.PlayerIds.Should().BeEquivalentTo(new PlayerId[] { initialStoryTeller, "invitedPlayer1", "invitedPlayer2", "invitedPlayer3" });
-        gameRoom.RequiredMinPlayers.Count.Should().Be(requiredMinPlayers);
         gameRoom.Status.Should().Be(GameStatus.InProgress);
         gameRoom.Deck.Should().NotBeEmpty();
         gameRoom.PlayerHands.Should().NotBeEmpty();

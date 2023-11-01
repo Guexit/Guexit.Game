@@ -92,7 +92,6 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var gameRoom = new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(playerId1).WithPlayersThatJoined(playerId2, playerId3)
-            .WithMinRequiredPlayers(3)
             .Build();
         await Save(gameRoom);
         await Save(new[]

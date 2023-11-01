@@ -9,7 +9,6 @@ public sealed class GameRoomBuilder
     private PlayerId _creatorId = new(Guid.NewGuid().ToString());
     private PlayerId[] _playersThatJoined = Array.Empty<PlayerId>();
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
-    private RequiredMinPlayers _minRequiredPlayers = RequiredMinPlayers.Default;
     private CardBuilder[] _cards = Array.Empty<CardBuilder>();
     private bool _isStarted = false;
     private string _storyTellerCardStory = string.Empty;
@@ -107,12 +106,6 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         _createdAt = createdAt;
-        return this;
-    }
-
-    public GameRoomBuilder WithMinRequiredPlayers(int count)
-    {
-        _minRequiredPlayers = new RequiredMinPlayers(count);
         return this;
     }
 

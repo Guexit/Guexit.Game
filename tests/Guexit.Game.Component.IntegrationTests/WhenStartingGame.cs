@@ -25,7 +25,6 @@ public sealed class WhenStartingGame : ComponentTest
         await Save(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(playerId1).WithPlayersThatJoined(playerId2, playerId3)
-            .WithMinRequiredPlayers(3)
             .Build());
         await Save(new PlayerBuilder().WithId(playerId1).Build(),
             new PlayerBuilder().WithId(playerId2).Build(),
