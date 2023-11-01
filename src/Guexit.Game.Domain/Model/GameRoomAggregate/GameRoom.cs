@@ -6,7 +6,6 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
-    public const int TotalCardsPerPlayer = 8;
     public const int PlayerHandSize = 4;
 
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
@@ -34,8 +33,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
-    public int GetRequiredNumberOfCardsInDeck() => PlayerIds.Count * TotalCardsPerPlayer;
-    public void DefineMinRequiredPlayers(int count) => RequiredMinPlayers = new RequiredMinPlayers(count);
+    public int GetRequiredNumberOfCardsInDeck()
+    {
+        var totalCardsRequired = new TotalNumberOfCardsRequired(GetPlayersCount(), desiredRounds: 1);
+        return totalCardsRequired.RequiredCardCount;
+    }
 
     public void Join(PlayerId playerId)
     {
@@ -63,7 +65,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (Status != GameStatus.NotStarted)
             throw new StartAlreadyStartedGameException(Id);
 
-        if (!RequiredMinPlayers.AreSatisfiedBy(PlayerIds.Count))
+        if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
         
         if (!PlayerIds.Contains(playerId))

@@ -48,14 +48,22 @@ public sealed class WhenHandlingStartGameCommand
         gameRoom.Status.Should().Be(GameStatus.InProgress);
     }
 
-    [Fact]
-    public async Task AssignsDeckAndDealsInitialCardsToPlayers()
+    [Theory]
+    [InlineData(3, 6)]
+    [InlineData(4, 12)]
+    [InlineData(5, 20)]
+    [InlineData(6, 30)]
+    [InlineData(7, 42)]
+    [InlineData(8, 56)]
+    [InlineData(9, 72)]
+    [InlineData(10, 90)]
+    public async Task AssignsDeckAndDealsInitialCardsToPlayers(int totalPlayers, int expectedCardsInDeckAfterInitialDeal)
     {
         var creatorId = new PlayerId("creator");
         var gameRoom = new GameRoomBuilder()
             .WithId(GameRoomId)
             .WithCreator(creatorId)
-            .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
+            .WithPlayersThatJoined(Enumerable.Range(0, totalPlayers - 1).Select(x => new PlayerId(x.ToString())).ToArray())
             .WithMinRequiredPlayers(3)
             .Build();
         var imagesToAssign = CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck());
@@ -65,20 +73,15 @@ public sealed class WhenHandlingStartGameCommand
 
         await _commandHandler.Handle(new StartGameCommand(GameRoomId, creatorId));
 
-        gameRoom.Should().NotBeNull();
-
-        int allCardsInDeckMinusAlreadyDealt = gameRoom.GetRequiredNumberOfCardsInDeck() - (GameRoom.PlayerHandSize * gameRoom.GetPlayersCount());
-        gameRoom.Deck.Should().HaveCount(allCardsInDeckMinusAlreadyDealt);
+        gameRoom.Deck.Count.Should().Be(expectedCardsInDeckAfterInitialDeal);
         gameRoom.Deck.Select(x => x.Url).Should().BeSubsetOf(imagesToAssign.Select(x => x.Url));
 
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("creator")).Cards.Should().HaveCount(GameRoom.PlayerHandSize)
-            .And.Subject.Select(x => x.Url).Should().BeSubsetOf(imagesToAssign.Select(x => x.Url));
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("2")).Cards.Should().HaveCount(GameRoom.PlayerHandSize)
-            .And.Subject.Select(x => x.Url).Should().BeSubsetOf(imagesToAssign.Select(x => x.Url));
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("3")).Cards.Should().HaveCount(GameRoom.PlayerHandSize)
-            .And.Subject.Select(x => x.Url).Should().BeSubsetOf(imagesToAssign.Select(x => x.Url));
-        gameRoom.PlayerHands.First(x => x.PlayerId == new PlayerId("4")).Cards.Should().HaveCount(GameRoom.PlayerHandSize)
-            .And.Subject.Select(x => x.Url).Should().BeSubsetOf(imagesToAssign.Select(x => x.Url));
+        var imagesUrls = imagesToAssign.Select(x => x.Url).ToHashSet();
+        foreach (var playerHand in gameRoom.PlayerHands)
+        {
+            playerHand.Cards.Should().HaveCount(GameRoom.PlayerHandSize)
+                .And.Subject.Select(x => x.Url).Should().BeSubsetOf(imagesUrls);
+        }
     }
 
     [Fact]
@@ -141,7 +144,7 @@ public sealed class WhenHandlingStartGameCommand
             .WithCreator(playerId)
             .WithPlayersThatJoined("thanos", "gamora", "thor")
             .Build();
-        var insufficientAvailableCardsCount = (gameRoom.PlayerIds.Count * GameRoom.TotalCardsPerPlayer) - 1;
+        var insufficientAvailableCardsCount = gameRoom.GetRequiredNumberOfCardsInDeck() - 1;
         
         await _imageRepository.AddRange(CreateImages(insufficientAvailableCardsCount));
         await _gameRoomRepository.Add(gameRoom);

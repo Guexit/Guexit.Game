@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -20,13 +19,11 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         var storyTellerId = new PlayerId("thanos");
         var guessingPlayer1 = new PlayerId("ironman");
         var guessingPlayer2 = new PlayerId("starlord");
-        var playersInGame = 3;
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayer1, guessingPlayer2 })
             .WithStoryTellerStory("Infinity gems")
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
             .WithVote(guessingPlayer1, storyTellerId)
             .WithVote(guessingPlayer2, storyTellerId)
-            .WithCardsInDeck(GameRoom.TotalCardsPerPlayer * playersInGame + playersInGame)
             .Build();
         AssumeStoryTellerSubmittedStory(gameRoom);
         AssumeAllPlayersSubmittedCard(gameRoom);
