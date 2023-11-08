@@ -17,15 +17,13 @@ public sealed class ComponentTestCollectionDefinition : IClassFixture<GameWebApp
 [Collection(nameof(ComponentTestCollectionDefinition))]
 public abstract class ComponentTest : IAsyncLifetime
 {
-    private readonly ITestDataCleaner[] _testDataCleaners;
+    private static readonly ITestDataCleaner[] _testDataCleaners = { new PersistenceDataCleaner() };
+    
     protected GameWebApplicationFactory WebApplicationFactory { get; }
 
     protected ComponentTest(GameWebApplicationFactory webApplicationFactory)
     {
         WebApplicationFactory = webApplicationFactory;
-        _ = WebApplicationFactory.CreateClient();
-
-        _testDataCleaners = new ITestDataCleaner[] { new PersistenceDataCleaner() };
     }
 
     protected async Task ConsumeMessage<TMessage>(TMessage message)
@@ -59,7 +57,8 @@ public abstract class ComponentTest : IAsyncLifetime
     protected async Task<HttpResponseMessage> Send(HttpMethod httpMethod, string requestUri, HttpContent content, 
         PlayerId authenticatedPlayerId)
     {
-        using var request = new HttpRequestMessage(httpMethod, requestUri) { Content = content };
+        using var request = new HttpRequestMessage(httpMethod, requestUri);
+        request.Content = content;
         request.AddPlayerIdHeader(authenticatedPlayerId);
         return await Send(request);
     }
@@ -80,7 +79,7 @@ public abstract class ComponentTest : IAsyncLifetime
     public Task InitializeAsync() => CleanUp();
     public Task DisposeAsync() => Task.CompletedTask;
 
-    public async Task CleanUp()
+    private async Task CleanUp()
     {
         foreach (var cleaner in _testDataCleaners)
             await cleaner.Clean(WebApplicationFactory);

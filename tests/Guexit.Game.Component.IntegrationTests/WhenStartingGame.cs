@@ -44,8 +44,8 @@ public sealed class WhenStartingGame : ComponentTest
         var gameRoom = await gameRoomRepository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();
         gameRoom!.Status.Should().Be(GameStatus.InProgress);
-        gameRoom.Deck.Should().NotBeEmpty()
-            .And.Subject.Select(x => x.Url).Should().BeSubsetOf(images.Select(x => x.Url));
+        gameRoom.Deck.Should().NotBeEmpty();
+        gameRoom.Deck.Select(x => x.Url).Should().BeSubsetOf(images.Select(x => x.Url));
         gameRoom.PlayerHands.Should().AllSatisfy(x =>
         {
             x.Cards.Should().HaveCount(GameRoom.PlayerHandSize);
