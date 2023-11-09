@@ -88,6 +88,26 @@ public sealed class WhenHandlingVoteCardCommand
     }
 
     [Fact]
+    public async Task GuessingPlayerVotedEventIsRaised()
+    {
+        var votingPlayerId = new PlayerId("votingPlayer");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId, new PlayerId("player3") })
+            .WithStoryTellerStory("Any story")
+            .WithGuessingPlayerThatSubmittedCard(votingPlayerId, "player3")
+            .Build();
+        var votedCardId = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId).Card.Id;
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _commandHandler.Handle(new VoteCardCommand(votingPlayerId, GameRoomId, votedCardId));
+
+        gameRoom.DomainEvents.OfType<GuessingPlayerVoted>().Should().HaveCount(1);
+        var @event = gameRoom.DomainEvents.OfType<GuessingPlayerVoted>().Single();
+        @event.GameRoomId.Should().Be(gameRoom.Id);
+        @event.PlayerId.Should().Be(votingPlayerId);
+        @event.SelectedCardId.Should().Be(votedCardId);
+    }
+    
+    [Fact]
     public async Task GuessingPlayersReceiveOnePointPerEachGuesserVoteAndStoryTellerDoNotReceiveIfNoOneVotedTheirs()
     {
         var storyTellerId = new PlayerId("storyTellerId");
