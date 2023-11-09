@@ -22,19 +22,22 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         var storyTellerId = new PlayerId("storyTellerId");
         var storyTellerUsername = "antman";
         var story = "El tipico adolescente abuelo";
+        
         var guessingPlayer1 = new PlayerId("player2");
         var guessingPlayer2 = new PlayerId("player3");
+        
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayer1, guessingPlayer2 })
             .WithStoryTellerStory(story)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
             .Build();
+        
         await Save(gameRoom);
-        await Save(new[]
-        {
+        await Save(
             new PlayerBuilder().WithId(storyTellerId).WithUsername(storyTellerUsername).Build(),
             new PlayerBuilder().WithId(guessingPlayer1).WithUsername("spiderman").Build(),
             new PlayerBuilder().WithId(guessingPlayer2).WithUsername("fury").Build()
-        });
+        );
+        
         var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId);
         var guessingPlayer1Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1);
         var guessingPlayer2Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer2);
@@ -45,21 +48,21 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         using var votingReadModelResponse = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", storyTellerId);
         await votingReadModelResponse.ShouldHaveSuccessStatusCode();
 
-        var responseContent = await votingReadModelResponse.Content.ReadFromJsonAsync<VotingReadModel>();
-        responseContent.Should().NotBeNull();
-        responseContent!.IsCurrentUserStoryTeller.Should().BeTrue();
-        responseContent.CurrentUserHasAlreadyVoted.Should().BeFalse();
-        responseContent.Cards.Should().HaveCount(3);
-        responseContent.PlayersWhoHaveAlreadyVoted.Should().HaveCount(1);
-        responseContent.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId.Value);
-        responseContent.CurrentStoryTeller.Username.Should().Be(storyTellerUsername);
-        responseContent.CurrentStoryTeller.Story.Should().Be(story);
+        var votingReadModel = await votingReadModelResponse.Content.ReadFromJsonAsync<VotingReadModel>();
+        votingReadModel.Should().NotBeNull();
+        votingReadModel!.IsCurrentUserStoryTeller.Should().BeTrue();
+        votingReadModel.CurrentUserHasAlreadyVoted.Should().BeFalse();
+        votingReadModel.Cards.Should().HaveCount(3);
+        votingReadModel.PlayersWhoHaveAlreadyVoted.Should().HaveCount(1);
+        votingReadModel.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId.Value);
+        votingReadModel.CurrentStoryTeller.Username.Should().Be(storyTellerUsername);
+        votingReadModel.CurrentStoryTeller.Story.Should().Be(story);
 
-        responseContent.Cards.Should()
+        votingReadModel.Cards.Should()
             .Contain(x => x.Id == storyTellerCard.Card.Id && x.Url == storyTellerCard.Card.Url && x.WasSubmittedByQueryingPlayer)
             .And.Contain(x => x.Id == guessingPlayer1Card.Card.Id && x.Url == guessingPlayer1Card.Card.Url && !x.WasSubmittedByQueryingPlayer)
             .And.Contain(x => x.Id == guessingPlayer2Card.Card.Id && x.Url == guessingPlayer2Card.Card.Url && !x.WasSubmittedByQueryingPlayer);
-        responseContent.PlayersWhoHaveAlreadyVoted.Should()
+        votingReadModel.PlayersWhoHaveAlreadyVoted.Should()
             .Contain(x => x.Username == "spiderman" && x.PlayerId == guessingPlayer1);
     }
 }
