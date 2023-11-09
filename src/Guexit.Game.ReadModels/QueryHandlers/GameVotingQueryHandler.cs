@@ -36,23 +36,27 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var voterIds = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
-
         var players = await DbContext.Players.AsNoTracking().ToArrayAsync(ct);
-        var playerWhoVoted = players.Where(x => voterIds.Contains(x.Id));
-
+        
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
             .ToArray();
-
+        var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds().ToHashSet();
+        var guessingPlayers = players.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
+        var playerIdsWhoAlreadyVoted = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
         var currentStoryTeller = players.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
 
         return new VotingReadModel
         {
             Cards = submittedCards,
-            PlayersWhoHaveAlreadyVoted = playerWhoVoted
-                .Select(x => new PlayerDto { PlayerId = x.Id, Username = x.Username }).ToArray(),
-            CurrentUserHasAlreadyVoted = voterIds.Contains(query.PlayerId),
+            GuessingPlayers = guessingPlayers.Select(x => new VotingReadModel.VotingPlayerDto
+                {
+                    PlayerId = x.Id,
+                    Username = x.Username,
+                    HasVotedAlready = playerIdsWhoAlreadyVoted.Contains(x.Id)
+                }) 
+                .ToArray(),
+            CurrentUserHasAlreadyVoted = playerIdsWhoAlreadyVoted.Contains(query.PlayerId),
             IsCurrentUserStoryTeller = gameRoom.CurrentStoryTeller.PlayerId == query.PlayerId,
             CurrentStoryTeller = new StoryTellerDto                                                              
             {
