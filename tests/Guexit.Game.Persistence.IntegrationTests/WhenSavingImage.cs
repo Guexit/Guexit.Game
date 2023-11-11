@@ -1,11 +1,12 @@
 ﻿using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Persistence.Repositories;
+using Xunit.Abstractions;
 
 namespace Guexit.Game.Persistence.IntegrationTests;
 
 public sealed class WhenSavingImage : DatabaseMappingIntegrationTest
 {
-    public WhenSavingImage(IntegrationTestFixture fixture) : base(fixture)
+    public WhenSavingImage(IntegrationTestFixture fixture, ITestOutputHelper testOutput) : base(fixture, testOutput)
     {
     }
 
@@ -18,7 +19,7 @@ public sealed class WhenSavingImage : DatabaseMappingIntegrationTest
         var repository = new ImageRepository(DbContext);
 
         await repository.Add(new Image(imageId, url, createdAt));
-        await SaveChangesAndClearChangeTracking();
+        await SaveChanges();
 
         var image = await repository.GetBy(imageId);
         image.Should().NotBeNull();

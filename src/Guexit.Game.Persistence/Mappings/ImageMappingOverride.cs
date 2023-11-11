@@ -9,6 +9,8 @@ internal sealed class ImageMappingOverride : IEntityTypeConfiguration<Image>
 {
     public void Configure(EntityTypeBuilder<Image> builder)
     {
+        builder.Property<uint>("Version").IsRowVersion();
+        
         builder.Property(x => x.Id).HasConversion(to => to.Value, from => new ImageId(from));
         builder.HasKey(x => x.Id);
 
@@ -17,7 +19,5 @@ internal sealed class ImageMappingOverride : IEntityTypeConfiguration<Image>
         builder.Property(x => x.GameRoomId).HasConversion(to => to.Value, from => new GameRoomId(from));
 
         builder.HasIndex(x => x.CreatedAt);
-
-        builder.Property<uint>("Version").IsRowVersion();
     }
 }

@@ -10,11 +10,11 @@ internal sealed class PlayerMappingOverride : IEntityTypeConfiguration<Player>
 
     public void Configure(EntityTypeBuilder<Player> builder)
     {
+        builder.Property<uint>("Version").IsRowVersion();
+        
         builder.Property(x => x.Id).HasConversion(to => to.Value, from => new PlayerId(from));
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Username).IsRequired().HasMaxLength(MaxEmailLength);
-        
-        builder.Property<uint>("Version").IsRowVersion();
     }
 }
