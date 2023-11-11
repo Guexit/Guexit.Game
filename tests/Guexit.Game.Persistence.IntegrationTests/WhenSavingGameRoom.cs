@@ -2,14 +2,14 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence.Repositories;
 using Guexit.Game.Tests.Common;
+using Xunit.Abstractions;
 
 namespace Guexit.Game.Persistence.IntegrationTests;
 
 public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
 {
-    public WhenSavingGameRoom(IntegrationTestFixture fixture) : base(fixture)
-    {
-    }
+    public WhenSavingGameRoom(IntegrationTestFixture fixture, ITestOutputHelper testOutput) : base(fixture, testOutput)
+    { }
 
     [Fact]
     public async Task IsPersisted()
@@ -31,7 +31,7 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
             .WithStoryTellerStory(submittedStory)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayerdIdsThatSubmittedCard)
             .Build());
-        await SaveChangesAndClearChangeTracking();
+        await SaveChanges();
 
         var gameRoom = await repository.GetBy(gameRoomId);
         gameRoom.Should().NotBeNull();

@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Guexit.Game.Application;
+﻿using Guexit.Game.Application;
 using Guexit.Game.Domain;
 using Microsoft.EntityFrameworkCore.Storage;
 

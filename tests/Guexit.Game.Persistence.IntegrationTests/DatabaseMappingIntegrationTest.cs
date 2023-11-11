@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
 
 namespace Guexit.Game.Persistence.IntegrationTests;
 
@@ -16,8 +17,6 @@ public sealed class IntegrationTestFixture
            .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
            .AddEnvironmentVariables()
            .Build();
-
-        // TODO Move DbContext creation here
     }
 }
 
@@ -29,21 +28,22 @@ public sealed class MappingIntegrationTestCollectionDefinition : ICollectionFixt
 [Collection(nameof(MappingIntegrationTestCollectionDefinition))]
 public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
 {
-    //private readonly IDbContextTransaction _transactionToDiscardChanges;
-    protected readonly GameDbContext DbContext;
+    protected DbContextOptions<GameDbContext> DbContextOptions { get; }
+    protected GameDbContext DbContext { get; }
 
-    protected DatabaseMappingIntegrationTest(IntegrationTestFixture fixture)
+
+    protected DatabaseMappingIntegrationTest(IntegrationTestFixture fixture, ITestOutputHelper testOutput)
     {
-        var dbContextOptions = new DbContextOptionsBuilder<GameDbContext>()
+        DbContextOptions = new DbContextOptionsBuilder<GameDbContext>()
             .UseNpgsql(fixture.Configuration.GetConnectionString("Guexit_Game_GameDb"))
             .EnableSensitiveDataLogging()
+            .LogTo(testOutput.WriteLine, LogLevel.Information)
             .Options;
 
-        DbContext = new GameDbContext(dbContextOptions);
-        //_transactionToDiscardChanges = DbContext.Database.BeginTransaction();
+        DbContext = new GameDbContext(DbContextOptions);
     }
 
-    protected async Task SaveChangesAndClearChangeTracking()
+    protected async Task SaveChanges()
     {
         await DbContext.SaveChangesAsync();
         DbContext.ChangeTracker.Clear();
@@ -53,8 +53,12 @@ public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        //await _transactionToDiscardChanges.RollbackAsync();
-        //await _transactionToDiscardChanges.DisposeAsync();
+        await DbContext.Cards.ExecuteDeleteAsync();
+        await DbContext.PlayerHands.ExecuteDeleteAsync();
+        await DbContext.GameRooms.ExecuteDeleteAsync();
+        await DbContext.Players.ExecuteDeleteAsync();
+        await DbContext.Images.ExecuteDeleteAsync();
+        
         await DbContext.DisposeAsync();
     }
 }
