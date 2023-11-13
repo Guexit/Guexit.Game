@@ -25,6 +25,8 @@ public static class PersistenceInstaller
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddScoped<GameRoomOptimisticConcurrencyCheckEnforcer>();
+        
         return services.AddScoped<IGameRoomRepository, GameRoomRepository>()
             .AddScoped<IPlayerRepository, PlayerRepository>()
             .AddScoped<IImageRepository, ImageRepository>()

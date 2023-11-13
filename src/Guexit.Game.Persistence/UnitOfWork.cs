@@ -1,14 +1,15 @@
-﻿using Guexit.Game.Application;
+using System.Data;
+using System.Data.Common;
+using Guexit.Game.Application;
 using Guexit.Game.Domain;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Guexit.Game.Persistence;
 
-public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
+public sealed class UnitOfWork : IUnitOfWork
 {
     private readonly GameDbContext _dbContext;
     private readonly IDomainEventPublisher _domainEventPublisher;
-    private IDbContextTransaction? _transaction;
 
     public UnitOfWork(GameDbContext dbContext, IDomainEventPublisher domainEventPublisher)
     {
@@ -16,30 +17,16 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
         _domainEventPublisher = domainEventPublisher;
     }
 
-    public async Task BeginTransaction(CancellationToken cancellationToken)
+    public async Task<DbTransaction> BeginTransaction(CancellationToken cancellationToken)
     {
-        if (_transaction is not null)
-            throw new InvalidOperationException("A transaction already began, multiple transactions is not supported");
-
-        _transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        return dbContextTransaction.GetDbTransaction();
     }
 
-    public async Task Commit(CancellationToken cancellationToken = default)
+    public async Task SaveChanges(CancellationToken cancellationToken = default)
     {
-        if (_transaction is null)
-            throw new InvalidOperationException("Cannot commit before beginning a transaction");
-
         await PublishDomainEvents(cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
-        await _transaction.CommitAsync(cancellationToken);
-    }
-
-    public async Task Rollback(CancellationToken cancellationToken = default)
-    {
-        if (_transaction is null)
-            throw new InvalidOperationException("Cannot rollback before beginning a transaction");
-
-        await _transaction.RollbackAsync(cancellationToken);
     }
 
     private async ValueTask PublishDomainEvents(CancellationToken cancellationToken)
@@ -57,11 +44,5 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
             aggregateRoots = _dbContext.ChangeTracker.Entries<IAggregateRoot>().Select(x => x.Entity).ToArray();
             domainEvents = aggregateRoots.SelectMany(x => x.DomainEvents).ToArray();
         }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_transaction is not null)
-            await _transaction.DisposeAsync();
     }
 }

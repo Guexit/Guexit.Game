@@ -19,12 +19,7 @@ public sealed class WhenHandlingCreateGameRoomCommand
         _playerRepository = new FakeInMemoryPlayerRepository();
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
         _systemClock = Substitute.For<ISystemClock>();
-        _commandHandler = new CreateGameRoomCommandHandler(
-            Substitute.For<IUnitOfWork>(),
-            _playerRepository,
-            _gameRoomRepository,
-            _systemClock
-        );
+        _commandHandler = new CreateGameRoomCommandHandler(_playerRepository, _gameRoomRepository, _systemClock);
     }
 
     [Fact]

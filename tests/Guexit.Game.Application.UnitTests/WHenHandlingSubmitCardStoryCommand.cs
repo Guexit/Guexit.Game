@@ -17,7 +17,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
     public WhenHandlingSubmitCardStoryCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new SubmitStoryTellerCardStoryCommandHandler(Substitute.For<IUnitOfWork>(), _gameRoomRepository);
+        _commandHandler = new SubmitStoryTellerCardStoryCommandHandler(_gameRoomRepository);
     }
 
     [Fact]

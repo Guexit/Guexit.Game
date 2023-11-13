@@ -1,0 +1,36 @@
+using Guexit.Game.Application;
+using Mediator;
+using ICommand = Guexit.Game.Application.ICommand;
+
+namespace Guexit.Game.WebApi.Mediator;
+
+public sealed class UnitOfWorkCommandPipelineBehavior<TCommand, TResponse> : IPipelineBehavior<TCommand, TResponse>
+    where TCommand : ICommand
+{
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UnitOfWorkCommandPipelineBehavior(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+    
+    public async ValueTask<TResponse> Handle(TCommand command, CancellationToken ct, MessageHandlerDelegate<TCommand, TResponse> next)
+    {
+        await using var transaction = await _unitOfWork.BeginTransaction(ct);
+
+        try
+        {
+            var response = await next.Invoke(command, ct);
+            
+            await _unitOfWork.SaveChanges(ct);
+            await transaction.CommitAsync(ct);
+            
+            return response;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
+    }
+}

@@ -18,11 +18,7 @@ public sealed class WhenHandlingJoinGameRoomCommand
     {
         _playerRepository = new FakeInMemoryPlayerRepository();
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new JoinGameRoomCommandHandler(
-            Substitute.For<IUnitOfWork>(),
-            _playerRepository,
-            _gameRoomRepository
-        );
+        _commandHandler = new JoinGameRoomCommandHandler(_playerRepository, _gameRoomRepository);
     }
 
     [Fact]

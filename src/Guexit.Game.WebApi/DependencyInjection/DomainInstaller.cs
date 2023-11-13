@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.Domain;
+using Guexit.Game.WebApi.Mediator;
 
 namespace Guexit.Game.WebApi.DependencyInjection;
 
