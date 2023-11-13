@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,20 +11,30 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "MessageType",
-                table: "OutboxMessage",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.Sql("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT FROM information_schema.columns 
+                        WHERE table_schema = 'public' 
+                          AND table_name = 'OutboxMessage' 
+                          AND column_name = 'MessageType'
+                    ) THEN
+                        ALTER TABLE public."OutboxMessage"
+                        ADD COLUMN "MessageType" text NOT NULL DEFAULT '';
+                    END IF;
+                END
+                $$;
+            """);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MessageType",
-                table: "OutboxMessage");
+            migrationBuilder.Sql("""
+                ALTER TABLE public."OutboxMessage"
+                DROP COLUMN IF EXISTS "MessageType";
+            """);
         }
     }
 }
