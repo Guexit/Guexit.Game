@@ -11,7 +11,6 @@ public static class ApplicationInstaller
     {
         services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(OptimisticConcurrencyFailureRetryPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkCommandPipelineBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(GameRoomOptimisticConcurrencyCheckPipelineBehaviour<,>));
 
