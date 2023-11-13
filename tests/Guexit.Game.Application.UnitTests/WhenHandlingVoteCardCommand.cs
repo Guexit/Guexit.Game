@@ -19,7 +19,7 @@ public sealed class WhenHandlingVoteCardCommand
     public WhenHandlingVoteCardCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new VoteCardCommandHandler(Substitute.For<IUnitOfWork>(), _gameRoomRepository);
+        _commandHandler = new VoteCardCommandHandler(_gameRoomRepository);
     }
 
     [Fact]

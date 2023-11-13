@@ -3,7 +3,7 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.Application.Commands;
 
-public sealed class StartGameCommand : ICommand
+public sealed class StartGameCommand : IGameRoomCommand
 {
     public GameRoomId GameRoomId { get; }
     public PlayerId PlayerId { get; }

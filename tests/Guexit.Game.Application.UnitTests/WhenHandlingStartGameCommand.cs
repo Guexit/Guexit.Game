@@ -22,11 +22,7 @@ public sealed class WhenHandlingStartGameCommand
     {
         _imageRepository = new FakeInMemoryImageRepository();
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new StartGameCommandHandler(
-            Substitute.For<IUnitOfWork>(),
-            _gameRoomRepository,
-            _imageRepository
-        );
+        _commandHandler = new StartGameCommandHandler(_gameRoomRepository, _imageRepository);
     }
 
     [Fact]

@@ -1,8 +1,9 @@
-﻿namespace Guexit.Game.Application;
+﻿using System.Data.Common;
+
+namespace Guexit.Game.Application;
 
 public interface IUnitOfWork
 {
-    Task BeginTransaction(CancellationToken cancellationToken = default);
-    Task Commit(CancellationToken cancellationToken = default);
-    Task Rollback(CancellationToken cancellationToken = default);
+    Task<DbTransaction> BeginTransaction(CancellationToken cancellationToken = default);
+    Task SaveChanges(CancellationToken cancellationToken = default);
 }

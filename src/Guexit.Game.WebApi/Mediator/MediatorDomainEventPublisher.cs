@@ -1,7 +1,7 @@
 ﻿using Guexit.Game.Domain;
 using Mediator;
 
-namespace Guexit.Game.WebApi;
+namespace Guexit.Game.WebApi.Mediator;
 
 public sealed class MediatorDomainEventPublisher : IDomainEventPublisher
 {

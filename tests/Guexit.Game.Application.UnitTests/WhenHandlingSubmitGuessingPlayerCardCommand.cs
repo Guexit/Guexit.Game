@@ -19,7 +19,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     public WhenHandlingSubmitGuessingPlayerCardCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new SubmitGuessingPlayerCardCommandHandler(Substitute.For<IUnitOfWork>(), _gameRoomRepository);
+        _commandHandler = new SubmitGuessingPlayerCardCommandHandler(_gameRoomRepository);
     }
 
     [Fact]
