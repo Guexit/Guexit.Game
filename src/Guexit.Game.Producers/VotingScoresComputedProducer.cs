@@ -7,12 +7,12 @@ namespace Guexit.Game.Producers;
 
 public sealed class VotingScoresComputedProducer : IDomainEventHandler<VotingScoresComputed>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public VotingScoresComputedProducer(IBus bus) => _bus = bus;
+    public VotingScoresComputedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(VotingScoresComputed @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new VotingScoresComputedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
+        await _publishEndpoint.Publish(new VotingScoresComputedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }
 }

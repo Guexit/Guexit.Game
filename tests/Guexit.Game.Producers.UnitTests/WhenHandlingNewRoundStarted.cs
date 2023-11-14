@@ -9,12 +9,12 @@ namespace Guexit.Game.Producers.UnitTests;
 public sealed class WhenHandlingNewRoundStarted
 {
     private readonly NewRoundStartedProducer _eventHandler;
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public WhenHandlingNewRoundStarted()
     {
-        _bus = Substitute.For<IBus>();
-        _eventHandler = new NewRoundStartedProducer(_bus);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _eventHandler = new NewRoundStartedProducer(_publishEndpoint);
     }
 
     [Fact]
@@ -25,6 +25,6 @@ public sealed class WhenHandlingNewRoundStarted
 
         await _eventHandler.Handle(newRoundStarted);
 
-        await _bus.Received(1).Publish(Arg.Is<NewRoundStartedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
+        await _publishEndpoint.Received(1).Publish(Arg.Is<NewRoundStartedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
     }
 }

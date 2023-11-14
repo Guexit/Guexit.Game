@@ -7,13 +7,13 @@ namespace Guexit.Game.Producers;
 
 public sealed class GuessingPlayerVotedProducer : IDomainEventHandler<GuessingPlayerVoted>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public GuessingPlayerVotedProducer(IBus bus) => _bus = bus;
+    public GuessingPlayerVotedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(GuessingPlayerVoted @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new GuessingPlayerVotedIntegrationEvent 
+        await _publishEndpoint.Publish(new GuessingPlayerVotedIntegrationEvent 
         { 
             GameRoomId = @event.GameRoomId,
             SelectedCardId = @event.SelectedCardId,

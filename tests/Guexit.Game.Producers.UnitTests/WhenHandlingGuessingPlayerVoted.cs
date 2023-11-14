@@ -10,12 +10,12 @@ namespace Guexit.Game.Producers.UnitTests;
 public sealed class WhenHandlingGuessingPlayerVoted
 {
     private readonly GuessingPlayerVotedProducer _eventHandler;
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public WhenHandlingGuessingPlayerVoted()
     {
-        _bus = Substitute.For<IBus>();
-        _eventHandler = new GuessingPlayerVotedProducer(_bus);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _eventHandler = new GuessingPlayerVotedProducer(_publishEndpoint);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public sealed class WhenHandlingGuessingPlayerVoted
 
         await _eventHandler.Handle(@event);
 
-        await _bus.Received(1).Publish(Arg.Is<GuessingPlayerVotedIntegrationEvent>(e =>
+        await _publishEndpoint.Received(1).Publish(Arg.Is<GuessingPlayerVotedIntegrationEvent>(e =>
             e.GameRoomId == @event.GameRoomId && 
             e.PlayerId == @event.PlayerId && 
             e.SelectedCardId == @event.SelectedCardId));

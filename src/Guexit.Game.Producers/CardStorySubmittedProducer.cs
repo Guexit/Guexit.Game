@@ -3,17 +3,17 @@ using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Messages;
 using MassTransit;
 
-namespace Guexit.Game.Producer;
+namespace Guexit.Game.Producers;
 
 public sealed class CardStorySubmittedProducer : IDomainEventHandler<StoryTellerCardStorySubmitted>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CardStorySubmittedProducer(IBus bus) => _bus = bus;
+    public CardStorySubmittedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(StoryTellerCardStorySubmitted @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new CardStorySubmittedIntegrationEvent(@event.GameRoomId, 
+        await _publishEndpoint.Publish(new CardStorySubmittedIntegrationEvent(@event.GameRoomId, 
             @event.SelectedCardId, @event.StoryTellerId, @event.Story), ct);
     }
 }

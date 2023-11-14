@@ -7,12 +7,12 @@ namespace Guexit.Game.Producers;
 
 public sealed class AllPlayerCardsSubmittedProducer : IDomainEventHandler<AllPlayerCardsSubmitted>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public AllPlayerCardsSubmittedProducer(IBus bus) => _bus = bus;
+    public AllPlayerCardsSubmittedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(AllPlayerCardsSubmitted @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new AllPlayerCardsSubmittedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
+        await _publishEndpoint.Publish(new AllPlayerCardsSubmittedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }
 }

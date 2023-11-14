@@ -9,12 +9,12 @@ namespace Guexit.Game.Producers.UnitTests;
 public sealed class WhenHandlingVotingScoresComputed
 {
     private readonly VotingScoresComputedProducer _eventHandler;
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public WhenHandlingVotingScoresComputed()
     {
-        _bus = Substitute.For<IBus>();
-        _eventHandler = new VotingScoresComputedProducer(_bus);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _eventHandler = new VotingScoresComputedProducer(_publishEndpoint);
     }
 
     [Fact]
@@ -25,6 +25,6 @@ public sealed class WhenHandlingVotingScoresComputed
 
         await _eventHandler.Handle(gameStarted);
 
-        await _bus.Received(1).Publish(Arg.Is<VotingScoresComputedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
+        await _publishEndpoint.Received(1).Publish(Arg.Is<VotingScoresComputedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
     }
 }

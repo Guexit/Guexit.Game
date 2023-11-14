@@ -7,10 +7,10 @@ namespace Guexit.Game.Producers;
 
 public sealed class NewRoundStartedProducer : IDomainEventHandler<NewRoundStarted>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public NewRoundStartedProducer(IBus bus) => _bus = bus;
+    public NewRoundStartedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(NewRoundStarted @event, CancellationToken ct = default) 
-        => await _bus.Publish(new NewRoundStartedIntegrationEvent(@event.GameRoomId), ct);
+        => await _publishEndpoint.Publish(new NewRoundStartedIntegrationEvent(@event.GameRoomId), ct);
 }

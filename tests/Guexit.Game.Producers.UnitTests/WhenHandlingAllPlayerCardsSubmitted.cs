@@ -9,12 +9,12 @@ namespace Guexit.Game.Producers.UnitTests;
 public sealed class WhenHandlingAllPlayerCardsSubmitted
 {
     private readonly AllPlayerCardsSubmittedProducer _eventHandler;
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public WhenHandlingAllPlayerCardsSubmitted()
     {
-        _bus = Substitute.For<IBus>();
-        _eventHandler = new AllPlayerCardsSubmittedProducer(_bus);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _eventHandler = new AllPlayerCardsSubmittedProducer(_publishEndpoint);
     }
 
     [Fact]
@@ -25,6 +25,6 @@ public sealed class WhenHandlingAllPlayerCardsSubmitted
 
         await _eventHandler.Handle(gameStarted);
 
-        await _bus.Received(1).Publish(Arg.Is<AllPlayerCardsSubmittedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
+        await _publishEndpoint.Received(1).Publish(Arg.Is<AllPlayerCardsSubmittedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
     }
 }

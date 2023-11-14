@@ -7,13 +7,13 @@ namespace Guexit.Game.Producers;
 
 public class PlayerJoinedProducer : IDomainEventHandler<PlayerJoined>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public PlayerJoinedProducer(IBus bus) => _bus = bus;
+    public PlayerJoinedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(PlayerJoined @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new PlayerJoinedGameRoomIntegrationEvent
+        await _publishEndpoint.Publish(new PlayerJoinedGameRoomIntegrationEvent
         {
             PlayerId = @event.PlayerId,
             GameRoomId = @event.GameRoomId

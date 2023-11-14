@@ -11,12 +11,12 @@ namespace Guexit.Game.Producers.UnitTests;
 public sealed class WhenHandlingPlayerJoinedGameRoom
 {
     private readonly PlayerJoinedProducer _eventHandler;
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public WhenHandlingPlayerJoinedGameRoom()
     {
-        _bus = Substitute.For<IBus>();
-        _eventHandler = new PlayerJoinedProducer(_bus);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _eventHandler = new PlayerJoinedProducer(_publishEndpoint);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public sealed class WhenHandlingPlayerJoinedGameRoom
 
         await _eventHandler.Handle(playerJoined);
 
-        await _bus.Received(1).Publish(Arg.Is<PlayerJoinedGameRoomIntegrationEvent>(e =>
+        await _publishEndpoint.Received(1).Publish(Arg.Is<PlayerJoinedGameRoomIntegrationEvent>(e =>
             e.GameRoomId == playerJoined.GameRoomId && e.PlayerId == playerJoined.PlayerId));
     }
 }

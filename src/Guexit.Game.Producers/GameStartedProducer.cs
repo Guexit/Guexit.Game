@@ -7,12 +7,12 @@ namespace Guexit.Game.Producers;
 
 public sealed class GameStartedProducer : IDomainEventHandler<GameStarted>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public GameStartedProducer(IBus bus) => _bus = bus;
+    public GameStartedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(GameStarted @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new GameStartedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
+        await _publishEndpoint.Publish(new GameStartedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }
 }

@@ -9,12 +9,12 @@ namespace Guexit.Game.Producers.UnitTests;
 public sealed class WhenHandlingGameFinished
 {
     private readonly GameFinishedProducer _eventHandler;
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public WhenHandlingGameFinished()
     {
-        _bus = Substitute.For<IBus>();
-        _eventHandler = new GameFinishedProducer(_bus);
+        _publishEndpoint = Substitute.For<IPublishEndpoint>();
+        _eventHandler = new GameFinishedProducer(_publishEndpoint);
     }
 
     [Fact]
@@ -25,6 +25,6 @@ public sealed class WhenHandlingGameFinished
 
         await _eventHandler.Handle(gameFinished);
 
-        await _bus.Received(1).Publish(Arg.Is<GameFinishedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
+        await _publishEndpoint.Received(1).Publish(Arg.Is<GameFinishedIntegrationEvent>(e => e.GameRoomId == gameRoomId));
     }
 }

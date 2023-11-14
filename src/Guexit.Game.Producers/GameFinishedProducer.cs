@@ -7,13 +7,13 @@ namespace Guexit.Game.Producers;
 
 public sealed class GameFinishedProducer : IDomainEventHandler<GameFinished>
 {
-    private readonly IBus _bus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public GameFinishedProducer(IBus bus) => _bus = bus;
+    public GameFinishedProducer(IPublishEndpoint publishEndpoint) => _publishEndpoint = publishEndpoint;
 
     public async ValueTask Handle(GameFinished @event, CancellationToken ct = default)
     {
-        await _bus.Publish(new GameFinishedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
+        await _publishEndpoint.Publish(new GameFinishedIntegrationEvent { GameRoomId = @event.GameRoomId }, ct);
     }
 }
 
