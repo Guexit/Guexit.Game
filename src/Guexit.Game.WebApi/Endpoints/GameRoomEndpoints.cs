@@ -11,7 +11,7 @@ public static class GameRoomEndpoints
 {
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("game-rooms/{gameRoomId:guid}");
+        var group = app.MapGroup("game-rooms/{gameRoomId:guid}").WithOpenApi();
 
         group.MapPost("", CreateGameRoom);
         group.MapPost("/join", JoinGameRoom);
@@ -19,7 +19,7 @@ public static class GameRoomEndpoints
         group.MapPost("/storyteller/submit-card-story", SubmitStoryTellerCardStory);
         group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
         group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
-        
+
         group.MapGet("/lobby", GetLobby).Produces<LobbyReadModel>();
         group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
         group.MapGet("/voting", GetVoting).Produces<VotingReadModel>();
