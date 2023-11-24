@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Guexit.Game.Persistence;
 using Guexit.Game.WebApi.DependencyInjection;
 using Guexit.Game.WebApi.Endpoints;
@@ -7,7 +6,8 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSwagger();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddDomain();
 builder.Services.AddApplication();
 builder.Services.AddServiceBus(builder.Configuration);
@@ -16,29 +16,15 @@ builder.Services.AddRecurrentTasks();
 
 var app = builder.Build();
 
-var versionSet = app.NewApiVersionSet()
-    .HasApiVersion(new ApiVersion(1))
-    .ReportApiVersions()
-    .Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        var descriptions = app.DescribeApiVersions();
-
-        foreach (var description in descriptions)
-        {
-            var name = description.GroupName.ToUpperInvariant();
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", name);
-        }
-    });
+    app.UseSwaggerUI();
 }
 
 app.MapExceptionsToProblemDetails();
 app.UseHttpsRedirection();
-app.MapGameRoomEndpoints(versionSet);
+app.MapGameRoomEndpoints();
 
 var databaseOptions = app.Services.GetRequiredService<IOptions<DatabaseOptions>>();
 if (databaseOptions.Value.MigrateOnStartup)

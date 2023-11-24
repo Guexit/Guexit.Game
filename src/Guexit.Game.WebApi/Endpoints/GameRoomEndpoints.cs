@@ -1,5 +1,4 @@
-﻿using Asp.Versioning.Builder;
-using Guexit.Game.Application.Commands;
+﻿using Guexit.Game.Application.Commands;
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.WebApi.Contracts.Requests;
@@ -10,9 +9,9 @@ namespace Guexit.Game.WebApi.Endpoints;
 
 public static class GameRoomEndpoints
 {
-    public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
+    public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("game-rooms/{gameRoomId:guid}").WithApiVersionSet(versionSet).MapToApiVersion(1);
+        var group = app.MapGroup("game-rooms/{gameRoomId:guid}");
 
         group.MapPost("", CreateGameRoom);
         group.MapPost("/join", JoinGameRoom);
