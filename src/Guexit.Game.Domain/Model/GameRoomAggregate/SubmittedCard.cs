@@ -23,7 +23,7 @@ public sealed class SubmittedCard : Entity<SubmittedCardId>
         GameRoomId = gameRoomId;
     }
 
-    public void Vote(PlayerId votingPlayerId)
+    public void RecordVote(PlayerId votingPlayerId)
     {
         if (PlayerId == votingPlayerId)
             throw new PlayerCannotVoteTheirOwnSubmittedCardException(GameRoomId, votingPlayerId, Card.Id);
