@@ -36,15 +36,17 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var players = await DbContext.Players.AsNoTracking().ToArrayAsync(ct);
+        var playersInGameRoom = await DbContext.Players.AsNoTracking()
+            .Where(x => gameRoom.PlayerIds.Contains(x.Id))
+            .ToArrayAsync(ct);
         
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
             .ToArray();
         var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds().ToHashSet();
-        var guessingPlayers = players.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
+        var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
         var playerIdsWhoAlreadyVoted = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
-        var currentStoryTeller = players.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
+        var currentStoryTeller = playersInGameRoom.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
 
         return new VotingReadModel
         {

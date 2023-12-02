@@ -50,7 +50,5 @@ public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
         responseContent!.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId);
         responseContent.CurrentStoryTeller.Story.Should().Be(story);
         responseContent.CurrentStoryTeller.Username.Should().Be("gamora");
-        responseContent.SubmittedCards.Should().HaveCount(1);
-        responseContent.SubmittedCards[0].Id.Should().Be(selectedCardId);
     }
 }

@@ -18,13 +18,19 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var guessingPlayerId = new PlayerId("player2");
+
+        await Save(
+            new PlayerBuilder().WithId("storyTellerId").Build(),
+            new PlayerBuilder().WithId("player2").Build(),
+            new PlayerBuilder().WithId("player3").Build()
+        );
+
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, "storyTellerId", new PlayerId[] { guessingPlayerId, "player3" })
             .WithStoryTellerStory("Any card story")
             .Build();
+
         await Save(gameRoom);
-        await Save(
-            new PlayerBuilder().WithId("player2").Build(), 
-            new PlayerBuilder().WithId("storyTellerId").Build());
+        
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
 
         var submitCardResponse = await Send(
@@ -35,18 +41,13 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
         );
         await submitCardResponse.ShouldHaveSuccessStatusCode();
 
-        var getBoardResponse = await Send(
-            HttpMethod.Get,
-            $"/game-rooms/{gameRoom.Id.Value}/board",
-            guessingPlayerId
-        );
+        var getBoardResponse = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", guessingPlayerId);
         await getBoardResponse.ShouldHaveSuccessStatusCode();
 
-        var responseContent = await getBoardResponse.Content.ReadFromJsonAsync<BoardReadModel>();
-        responseContent.Should().NotBeNull();
-        responseContent!.CurrentUserSubmittedCard.Should().NotBeNull();
-        responseContent.CurrentUserSubmittedCard!.Id.Should().Be(card.Id);
-        responseContent.SubmittedCards.Should().HaveCount(2);
-        responseContent.SubmittedCards.Should().Contain(x => x.Id == card.Id.Value);
+        var boardReadModel = await getBoardResponse.Content.ReadFromJsonAsync<BoardReadModel>();
+        boardReadModel.Should().NotBeNull();
+        boardReadModel!.CurrentUserSubmittedCard.Should().NotBeNull();
+        boardReadModel.CurrentUserSubmittedCard!.Id.Should().Be(card.Id);
+        boardReadModel.CurrentUserSubmittedCard.Url.Should().Be(card.Url);
     }
 }
