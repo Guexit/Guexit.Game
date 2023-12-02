@@ -36,38 +36,74 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
             .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
             .SingleOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
 
-        if (gameRoom is null) 
+        if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
         if (gameRoom.Status != GameStatus.InProgress)
             throw new CannotReadBoardIfGameIsNotInProgressException(gameRoom.Id, gameRoom.Status);
 
-        var currentStoryTeller = await DbContext.Players.AsNoTracking()
-            .SingleAsync(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId, ct);
+        var playersInGameRoom = await DbContext.Players.AsNoTracking()
+            .Where(x => gameRoom.PlayerIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, ct);
 
-        var allSubmittedCards = gameRoom.SubmittedCards.Select(x => new BoardReadModel.CardDto { Id = x.Card.Id, Url = x.Card.Url }).ToArray();
-        var submittedCardOfCurrentUser = gameRoom.SubmittedCards.FirstOrDefault(x => x.PlayerId == query.PlayerId);
+        var currentUserSubmittedCard = GetCurrentUserSubmittedCard(gameRoom, query.PlayerId);
+        var guessingPlayers = GetGuessingPlayers(gameRoom, playersInGameRoom);
+        var currentUserPlayerHand = GetCurrentUserPlayerHand(gameRoom, query.PlayerId);
 
-        var readModel = new BoardReadModel()
+        var readModel = new BoardReadModel
         {
             GameRoomId = gameRoom.Id,
-            CurrentStoryTeller = new StoryTellerDto 
-            { 
-                PlayerId = currentStoryTeller.Id.Value, 
-                Username = currentStoryTeller.Username, 
+            CurrentStoryTeller = new StoryTellerDto
+            {
+                PlayerId = gameRoom.CurrentStoryTeller.PlayerId.Value,
+                Username = playersInGameRoom[gameRoom.CurrentStoryTeller.PlayerId].Username,
                 Story = gameRoom.CurrentStoryTeller.Story
             },
-            PlayerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == query.PlayerId).Cards.Select(x => new BoardReadModel.CardDto
-            {
-                Id = x.Id,
-                Url = x.Url
-            }).ToArray(),
+            PlayerHand = currentUserPlayerHand,
             IsCurrentUserStoryTeller = query.PlayerId == gameRoom.CurrentStoryTeller.PlayerId,
-            CurrentUserSubmittedCard = submittedCardOfCurrentUser is null 
-                ? null 
-                : new BoardReadModel.CardDto { Id = submittedCardOfCurrentUser.Card.Id, Url = submittedCardOfCurrentUser.Card.Url },
-            SubmittedCards = allSubmittedCards
+            CurrentUserSubmittedCard = currentUserSubmittedCard,
+            GuessingPlayers = guessingPlayers
         };
         return readModel;
+    }
+
+    private static BoardReadModel.CardDto? GetCurrentUserSubmittedCard(GameRoom gameRoom, PlayerId currentPlayerId)
+    {
+        var submittedCardOfCurrentUser = gameRoom.SubmittedCards.FirstOrDefault(x => x.PlayerId == currentPlayerId);
+        if (submittedCardOfCurrentUser is null)
+            return null;
+
+        return new BoardReadModel.CardDto 
+        {
+            Id = submittedCardOfCurrentUser.Card.Id,
+            Url = submittedCardOfCurrentUser.Card.Url
+        };
+    }
+
+    private static BoardReadModel.GuessingPlayersDto[] GetGuessingPlayers(GameRoom gameRoom, Dictionary<PlayerId, Player> playersInGameRoom)
+    {
+        var submittedCardsByPlayerId = gameRoom.SubmittedCards.ToDictionary(x => x.PlayerId);
+
+        var guessingPlayersDtos = gameRoom.GetCurrentGuessingPlayerIds().Select(playerId => new BoardReadModel.GuessingPlayersDto
+        {
+            HasSubmittedCardAlready = submittedCardsByPlayerId.ContainsKey(playerId),
+            PlayerId = playerId,
+            Username = playersInGameRoom[playerId].Username
+        }).ToArray();
+
+        return guessingPlayersDtos;
+    }
+
+    private static BoardReadModel.CardDto[] GetCurrentUserPlayerHand(GameRoom gameRoom, PlayerId currentPlayerId)
+    {
+        var playerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == currentPlayerId);
+
+        var cardDtos = playerHand.Cards.Select(x => new BoardReadModel.CardDto
+        {
+            Id = x.Id,
+            Url = x.Url
+        }).ToArray();
+
+        return cardDtos;
     }
 }

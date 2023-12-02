@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
@@ -21,7 +20,12 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var playerId1 = new PlayerId("storyTellerId"); 
         var playerId2 = new PlayerId("player2"); 
         var playerId3 = new PlayerId("player3");
-        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, playerId1, new[] { playerId2, playerId3 }).Build();
+        var story = "El tipico adolescente abuelo";
+
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, playerId1, new[] { playerId2, playerId3 })
+            .WithStoryTellerStory(story)
+            .WithGuessingPlayerThatSubmittedCard(playerId2)
+            .Build();
         await Save(gameRoom);
         await Save(new[]
         {
@@ -33,17 +37,28 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId1);
 
         await response.ShouldHaveSuccessStatusCode();
+
         var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
+
         responseContent.Should().NotBeNull();
         responseContent!.GameRoomId.Should().Be(gameRoomId);
         responseContent.CurrentStoryTeller.PlayerId.Should().Be(playerId1);
-        responseContent.CurrentStoryTeller.Story.Should().BeEmpty();
+        responseContent.CurrentStoryTeller.Story.Should().Be(story);
         responseContent.CurrentStoryTeller.Username.Should().Be("gamora");
-        responseContent.PlayerHand.Should().NotBeEmpty();
-        responseContent.PlayerHand.Should().BeEquivalentTo(gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
-            .Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url }));
         responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
-        responseContent.CurrentUserSubmittedCard.Should().BeNull();
+        responseContent.CurrentUserSubmittedCard.Should().NotBeNull();
+
+        responseContent.GuessingPlayers.Should().HaveCount(2);
+
+        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId2).Username.Should().Be("starlord");
+        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId2).HasSubmittedCardAlready.Should().BeTrue();
+
+        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId3).Username.Should().Be("wroot");
+        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId3).HasSubmittedCardAlready.Should().BeFalse();
+
+        var expectedPlayerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
+                        .Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url });
+        responseContent.PlayerHand.Should().BeEquivalentTo(expectedPlayerHand);
     }
 
     [Fact]
