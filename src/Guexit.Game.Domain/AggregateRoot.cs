@@ -10,7 +10,7 @@ public abstract class AggregateRoot<TId> : Entity<TId>, IAggregateRoot
     where TId : notnull
 {
     private readonly List<IDomainEvent> _domainEvents = new();
-    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToList().AsReadOnly();
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToArray().AsReadOnly();
 
     protected void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
     protected void AddDomainEvents(params IDomainEvent[] domainEvents) => _domainEvents.AddRange(domainEvents);
