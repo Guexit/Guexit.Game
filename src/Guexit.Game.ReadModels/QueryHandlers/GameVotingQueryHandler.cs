@@ -43,7 +43,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
             .ToArray();
-        var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds().ToHashSet();
+        var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds();
         var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
         var playerIdsWhoAlreadyVoted = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
         var currentStoryTeller = playersInGameRoom.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);

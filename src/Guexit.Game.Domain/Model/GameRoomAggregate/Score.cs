@@ -4,11 +4,11 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
 public sealed class Score : ValueObject
 {
-    public FinishedRoundId FinishedRoundId { get; private set; } = default!;
-    public PlayerId PlayerId { get; private set; } = default!;
-    public Points Points { get; private set; } = default!;
+    public FinishedRoundId FinishedRoundId { get; private init; } = default!;
+    public PlayerId PlayerId { get; private init; } = default!;
+    public Points Points { get; private init; } = default!;
 
-    public Score()
+    private Score()
     {
         // EF required parameterless ctor
     }
