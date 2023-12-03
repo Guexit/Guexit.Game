@@ -24,7 +24,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
 
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, player1.Id, [player2.Id, player3.Id])
             .WithStoryTellerStory(story)
-            .WithGuessingPlayerThatSubmittedCard(player1.Id)
+            .WithGuessingPlayerThatSubmittedCard(player2.Id)
             .Build();
         await Save(gameRoom);
         await Save(player1, player2, player3);
