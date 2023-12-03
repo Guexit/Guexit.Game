@@ -17,48 +17,45 @@ public sealed class WhenQueryingGameBoard : ComponentTest
     public async Task ReturnsGameBoardReadModel()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        var playerId1 = new PlayerId("storyTellerId"); 
-        var playerId2 = new PlayerId("player2"); 
-        var playerId3 = new PlayerId("player3");
+        var player1 = new PlayerBuilder().WithId("storyTellerId").WithUsername("gamora").Build(); 
+        var player2 = new PlayerBuilder().WithId("playerId2").WithUsername("starlord").Build(); 
+        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("wroot").Build();
         var story = "El tipico adolescente abuelo";
 
-        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, playerId1, new[] { playerId2, playerId3 })
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, player1.Id, [player2.Id, player3.Id])
             .WithStoryTellerStory(story)
-            .WithGuessingPlayerThatSubmittedCard(playerId2)
+            .WithGuessingPlayerThatSubmittedCard(player1.Id)
             .Build();
         await Save(gameRoom);
-        await Save(new[]
-        {
-            new PlayerBuilder().WithId(playerId1).WithUsername("gamora").Build(),
-            new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),
-            new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
-        });
+        await Save(player1, player2, player3);
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId1);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", player1.Id);
 
         await response.ShouldHaveSuccessStatusCode();
 
         var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
 
         responseContent.Should().NotBeNull();
+        
         responseContent!.GameRoomId.Should().Be(gameRoomId);
-        responseContent.CurrentStoryTeller.PlayerId.Should().Be(playerId1);
+
+        responseContent.CurrentStoryTeller.PlayerId.Should().Be(player1.Id);
         responseContent.CurrentStoryTeller.Story.Should().Be(story);
         responseContent.CurrentStoryTeller.Username.Should().Be("gamora");
         responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
         responseContent.CurrentUserSubmittedCard.Should().NotBeNull();
 
+        var expectedPlayerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == player1.Id)
+            .Cards.Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url });
+        responseContent.PlayerHand.Should().BeEquivalentTo(expectedPlayerHand);
+
         responseContent.GuessingPlayers.Should().HaveCount(2);
 
-        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId2).Username.Should().Be("starlord");
-        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId2).HasSubmittedCardAlready.Should().BeTrue();
+        responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).Username.Should().Be(player2.Username);
+        responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).HasSubmittedCardAlready.Should().BeTrue();
 
-        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId3).Username.Should().Be("wroot");
-        responseContent.GuessingPlayers.First(x => x.PlayerId == playerId3).HasSubmittedCardAlready.Should().BeFalse();
-
-        var expectedPlayerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == playerId1).Cards
-                        .Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url });
-        responseContent.PlayerHand.Should().BeEquivalentTo(expectedPlayerHand);
+        responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).Username.Should().Be(player3.Username);
+        responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).HasSubmittedCardAlready.Should().BeFalse();
     }
 
     [Fact]
