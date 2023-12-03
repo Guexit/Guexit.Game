@@ -12,7 +12,7 @@ public sealed class Points : ValueObject, IComparable<Points>
     public Points(int points)
     {
         if (points < 0)
-            throw new ArgumentOutOfRangeException(nameof(points));
+            throw new ArgumentOutOfRangeException(nameof(points), points, "Points value cannot be negative.");
 
         Value = points;
     }
@@ -23,6 +23,8 @@ public sealed class Points : ValueObject, IComparable<Points>
 
     public static Points operator +(Points points1, Points points2) => points1.Sum(points2);
     public static Points operator -(Points points1, Points points2) => points1.Substract(points2);
+
+    public int CompareTo(Points? other) => other is null ? 1 : Value.CompareTo(other.Value);
     public static bool operator >(Points points1, Points points2) => points1.CompareTo(points2) > 0;
     public static bool operator <(Points points1, Points points2) => points1.CompareTo(points2) < 0;
     public static bool operator >=(Points points1, Points points2) => points1.CompareTo(points2) >= 0;
@@ -33,10 +35,5 @@ public sealed class Points : ValueObject, IComparable<Points>
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
-    }
-
-    public int CompareTo(Points? other)
-    {
-        return other is null ? 1 : Value.CompareTo(other.Value);
     }
 }
