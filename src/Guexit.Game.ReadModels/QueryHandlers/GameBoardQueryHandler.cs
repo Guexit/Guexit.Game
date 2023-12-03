@@ -82,11 +82,11 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
 
     private static BoardReadModel.GuessingPlayersDto[] GetGuessingPlayers(GameRoom gameRoom, Dictionary<PlayerId, Player> playersInGameRoom)
     {
-        var submittedCardsByPlayerId = gameRoom.SubmittedCards.ToDictionary(x => x.PlayerId);
+        var playerIdsThatSubmittedTheCardAlready = gameRoom.SubmittedCards.Select(x => x.PlayerId).ToHashSet();
 
         var guessingPlayersDtos = gameRoom.GetCurrentGuessingPlayerIds().Select(playerId => new BoardReadModel.GuessingPlayersDto
         {
-            HasSubmittedCardAlready = submittedCardsByPlayerId.ContainsKey(playerId),
+            HasSubmittedCardAlready = playerIdsThatSubmittedTheCardAlready.Contains(playerId),
             PlayerId = playerId,
             Username = playersInGameRoom[playerId].Username
         }).ToArray();
@@ -96,7 +96,7 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
 
     private static BoardReadModel.CardDto[] GetCurrentUserPlayerHand(GameRoom gameRoom, PlayerId currentPlayerId)
     {
-        var playerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == currentPlayerId);
+        var playerHand = gameRoom.PlayerHands.First(x => x.PlayerId == currentPlayerId);
 
         var cardDtos = playerHand.Cards.Select(x => new BoardReadModel.CardDto
         {

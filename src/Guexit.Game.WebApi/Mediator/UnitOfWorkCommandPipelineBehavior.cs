@@ -16,20 +16,19 @@ public sealed class UnitOfWorkCommandPipelineBehavior<TCommand, TResponse> : IPi
     
     public async ValueTask<TResponse> Handle(TCommand command, CancellationToken ct, MessageHandlerDelegate<TCommand, TResponse> next)
     {
-        await using var transaction = await _unitOfWork.BeginTransaction(ct);
+        await _unitOfWork.BeginTransaction(ct);
 
         try
         {
             var response = await next.Invoke(command, ct);
             
-            await _unitOfWork.SaveChanges(ct);
-            await transaction.CommitAsync(ct);
+            await _unitOfWork.Commit(ct);
             
             return response;
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync(ct);
+            await _unitOfWork.Rollback(ct);
             throw;
         }
     }
