@@ -23,24 +23,24 @@ public sealed class PlayerHand : Entity<PlayerHandId>
         GameRoomId = gameRoomId;
     }
 
-    public Card SubstractCard(CardId cardId)
+    public void AddCard(Card card)
+    {
+        Cards.Add(card);
+    }
+
+    public Card SubtractCard(CardId cardId)
     {
         var card = GetCard(cardId);
         RemoveCard(cardId);
         return card;
     }
 
-    public void RemoveCard(CardId cardId) => Cards.Remove(GetCard(cardId));
+    private void RemoveCard(CardId cardId) => Cards.Remove(GetCard(cardId));
 
-    public Card GetCard(CardId cardId)
+    private Card GetCard(CardId cardId)
     {
         return Cards.SingleOrDefault(x => x.Id == cardId) 
             ?? throw new CardNotFoundInPlayerHandException(PlayerId, cardId);
-    }
-
-    public void AddCard(Card card)
-    {
-        Cards.Add(card);
     }
 }
 
@@ -59,7 +59,4 @@ public sealed class PlayerHandId : ValueObject
     {
         yield return Value;
     }
-
-    public static implicit operator PlayerHandId(Guid value) => new(value);
-    public static implicit operator Guid(PlayerHandId value) => value.Value;
 }

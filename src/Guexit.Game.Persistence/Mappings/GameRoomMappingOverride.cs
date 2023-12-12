@@ -16,6 +16,8 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.Property(x => x.Id).HasConversion(to => to.Value, from => new GameRoomId(from));
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.CreatedBy).HasConversion(to => to.Value, from => new PlayerId(from)).IsRequired();
+        
         builder.Property(x => x.PlayerIds)
             .HasConversion<PlayerIdsToCommaSeparatedTextCollectionValueConverter>()
             .Metadata

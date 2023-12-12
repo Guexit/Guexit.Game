@@ -3,6 +3,7 @@ using System;
 using Guexit.Game.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Guexit.Game.Persistence.Npgsql.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231212182112_AddCreatedByToGameRoom")]
+    partial class AddCreatedByToGameRoom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,7 +98,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GameRooms", (string)null);
+                    b.ToTable("GameRooms");
                 });
 
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.PlayerHand", b =>
@@ -200,7 +203,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
                     b.HasIndex("CreatedAt");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Guexit.Game.Domain.Model.PlayerAggregate.Player", b =>
@@ -221,7 +224,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Players", (string)null);
+                    b.ToTable("Players");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
@@ -270,7 +273,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
                     b.HasIndex("Delivered");
 
-                    b.ToTable("InboxState", (string)null);
+                    b.ToTable("InboxState");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
@@ -361,7 +364,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     b.HasIndex("InboxMessageId", "InboxConsumerId", "SequenceNumber")
                         .IsUnique();
 
-                    b.ToTable("OutboxMessage", (string)null);
+                    b.ToTable("OutboxMessage");
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxState", b =>
@@ -391,7 +394,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
                     b.HasIndex("Created");
 
-                    b.ToTable("OutboxState", (string)null);
+                    b.ToTable("OutboxState");
                 });
 
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.Card", b =>
@@ -413,7 +416,28 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Guexit.Game.Domain.Model.GameRoomAggregate.FinishedRound.Scores#Guexit.Game.Domain.Model.GameRoomAggregate.Score", "Scores", b1 =>
+                    b.OwnsOne("Guexit.Game.Domain.Model.GameRoomAggregate.StoryTeller", "StoryTeller", b1 =>
+                        {
+                            b1.Property<Guid>("FinishedRoundId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("PlayerId")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Story")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("FinishedRoundId");
+
+                            b1.ToTable("FinishedRounds");
+
+                            b1.WithOwner()
+                                .HasForeignKey("FinishedRoundId");
+                        });
+
+                    b.OwnsMany("Guexit.Game.Domain.Model.GameRoomAggregate.Score", "Scores", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -441,27 +465,6 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                                 .HasForeignKey("FinishedRoundId");
                         });
 
-                    b.OwnsOne("Guexit.Game.Domain.Model.GameRoomAggregate.FinishedRound.StoryTeller#Guexit.Game.Domain.Model.GameRoomAggregate.StoryTeller", "StoryTeller", b1 =>
-                        {
-                            b1.Property<Guid>("FinishedRoundId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("PlayerId")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Story")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("FinishedRoundId");
-
-                            b1.ToTable("FinishedRounds", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("FinishedRoundId");
-                        });
-
                     b.Navigation("Scores");
 
                     b.Navigation("StoryTeller")
@@ -470,7 +473,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
             modelBuilder.Entity("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom", b =>
                 {
-                    b.OwnsOne("Guexit.Game.Domain.Model.GameRoomAggregate.GameRoom.CurrentStoryTeller#Guexit.Game.Domain.Model.GameRoomAggregate.StoryTeller", "CurrentStoryTeller", b1 =>
+                    b.OwnsOne("Guexit.Game.Domain.Model.GameRoomAggregate.StoryTeller", "CurrentStoryTeller", b1 =>
                         {
                             b1.Property<Guid>("GameRoomId")
                                 .HasColumnType("uuid");
@@ -485,7 +488,7 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
 
                             b1.HasKey("GameRoomId");
 
-                            b1.ToTable("GameRooms", (string)null);
+                            b1.ToTable("GameRooms");
 
                             b1.WithOwner()
                                 .HasForeignKey("GameRoomId");
