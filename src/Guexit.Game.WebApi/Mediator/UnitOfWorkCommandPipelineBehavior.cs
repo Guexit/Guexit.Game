@@ -1,11 +1,10 @@
 using Guexit.Game.Application;
 using Mediator;
-using ICommand = Guexit.Game.Application.ICommand;
 
 namespace Guexit.Game.WebApi.Mediator;
 
 public sealed class UnitOfWorkCommandPipelineBehavior<TCommand, TResponse> : IPipelineBehavior<TCommand, TResponse>
-    where TCommand : ICommand
+    where TCommand : Application.ICommand
 {
     private readonly IUnitOfWork _unitOfWork;
 

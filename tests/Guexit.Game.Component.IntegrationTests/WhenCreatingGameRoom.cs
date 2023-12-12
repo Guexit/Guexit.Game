@@ -50,9 +50,11 @@ public sealed class WhenCreatingGameRoom : ComponentTest
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
         var gameRooms = await dbContext.GameRooms.ToArrayAsync();
-
         gameRooms.Should().HaveCount(1);
-        gameRooms[0].PlayerIds.Single().Should().Be(playerId);
-        gameRooms[0].RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
+
+        var gameRoom = gameRooms.Single();
+        gameRoom.CreatedBy.Should().Be(playerId);
+        gameRoom.PlayerIds.Single().Should().Be(playerId);
+        gameRoom.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
     }
 }

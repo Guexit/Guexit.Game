@@ -8,6 +8,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
     public const int PlayerHandSize = 4;
 
+    public PlayerId CreatedBy { get; private init; } = PlayerId.Empty;
     public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
@@ -30,6 +31,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         Id = id;
         CreatedAt = createdAt;
+        CreatedBy = creatorId;
         PlayerIds.Add(creatorId);
     }
 
@@ -90,7 +92,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (CurrentStoryTeller.HasSubmittedCardStory())
             throw new StoryAlreadySubmittedException(Id, storyTellerId);
 
-        var card = GetCurrentStoryTellerHand().SubstractCard(cardId);
+        var card = GetCurrentStoryTellerHand().SubtractCard(cardId);
         SubmittedCards.Add(new SubmittedCard(storyTellerId, card, Id));
         CurrentStoryTeller = CurrentStoryTeller.SubmitStory(story);
 
@@ -109,7 +111,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         var playerHand = PlayerHands.Single(x => x.PlayerId == guessingPlayerId);
 
-        var card = playerHand.SubstractCard(cardId);
+        var card = playerHand.SubtractCard(cardId);
         SubmittedCards.Add(new SubmittedCard(guessingPlayerId, card, Id));
         AddDomainEvent(new GuessingPlayerCardSubmitted(Id, guessingPlayerId, cardId));
 
@@ -130,7 +132,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
                 Deck.Remove(card);
             }
 
-            PlayerHands.Add(new PlayerHand(Guid.NewGuid(), player, cardsToDeal, Id));
+            PlayerHands.Add(new PlayerHand(new PlayerHandId(Guid.NewGuid()), player, cardsToDeal, Id));
         }
     }
 
@@ -160,20 +162,32 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     private PlayerHand GetCurrentStoryTellerHand() => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
 
-    private bool AllPlayersHaveVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == GetCurrentGuessingPlayerIds().Count;
-
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
     {
         if (!GetCurrentGuessingPlayerIds().Contains(playerId))
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 
+    private bool AllPlayersHaveVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == GetCurrentGuessingPlayerIds().Count;
+
     private void CompleteCurrentRound()
+    {
+        var pointsByPlayer = CalculateScoresOfCurrentRound();
+        
+        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
+
+        if (Deck.Count >= PlayerIds.Count)
+            ShiftToNextRound();
+        else
+            End();
+    }
+
+    private Dictionary<PlayerId, Points> CalculateScoresOfCurrentRound()
     {
         var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId);
         var amountOfPlayersWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
 
-        var pointsByPlayer = PlayerIds.ToDictionary(x => x, v => Points.Zero);
+        var pointsByPlayer = PlayerIds.ToDictionary(x => x, _ => Points.Zero);
         if (amountOfPlayersWhoVotedStoryTellerCard > 0 && amountOfPlayersWhoVotedStoryTellerCard < GetCurrentGuessingPlayerIds().Count)
             pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 
@@ -186,13 +200,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         }
 
         AddDomainEvent(new VotingScoresComputed(Id));
-        
-        FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
-
-        if (Deck.Count >= PlayerIds.Count)
-            ShiftToNextRound();
-        else
-            End();
+        return pointsByPlayer;
     }
 
     private void End()

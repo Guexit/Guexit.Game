@@ -26,7 +26,7 @@ public sealed class WhenHandlingCreateGameRoomCommand
     public async Task GameRoomIsCreated()
     {
         var gameRoomId = Guid.NewGuid();
-        var playerId = "playerId";
+        var playerId = new PlayerId("playerId");
         var command = new CreateGameRoomCommand(gameRoomId, playerId);
         var createdAt = new DateTimeOffset(2022, 1, 1, 2, 3, 4, TimeSpan.Zero);
         _systemClock.UtcNow.Returns(createdAt);
@@ -36,7 +36,8 @@ public sealed class WhenHandlingCreateGameRoomCommand
 
         var gameRoom = await _gameRoomRepository.GetBy(new GameRoomId(gameRoomId));
         gameRoom.Should().NotBeNull();
-        gameRoom!.PlayerIds.Single().Should().Be(new PlayerId(playerId));
+        gameRoom!.CreatedBy.Should().Be(playerId);
+        gameRoom.PlayerIds.Single().Should().Be(playerId);
         gameRoom.CreatedAt.Should().Be(createdAt);
         gameRoom.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
     }
