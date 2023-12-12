@@ -73,6 +73,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         if (!PlayerIds.Contains(playerId))
             throw new PlayerNotInGameRoomException(Id, playerId);
 
+        if (CreatedBy != playerId)
+            throw new GameStartPermissionDeniedException(Id, playerId);
+        
         DealInitialPlayerHands();
         
         CurrentStoryTeller = StoryTeller.Create(PlayerIds.First());
