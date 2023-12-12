@@ -189,6 +189,25 @@ public sealed class WhenHandlingStartGameCommand
         });
     }
 
+    [Fact]
+    public async Task ThrowsExceptionIfANonCreatorPlayerTriesToStartGame()
+    {
+        var creatorId = new PlayerId("creatorId");
+        var nonCreatorId = new PlayerId("nonCreatorId");
+        var gameRoom = new GameRoomBuilder()
+            .WithId(GameRoomId)
+            .WithCreator(creatorId)
+            .WithPlayersThatJoined(nonCreatorId, "otherPlayerId")
+            .Build();
+        await _gameRoomRepository.Add(gameRoom);
+        await _imageRepository.AddRange(CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck()));
+
+        var action = async () => await _commandHandler.Handle(new StartGameCommand(GameRoomId, nonCreatorId));
+
+        await action.Should().ThrowAsync<GameStartPermissionDeniedException>()
+            .WithMessage($"Player {nonCreatorId.Value} is not authorized to start the game in room {GameRoomId.Value}. Only the game creator can start the game.");
+    }
+
     private static Image[] CreateImages(int count)
     {
         return Enumerable.Range(0, count)
