@@ -41,4 +41,30 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo("thanos", "hulk", "ironman");
         lobbyReadModel.GameStatus.Should().Be(GameStatus.NotStarted.Value);
     }
+    
+    
+    [Fact]
+    public async Task CannotStartIfItsNotTheCreatorOfTheGameRoom()
+    {
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var creatorId = new PlayerId("player1");
+        var nonCreatorId = new PlayerId("player2");
+        await Save(new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creatorId)
+            .WithPlayersThatJoined(nonCreatorId, "player3")
+            .Build());
+        await Save(new[]
+        {
+            new PlayerBuilder().WithId("player1").WithUsername("thanos").Build(),
+            new PlayerBuilder().WithId("player2").WithUsername("hulk").Build(),
+            new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
+        });
+
+        using var response = await Send(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby", authenticatedPlayerId: nonCreatorId);
+
+        var lobbyReadModel = await response.Content.ReadFromJsonAsync<LobbyReadModel>();
+        lobbyReadModel.Should().NotBeNull();
+        lobbyReadModel!.CanStartGame.Should().BeFalse();
+    }
 }

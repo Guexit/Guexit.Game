@@ -4,16 +4,19 @@ using Microsoft.Extensions.Logging;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Domain.Model.PlayerAggregate;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
 public sealed class GameLobbyQuery : IQuery<LobbyReadModel>
 {
     public GameRoomId GameRoomId { get; }
+    public PlayerId PlayerId { get; }
 
-    public GameLobbyQuery(Guid gameRoomId)
+    public GameLobbyQuery(Guid gameRoomId, string playerId)
     {
         GameRoomId = new GameRoomId(gameRoomId);
+        PlayerId = new PlayerId(playerId);
     }
 }
 
@@ -36,7 +39,7 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyRe
             GameRoomId = gameRoom.Id.Value,
             Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Username, Id = x.Id.Value }).ToArray(),
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
-            CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length,
+            CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length && gameRoom.CreatedBy == query.PlayerId,
             CreatedBy = gameRoom.CreatedBy,
             GameStatus = gameRoom.Status.Value
         };
