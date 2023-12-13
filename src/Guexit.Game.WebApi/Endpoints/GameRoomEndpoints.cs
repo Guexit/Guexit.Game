@@ -92,11 +92,12 @@ public static class GameRoomEndpoints
     }
 
     private static async Task<IResult> GetLobby(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId), ct);
+        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId, userId), ct);
         return Results.Ok(readModel);
     }
 
