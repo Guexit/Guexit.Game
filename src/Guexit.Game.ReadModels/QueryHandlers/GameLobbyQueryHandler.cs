@@ -34,9 +34,10 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyRe
         return new LobbyReadModel
         {
             GameRoomId = gameRoom.Id.Value,
-            Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Username }).ToArray(),
+            Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Username, Id = x.Id.Value }).ToArray(),
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
             CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length,
+            CreatedBy = gameRoom.CreatedBy,
             GameStatus = gameRoom.Status.Value
         };
     }

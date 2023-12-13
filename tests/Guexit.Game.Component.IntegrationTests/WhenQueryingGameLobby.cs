@@ -34,9 +34,11 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         var lobbyReadModel = await response.Content.ReadFromJsonAsync<LobbyReadModel>();
         lobbyReadModel.Should().NotBeNull();
         lobbyReadModel!.GameRoomId.Should().Be(gameRoomId.Value);
+        lobbyReadModel.CreatedBy.Should().Be(creatorId);
         lobbyReadModel.CanStartGame.Should().BeTrue();
         lobbyReadModel.RequiredMinPlayers.Should().Be(3);
-        lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo(new[] { "thanos", "hulk", "ironman" });
+        lobbyReadModel.Players.Select(x => x.Id).Should().BeEquivalentTo("player1", "player2", "player3");
+        lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo("thanos", "hulk", "ironman");
         lobbyReadModel.GameStatus.Should().Be(GameStatus.NotStarted.Value);
     }
 }
