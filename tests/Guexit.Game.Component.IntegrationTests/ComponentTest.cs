@@ -1,5 +1,6 @@
 ﻿using Guexit.Game.Component.IntegrationTests.Builders;
 using Guexit.Game.Component.IntegrationTests.DataCleaners;
+using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
@@ -8,9 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
-// TODO: This should be implementing ICollectionFixture, need to spend some investigate why tests that uses ITestHarness are failing
 [CollectionDefinition(nameof(ComponentTestCollectionDefinition))]
-public sealed class ComponentTestCollectionDefinition : IClassFixture<GameWebApplicationFactory>
+public sealed class ComponentTestCollectionDefinition : ICollectionFixture<GameWebApplicationFactory>
 {
 }
 
@@ -35,10 +35,7 @@ public abstract class ComponentTest : IAsyncLifetime
         try
         {
             await harness.Start();
-            await harness.Bus.Publish(message);
-
-            await harness.Published.Any<TMessage>();
-            await harness.Consumed.Any<TMessage>();
+            await harness.PublishAndWaitUntilConsumed(message);
         }
         finally
         {
