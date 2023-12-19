@@ -19,6 +19,8 @@ internal sealed class PlayerHandMappingOverride : IEntityTypeConfiguration<Playe
         builder.HasMany(x => x.Cards);
 
         builder.HasIndex(x => new { x.GameRoomId, x.PlayerId }).IsUnique();
+
+        builder.Navigation(x => x.Cards).AutoInclude();
     }
 }
 
