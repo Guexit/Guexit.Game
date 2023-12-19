@@ -1,8 +1,7 @@
 using Guexit.Game.Application;
-using Guexit.Game.Persistence;
 using Mediator;
 
-namespace Guexit.Game.WebApi.Mediator;
+namespace Guexit.Game.Persistence.Interceptors;
 
 public sealed class GameRoomOptimisticConcurrencyCheckPipelineBehaviour<TGameRoomCommand, TResponse> : IPipelineBehavior<TGameRoomCommand, TResponse>
     where TGameRoomCommand : IGameRoomCommand

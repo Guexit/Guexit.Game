@@ -1,7 +1,7 @@
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Guexit.Game.Persistence;
+namespace Guexit.Game.Persistence.Interceptors;
 
 public sealed class GameRoomOptimisticConcurrencyCheckEnforcer
 {

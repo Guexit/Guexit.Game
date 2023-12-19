@@ -1,6 +1,9 @@
-﻿using Guexit.Game.Domain.Exceptions;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Domain.Services;
 
 namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
@@ -9,15 +12,15 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public const int PlayerHandSize = 4;
 
     public PlayerId CreatedBy { get; private init; } = PlayerId.Empty;
-    public ICollection<PlayerId> PlayerIds { get; private set; } = new List<PlayerId>();
+    public ICollection<PlayerId> PlayerIds { get; private init; } = new List<PlayerId>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
     public ICollection<Card> Deck { get; private set; } = new List<Card>();
-    public ICollection<PlayerHand> PlayerHands { get; private set; } = new List<PlayerHand>();
-    public ICollection<SubmittedCard> SubmittedCards { get; private set; } = new List<SubmittedCard>();
+    public ICollection<PlayerHand> PlayerHands { get; private init; } = new List<PlayerHand>();
+    public ICollection<SubmittedCard> SubmittedCards { get; private init; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
-    public ICollection<FinishedRound> FinishedRounds { get; private set; } = new List<FinishedRound>();
+    public ICollection<FinishedRound> FinishedRounds { get; private init; } = new List<FinishedRound>();
 
     public IReadOnlySet<PlayerId> GetCurrentGuessingPlayerIds() => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
     public int GetPlayersCount() => PlayerIds.Count;
@@ -35,11 +38,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
-    public int GetRequiredNumberOfCardsInDeck()
-    {
-        var totalCardsRequired = new TotalNumberOfCardsRequired(GetPlayersCount(), desiredRounds: 1);
-        return totalCardsRequired.RequiredCardCount;
-    }
+    public int GetRequiredNumberOfCardsInDeck() => RequiredDeckSizeService.CalculateDeckSize(GetPlayersCount(), desiredRounds: 1);
 
     public void Join(PlayerId playerId)
     {
@@ -249,4 +248,14 @@ public sealed class GameRoomId : ValueObject
 
     public static implicit operator GameRoomId(Guid value) => new(value);
     public static implicit operator Guid(GameRoomId value) => value.Value;
+
+    public long GetLongHashCode()
+    {
+        var guid = Value;
+        Span<byte> bytes = stackalloc byte[16];
+        MemoryMarshal.TryWrite(bytes, in guid);
+        ref long r = ref MemoryMarshal.AsRef<long>(bytes);
+        
+        return r ^ Unsafe.Add(ref r, 1);
+    }
 }
