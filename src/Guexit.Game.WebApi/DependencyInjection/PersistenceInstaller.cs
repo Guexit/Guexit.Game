@@ -3,6 +3,7 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
+using Guexit.Game.Persistence.Interceptors;
 using Guexit.Game.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ public static class PersistenceInstaller
             .ValidateOnStart();
 
         services.AddScoped<GameRoomOptimisticConcurrencyCheckEnforcer>();
+        services.AddScoped<GameRoomDistributedLock>();
         
         return services.AddScoped<IGameRoomRepository, GameRoomRepository>()
             .AddScoped<IPlayerRepository, PlayerRepository>()

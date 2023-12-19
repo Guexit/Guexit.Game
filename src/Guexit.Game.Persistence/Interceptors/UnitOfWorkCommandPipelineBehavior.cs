@@ -1,7 +1,7 @@
 using Guexit.Game.Application;
 using Mediator;
 
-namespace Guexit.Game.WebApi.Mediator;
+namespace Guexit.Game.Persistence.Interceptors;
 
 public sealed class UnitOfWorkCommandPipelineBehavior<TCommand, TResponse> : IPipelineBehavior<TCommand, TResponse>
     where TCommand : Application.ICommand
