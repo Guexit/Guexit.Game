@@ -28,7 +28,7 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .HasConversion(to => to.Count, from => new RequiredMinPlayers(from))
             .IsRequired();
 
-        builder.OwnsOne(x => x.CurrentStoryTeller, st =>
+        builder.ComplexProperty(x => x.CurrentStoryTeller, st =>
         {
             st.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
             st.Property(x => x.Story);
@@ -42,5 +42,11 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.HasMany(x => x.Deck).WithOne().HasForeignKey("GameRoomId");
         builder.HasMany(x => x.SubmittedCards).WithOne().HasForeignKey(x => x.GameRoomId);
         builder.HasMany(x => x.FinishedRounds).WithOne().HasForeignKey(x => x.GameRoomId);
+
+        builder.Navigation(x => x.PlayerHands).AutoInclude();
+        builder.Navigation(x => x.Deck).AutoInclude();
+        builder.Navigation(x => x.SubmittedCards).AutoInclude();
+        builder.Navigation(x => x.FinishedRounds).AutoInclude();
+        
     }
 }

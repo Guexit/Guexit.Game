@@ -24,5 +24,7 @@ internal sealed class SubmittedCardSnapshotMappingOverride : IEntityTypeConfigur
             .SetValueComparer(new PlayerIdsCommaSeparatedTextCollectionValueComparer());
 
         builder.HasOne(x => x.Card);
+        
+        builder.Navigation(x => x.Card).AutoInclude();
     }
 }

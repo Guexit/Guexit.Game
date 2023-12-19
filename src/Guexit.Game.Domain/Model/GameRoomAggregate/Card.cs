@@ -2,7 +2,7 @@
 
 public sealed class Card : Entity<CardId>
 {
-    public Uri Url { get; private set; } = default!;
+    public Uri Url { get; private set; }
 
     public Card(CardId id, Uri url)
     {

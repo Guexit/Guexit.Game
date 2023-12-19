@@ -30,11 +30,7 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
 
     protected override async Task<BoardReadModel> Process(GameBoardQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking()
-            .Include(x => x.Deck)
-            .Include(x => x.PlayerHands).ThenInclude(x => x.Cards)
-            .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
-            .SingleOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery().SingleOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
 
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);

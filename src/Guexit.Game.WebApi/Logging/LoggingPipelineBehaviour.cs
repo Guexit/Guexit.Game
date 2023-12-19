@@ -1,4 +1,5 @@
-﻿using Mediator;
+﻿using System.Diagnostics;
+using Mediator;
 
 namespace Guexit.Game.WebApi.Logging;
 
@@ -17,17 +18,19 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBeh
         CancellationToken cancellationToken,
         MessageHandlerDelegate<TRequest, TResponse> next)
     {
+        var timestamp = Stopwatch.GetTimestamp();
+
         try
         {
             _logger.LogInformation("Handling {requestType}", typeof(TRequest).Name);
             var response = await next(message, cancellationToken);
-            _logger.LogInformation("{requestType} handled successfully", typeof(TRequest).Name);
+            _logger.LogInformation("{requestType} handled successfully in {elapsed}", typeof(TRequest).Name, Stopwatch.GetElapsedTime(timestamp));
 
             return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while handling {requestType}", typeof(TRequest).Name);
+            _logger.LogError(ex, "Error while handling {requestType}. It took {elapsed}", typeof(TRequest).Name, Stopwatch.GetElapsedTime(timestamp));
             throw;
         }
     }

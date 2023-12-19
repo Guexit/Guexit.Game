@@ -19,7 +19,7 @@ public sealed class GameRoomRepository : IGameRoomRepository
 
     public async ValueTask<GameRoom?> GetBy(GameRoomId id, CancellationToken ct = default)
     {
-        return await _dbContext.GameRooms
+        return await _dbContext.GameRooms.AsSplitQuery()
             .Include(x => x.PlayerHands).ThenInclude(x => x.Cards)
             .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
             .Include(x => x.Deck)

@@ -7,7 +7,7 @@ public sealed class Image : AggregateRoot<ImageId>
     public GameRoomId GameRoomId { get; private set; } = GameRoomId.Empty;
     public Uri Url { get; private set; } = default!;
     public DateTimeOffset CreatedAt { get; private set; }
-    public bool IsAssignedToGameRoom => GameRoomId is not null;
+    public bool IsAssignedToGameRoom => GameRoomId != GameRoomId.Empty;
 
     private Image() { /* Entity Framework required parameterless ctor*/ }
 

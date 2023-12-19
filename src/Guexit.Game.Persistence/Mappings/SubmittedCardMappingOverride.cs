@@ -26,5 +26,7 @@ internal sealed class SubmittedCardMappingOverride : IEntityTypeConfiguration<Su
         builder.HasOne(x => x.Card);
 
         builder.HasIndex(x => new { x.GameRoomId, x.PlayerId }).IsUnique();
+
+        builder.Navigation(x => x.Card).AutoInclude();
     }
 }

@@ -15,7 +15,7 @@ internal sealed class FinishedRoundMappingOverride : IEntityTypeConfiguration<Fi
         builder.Property(x => x.Id).HasConversion(x => x.Value, x => new FinishedRoundId(x));
         builder.Property(x => x.GameRoomId).HasConversion(x => x.Value, x => new GameRoomId(x));
 
-        builder.OwnsOne(x => x.StoryTeller, st =>
+        builder.ComplexProperty(x => x.StoryTeller, st =>
         {
             st.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
             st.Property(x => x.Story);
@@ -32,5 +32,8 @@ internal sealed class FinishedRoundMappingOverride : IEntityTypeConfiguration<Fi
         });
 
         builder.HasMany(fr => fr.SubmittedCardSnapshots);
+
+        builder.Navigation(fr => fr.Scores).AutoInclude();
+        builder.Navigation(fr => fr.SubmittedCardSnapshots).AutoInclude();
     }
 }
