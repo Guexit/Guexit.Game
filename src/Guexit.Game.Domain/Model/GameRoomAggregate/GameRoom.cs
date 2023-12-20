@@ -252,10 +252,10 @@ public sealed class GameRoomId : ValueObject
     public long GetLongHashCode()
     {
         var guid = Value;
-        Span<byte> bytes = stackalloc byte[16];
-        MemoryMarshal.TryWrite(bytes, in guid);
-        ref long r = ref MemoryMarshal.AsRef<long>(bytes);
+        Span<byte> destination = stackalloc byte[16];
+        MemoryMarshal.Write(destination, in guid);
+        ref long firstPartOfGuidAsLong = ref MemoryMarshal.AsRef<long>(destination);
         
-        return r ^ Unsafe.Add(ref r, 1);
+        return firstPartOfGuidAsLong ^ Unsafe.Add(ref firstPartOfGuidAsLong, 1);
     }
 }

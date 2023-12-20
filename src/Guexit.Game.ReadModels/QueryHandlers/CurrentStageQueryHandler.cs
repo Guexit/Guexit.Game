@@ -24,8 +24,7 @@ public sealed class CurrentStageQuery : IQuery<GameStageReadModel>
 
 public sealed class CurrentStageQueryHandler : QueryHandler<CurrentStageQuery, GameStageReadModel>
 {
-    public static readonly IGameStageSpecification[] AllGameStageSpecifications = new IGameStageSpecification[]
-    { 
+    private static readonly IGameStageSpecification[] _allGameStageSpecifications = { 
         new BoardSpecification(),
         new VotingSpecification(),
         new LobbySpecification(),
@@ -38,14 +37,11 @@ public sealed class CurrentStageQueryHandler : QueryHandler<CurrentStageQuery, G
 
     protected override async Task<GameStageReadModel> Process(CurrentStageQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking()
-            .Include(x => x.FinishedRounds).ThenInclude(x => x.Scores)
-            .Include(x => x.FinishedRounds).ThenInclude(x => x.SubmittedCardSnapshots).ThenInclude(x => x.Card)
-            .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
-            .FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct)
-            ?? throw new GameRoomNotFoundException(query.GameRoomId);
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        if (gameRoom is null)
+            throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var matchingStageSpecification = AllGameStageSpecifications.FirstOrDefault(x => x.IsSatisfiedBy(gameRoom));
+        var matchingStageSpecification = _allGameStageSpecifications.FirstOrDefault(x => x.IsSatisfiedBy(gameRoom));
         if (matchingStageSpecification is null)
             throw new CouldNotMatchCurrentStageException(query.GameRoomId, query.PlayerId);
 
