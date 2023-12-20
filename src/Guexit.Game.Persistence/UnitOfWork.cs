@@ -1,7 +1,6 @@
 using Guexit.Game.Application;
 using Guexit.Game.Domain;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
 
 namespace Guexit.Game.Persistence;
 
@@ -9,15 +8,13 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
 {
     private readonly GameDbContext _dbContext;
     private readonly IDomainEventPublisher _domainEventPublisher;
-    private readonly ILogger<UnitOfWork> _logger;
 
     private IDbContextTransaction? _transaction;
 
-    public UnitOfWork(GameDbContext dbContext, IDomainEventPublisher domainEventPublisher, ILogger<UnitOfWork> logger)
+    public UnitOfWork(GameDbContext dbContext, IDomainEventPublisher domainEventPublisher)
     {
         _dbContext = dbContext;
         _domainEventPublisher = domainEventPublisher;
-        _logger = logger;
     }
 
     public async Task BeginTransaction(CancellationToken ct = default)

@@ -28,12 +28,11 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
 
     protected override async Task<GameSummaryReadModel> Process(GameRoomSummaryQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking()
-            .Include(x => x.FinishedRounds).ThenInclude(x => x.Scores)
-            .Include(x => x.FinishedRounds).ThenInclude(x => x.SubmittedCardSnapshots).ThenInclude(x => x.Card)
-            .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
-            .FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct)
-            ?? throw new GameRoomNotFoundException(query.GameRoomId);
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery()
+            .FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        
+        if (gameRoom is null)
+            throw new GameRoomNotFoundException(query.GameRoomId);
 
         var players = await DbContext.Players.AsNoTracking()
             .Where(x => gameRoom.PlayerIds.Contains(x.Id))

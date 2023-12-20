@@ -29,10 +29,8 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
 
     protected override async Task<VotingReadModel> Process(GameVotingQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking()
-            .Include(x => x.SubmittedCards).ThenInclude(x => x.Card)
+        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery()
             .SingleOrDefaultAsync(x => x.Id == query.GameRoomId, cancellationToken: ct);
-
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
@@ -42,6 +40,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
+            .OrderBy(x => x.Id)
             .ToArray();
         var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds();
         var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
