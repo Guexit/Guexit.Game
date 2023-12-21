@@ -17,7 +17,7 @@ on:
 jobs: 
   runTests:
     name: Run tests
-    uses: ./github/workflows/run-tests.yml
+    uses: ./.github/workflows/run-tests.yml
     secrets: inherit
     
   generateNewVersionTag:
