@@ -39,7 +39,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Run unit tests
-      run: dotnet test --filter FullyQualifiedName~.UnitTests --no-restore
+      run: dotnet test --filter FullyQualifiedName~.UnitTests --no-build
     - name: Generate EntityFramework migrations bundle
       run: |
         dotnet tool install --global dotnet-ef

@@ -35,3 +35,6 @@ jobs:
       - name: Calculate new version
         id: calculate-new-version
         run: ./.github/scripts/calculate_new_version.sh
+        
+      - name: Build docker image  
+        run: docker build . --tag ghcr.io/guexit/guexit-game:${{ steps.calculate-new-version.outputs.new-version }}
