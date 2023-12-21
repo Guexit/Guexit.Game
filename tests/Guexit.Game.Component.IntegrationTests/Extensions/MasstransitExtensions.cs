@@ -25,8 +25,8 @@ public static class MasstransitExtensions
         {
             while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
             {
-                var hasBeenPublished = await harness.Consumed.Any<TMessage>(x => x.Context.MessageId == messageId, cancellationToken);
-                if (hasBeenPublished)
+                var hasBeenConsumed = await harness.Consumed.Any<TMessage>(x => x.Context.MessageId == messageId, cancellationToken);
+                if (hasBeenConsumed)
                     return;
             }
         }
