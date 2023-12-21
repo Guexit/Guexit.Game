@@ -6,8 +6,7 @@ public interface IAggregateRoot
     void ClearDomainEvents();
 }
 
-public abstract class AggregateRoot<TId> : Entity<TId>, IAggregateRoot
-    where TId : notnull
+public abstract class AggregateRoot<TId> : Entity<TId>, IAggregateRoot where TId : notnull
 {
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToArray().AsReadOnly();
