@@ -3,14 +3,19 @@ get_current_version() {
 }
 
 get_part_to_increment() {
-  local increment="patch"
-  local commits
-  commits=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:%B)
-  
+  local commits=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:%B)
+
+  if [ -z "$commits" ]; then
+    echo "none"
+    return
+  fi
+
   if [[ $commits =~ BREAKING[[:space:]]CHANGE ]]; then
     echo "major"
     return
   fi
+
+  local increment="patch"
 
   while read -r commit; do
     if [[ $commit =~ ^feat ]]; then
@@ -22,6 +27,7 @@ get_part_to_increment() {
 
   echo $increment
 }
+
 
 increment_version() {
   local version=$1
@@ -41,6 +47,9 @@ increment_version() {
       patch=0
       ;;
     "patch")
+      patch=$((patch+1))
+      ;;
+    "none")
       patch=$((patch+1))
       ;;
   esac
