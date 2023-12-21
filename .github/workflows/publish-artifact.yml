@@ -14,15 +14,15 @@ on:
 # 3. Build docker image with the new version
 # 4. Create a release on the repository with this tag
 
-jobs: 
-  runTests:
+jobs:
+  buildSolutionAndRunTests:
     name: Run tests
     uses: ./.github/workflows/run-tests.yml
     secrets: inherit
     
   generateNewVersionTag:
     name: Generate new version tag
-    needs: runTests
+    needs: buildSolutionAndRunTests
     runs-on: ubuntu-latest
     outputs: 
       new-version: ${{ steps.calculate-new-version.outputs.new-version }}
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.runTests.outputs.commit-hash }}
+          ref: ${{ needs.buildSolutionAndRunTests.outputs.commit-hash }} 
           fetch-depth: 0
           
       - name: Calculate new version
