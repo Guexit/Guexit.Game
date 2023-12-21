@@ -254,7 +254,7 @@ public sealed class GameRoomId : ValueObject
         var guid = Value;
         Span<byte> destination = stackalloc byte[16];
         MemoryMarshal.Write(destination, in guid);
-        ref long firstPartOfGuidAsLong = ref MemoryMarshal.AsRef<long>(destination);
+        ref var firstPartOfGuidAsLong = ref MemoryMarshal.AsRef<long>(destination);
         
         return firstPartOfGuidAsLong ^ Unsafe.Add(ref firstPartOfGuidAsLong, 1);
     }

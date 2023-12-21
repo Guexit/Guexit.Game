@@ -20,12 +20,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97049A6F-B8E1-43C8-9B1D-90303DCAC7D8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		.github\workflows\ci-pipeline.yml = .github\workflows\ci-pipeline.yml
 		Dockerfile = Dockerfile
-		utilities\EntityFrameworkScriptsShorthand.txt = utilities\EntityFrameworkScriptsShorthand.txt
-		utilities\PublishMessagesNuGetShorthand.txt = utilities\PublishMessagesNuGetShorthand.txt
-		utilities\Scripts\Import-Images.ps1 = utilities\Scripts\Import-Images.ps1
-		utilities\Scripts\Import-Images.bat = utilities\Scripts\Import-Images.bat
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Persistence.Npgsql", "src\Guexit.Game.Persistence.Npgsql\Guexit.Game.Persistence.Npgsql.csproj", "{5A619641-57AC-47E4-B71F-0438FC5F4B8C}"
@@ -45,6 +40,19 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Producers", "src\Guexit.Game.Producers\Guexit.Game.Producers.csproj", "{FC99A9D2-486E-4FBD-8AAF-458C0FC2CB0D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guexit.Game.Producers.UnitTests", "tests\Guexit.Game.Producers.UnitTests\Guexit.Game.Producers.UnitTests.csproj", "{0485C0A5-7052-4712-99F5-A16A4CF82AE5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{DEB95F5E-B403-42CD-83D7-F3017D32F7FA}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\run-tests.yml = .github\workflows\run-tests.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{FD420F3F-18DB-4ACC-89E9-6FCA5C481AB2}"
+	ProjectSection(SolutionItems) = preProject
+		utilities\EntityFrameworkScriptsShorthand.txt = utilities\EntityFrameworkScriptsShorthand.txt
+		utilities\PublishMessagesNuGetShorthand.txt = utilities\PublishMessagesNuGetShorthand.txt
+		utilities\Scripts\Import-Images.bat = utilities\Scripts\Import-Images.bat
+		utilities\Scripts\Import-Images.ps1 = utilities\Scripts\Import-Images.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +135,8 @@ Global
 		{0B7B504A-B2E5-4B1A-82FB-70A10D72CC72} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{FC99A9D2-486E-4FBD-8AAF-458C0FC2CB0D} = {793A1A93-00AD-44FD-A22F-EF307E756742}
 		{0485C0A5-7052-4712-99F5-A16A4CF82AE5} = {88C1F78B-A1EA-4884-83C1-C59E96B9E673}
+		{DEB95F5E-B403-42CD-83D7-F3017D32F7FA} = {97049A6F-B8E1-43C8-9B1D-90303DCAC7D8}
+		{FD420F3F-18DB-4ACC-89E9-6FCA5C481AB2} = {97049A6F-B8E1-43C8-9B1D-90303DCAC7D8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A9CFE4F-FA8B-4163-A8DA-117487BB5948}
