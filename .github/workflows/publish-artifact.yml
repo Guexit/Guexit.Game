@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.buildSolutionAndRunTests.outputs.commit-hash }} 
+          ref: ${{ needs.build-and-run-tests.outputs.commit-hash }} 
           fetch-depth: 0
           
       - name: Calculate new version
