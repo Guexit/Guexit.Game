@@ -51,6 +51,7 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/guexit/guexit-game:buildcache
           cache-to: type=registry,ref=ghcr.io/guexit/guexit-game:buildcache,mode=max
       
+      
       - name: Create release ${{ steps.calculate-new-version.outputs.new-version }}
         env:
           GH_TOKEN: ${{ github.token }}
