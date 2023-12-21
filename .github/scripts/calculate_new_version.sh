@@ -4,16 +4,22 @@ get_current_version() {
 
 get_part_to_increment() {
   local increment="patch"
+  local commits
+  commits=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:%B)
+  
+  if [[ $commits =~ BREAKING[[:space:]]CHANGE ]]; then
+    echo "major"
+    return
+  fi
+
   while read -r commit; do
-    if [[ $commit =~ BREAKING[[:space:]]CHANGE ]]; then
-      echo "major"
-      return
-    elif [[ $commit =~ ^feat ]]; then
+    if [[ $commit =~ ^feat ]]; then
       increment="minor"
     elif ! [[ $commit =~ ^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)\: ]]; then
       increment="minor"
     fi
-  done <<< "$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:%s)"
+  done <<< "$(echo "$commits" | grep -E '^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)')"
+
   echo $increment
 }
 
