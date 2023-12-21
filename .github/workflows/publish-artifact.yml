@@ -51,8 +51,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/guexit/guexit-game:${{ steps.calculate-new-version.outputs.new-version }}
-          cache-from: type=registry,ref=user/app:buildcache
-          cache-to: type=registry,ref=user/app:buildcache,mode=max
       
       - name: Create release ${{ steps.calculate-new-version.outputs.new-version }}
         run: gh release create v${{steps.calculate-new-version.outputs.new-version}} --generate-notes --latest --title ${{steps.calculate-new-version.outputs.new-version}} --target ${{ needs.build-and-run-tests.outputs.commit-hash }}  
