@@ -1,0 +1,36 @@
+name: Publish Artifact
+
+concurrency:
+  group: PublishArtifact
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request: 
+    branches: [ main ]
+
+# 3. Build docker image with the new version
+# 4. Create a release on the repository with this tag
+
+jobs: 
+  runTests:
+    name: Run tests
+    uses: ./github/workflows/run-tests.yml
+    secrets: inherit
+    
+  generateNewVersionTag:
+    name: Generate new version tag
+    runs-on: ubuntu-latest
+    outputs: 
+      new-version: ${{ steps.calculate-new-version.outputs.new-version }}
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Calculate new version
+        id: calculate-new-version
+        run: ./.github/scripts/calculate_new_version.sh
