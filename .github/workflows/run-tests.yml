@@ -54,4 +54,4 @@ jobs:
       id: output-commit-hash
       run: |
         echo "commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-        echo "All tests passed for commit '$(git rev-parse HEAD)'
+        echo "All tests passed for commit '$(git rev-parse HEAD)'"
