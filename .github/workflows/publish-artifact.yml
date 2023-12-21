@@ -15,12 +15,11 @@ on:
 # 4. Create a release on the repository with this tag
 
 jobs:
-  buildSolutionAndRunTests:
+  build-and-run-tests:
     name: Run tests
     uses: ./.github/workflows/run-tests.yml
-    secrets: inherit
     
-  generateNewVersionTag:
+  generate-new-version-tag:
     name: Generate new version tag
     needs: buildSolutionAndRunTests
     runs-on: ubuntu-latest

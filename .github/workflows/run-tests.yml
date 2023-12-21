@@ -1,18 +1,20 @@
 name: Run Tests
 
 on:
-  workflow_call: 
+  workflow_call:
+    outputs:
+      commit-hash: ${{ jobs.build-and-run-tests.outputs.commit-hash }}
   pull_request:
     branches: [ main ]
   push: 
     branches: [ main ]
 
 jobs:
-  buildSolutionAndRunTests:
+  build-and-run-tests:
     name: Build solution and run tests
     runs-on: ubuntu-latest
     outputs: 
-      commit-hash: ${{ steps.output-commit-hash.outputs.COMMIT_HASH }}
+      commit-hash: ${{ steps.output-commit-hash.outputs.commit-hash }}
 
     services:
       postgres:
@@ -53,5 +55,5 @@ jobs:
     - name: Output commit hash
       id: output-commit-hash
       run: |
-        echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        echo "commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
         echo "All tests passed for commit '$(git rev-parse HEAD)'"
