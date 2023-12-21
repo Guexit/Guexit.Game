@@ -54,4 +54,4 @@ jobs:
       - name: Create release ${{ steps.calculate-new-version.outputs.new-version }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create v${{steps.calculate-new-version.outputs.new-version}} --generate-notes --latest --title v${{steps.calculate-new-version.outputs.new-version}} --target ${{ needs.build-and-run-tests.outputs.commit-hash }}  
+        run: gh release create ${{steps.calculate-new-version.outputs.new-version}} --generate-notes --latest --title v${{steps.calculate-new-version.outputs.new-version}} --target ${{ needs.build-and-run-tests.outputs.commit-hash }}  
