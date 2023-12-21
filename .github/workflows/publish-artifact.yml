@@ -41,7 +41,7 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ghcr.io/guexit/
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
         
@@ -51,6 +51,10 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/guexit/guexit-game:${{ steps.calculate-new-version.outputs.new-version }}
+          cache-from: type=registry,ref=ghcr.io/guexit/guexit-game:buildcache
+          cache-to: type=registry,ref=ghcr.io/guexit/guexit-game:buildcache,mode=max
       
       - name: Create release ${{ steps.calculate-new-version.outputs.new-version }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: gh release create v${{steps.calculate-new-version.outputs.new-version}} --generate-notes --latest --title ${{steps.calculate-new-version.outputs.new-version}} --target ${{ needs.build-and-run-tests.outputs.commit-hash }}  
