@@ -11,6 +11,8 @@ jobs:
   buildSolutionAndRunTests:
     name: Build solution and run tests
     runs-on: ubuntu-latest
+    outputs: 
+      commit-hash: ${{ steps.output-commit-hash.outputs.commit-hash }}
 
     services:
       postgres:
@@ -48,3 +50,8 @@ jobs:
       env: 
          ConnectionStrings__Guexit_Game_GameDb: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=guexit_game;
       run: dotnet test --filter FullyQualifiedName~.IntegrationTests --no-build
+    - name: Output commit hash
+      id: output-commit-hash
+      run: |
+        echo "commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        echo "All tests passed for commit '$(git rev-parse HEAD)'
