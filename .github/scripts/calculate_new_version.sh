@@ -6,7 +6,7 @@ get_part_to_increment() {
   local commits=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:%B)
 
   if [ -z "$commits" ]; then
-    echo "none"
+    echo "minor"
     return
   fi
 
