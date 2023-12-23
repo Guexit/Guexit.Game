@@ -31,11 +31,11 @@ public sealed class StoryTeller : ValueObject
         return new(PlayerId, story);
     }
 
+    public bool HasSubmittedCardStory() => Story != string.Empty;
+
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return PlayerId;
         yield return Story;
     }
-
-    public bool HasSubmittedCardStory() => Story != string.Empty;
 }

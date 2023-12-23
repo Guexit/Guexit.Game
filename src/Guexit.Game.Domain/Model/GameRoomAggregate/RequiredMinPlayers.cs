@@ -10,7 +10,7 @@ public sealed class RequiredMinPlayers : ValueObject
 
     public RequiredMinPlayers(int count)
     {
-        if (count < 3 || count > 10)
+        if (count is < 3 or > 10)
             throw new InvalidRequiredMinPlayersException(count);
 
         Count = count;

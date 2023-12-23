@@ -1,5 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.Domain.Services;
 
 namespace Guexit.Game.Tests.Common;
 
@@ -64,7 +65,7 @@ public sealed class GameRoomBuilder
             .WithId(gameRoomId)
             .WithCreator(creator)
             .WithPlayersThatJoined(playersThatJoined)
-            .WithAssignedDeck(Enumerable.Range(0, new TotalNumberOfCardsRequired(playersThatJoined.Length + 1).RequiredCardCount)
+            .WithAssignedDeck(Enumerable.Range(0, DeckSizeService.Calculate(playersThatJoined.Length + 1))
                 .Select(_ => new CardBuilder())
                 .ToArray())
             .Started();
@@ -123,7 +124,7 @@ public sealed class GameRoomBuilder
     
     public GameRoomBuilder WithValidDeckAssigned()
     {
-        WithAssignedDeck(Enumerable.Range(0, new TotalNumberOfCardsRequired(_playersThatJoined.Length + 1).RequiredCardCount)
+        WithAssignedDeck(Enumerable.Range(0, DeckSizeService.Calculate(_playersThatJoined.Length + 1))
             .Select(_ => new CardBuilder())
             .ToArray());
         return this;

@@ -38,7 +38,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
-    public int GetRequiredNumberOfCardsInDeck() => RequiredDeckSizeService.CalculateDeckSize(GetPlayersCount(), desiredRounds: 1);
+    public int GetRequiredNumberOfCardsInDeck() => DeckSizeService.Calculate(GetPlayersCount(), desiredRounds: 1);
 
     public void Join(PlayerId playerId)
     {

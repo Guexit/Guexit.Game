@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
+﻿namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 
-namespace Guexit.Game.Domain.Model.GameRoomAggregate;
-
-[DebuggerDisplay("Points: {Value}")]
 public sealed class Points : ValueObject, IComparable<Points>
 {
     public static readonly Points Zero = new(0);

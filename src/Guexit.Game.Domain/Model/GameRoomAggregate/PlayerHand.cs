@@ -23,10 +23,7 @@ public sealed class PlayerHand : Entity<PlayerHandId>
         GameRoomId = gameRoomId;
     }
 
-    public void AddCard(Card card)
-    {
-        Cards.Add(card);
-    }
+    public void AddCard(Card card) => Cards.Add(card);
 
     public Card SubtractCard(CardId cardId)
     {

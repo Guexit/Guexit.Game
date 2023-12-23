@@ -2,9 +2,9 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 
 namespace Guexit.Game.Domain.Services;
 
-public static class RequiredDeckSizeService
+public static class DeckSizeService
 {
-    public static int CalculateDeckSize(int totalPlayers, int desiredRounds = 1)
+    public static int Calculate(int totalPlayers, int desiredRounds = 1)
     {
         if (desiredRounds <= 0) 
             throw new ArgumentException($"{desiredRounds} is an invalid desired rounds count. It must be a positive number", nameof(desiredRounds));
