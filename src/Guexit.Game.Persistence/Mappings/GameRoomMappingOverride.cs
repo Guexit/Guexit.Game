@@ -38,6 +38,10 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .HasConversion(to => to.Value, from => GameStatus.From(from))
             .IsRequired();
 
+        builder.Property(x => x.NextGameRoomId)
+            .HasConversion(to => to.Value, from => new GameRoomId(from))
+            .HasDefaultValue(GameRoomId.Empty);
+        
         builder.HasMany(x => x.PlayerHands).WithOne().HasForeignKey(x => x.GameRoomId);
         builder.HasMany(x => x.Deck).WithOne().HasForeignKey("GameRoomId");
         builder.HasMany(x => x.SubmittedCards).WithOne().HasForeignKey(x => x.GameRoomId);
@@ -47,6 +51,7 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.Navigation(x => x.Deck).AutoInclude();
         builder.Navigation(x => x.SubmittedCards).AutoInclude();
         builder.Navigation(x => x.FinishedRounds).AutoInclude();
-        
+
+        builder.HasIndex(x => x.NextGameRoomId);
     }
 }
