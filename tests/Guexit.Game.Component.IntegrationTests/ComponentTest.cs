@@ -10,9 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Guexit.Game.Component.IntegrationTests;
 
 [CollectionDefinition(nameof(ComponentTestCollectionDefinition))]
-public sealed class ComponentTestCollectionDefinition : ICollectionFixture<GameWebApplicationFactory>
-{
-}
+public sealed class ComponentTestCollectionDefinition : ICollectionFixture<GameWebApplicationFactory>;
 
 [Collection(nameof(ComponentTestCollectionDefinition))]
 public abstract class ComponentTest : IAsyncLifetime

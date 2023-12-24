@@ -186,10 +186,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     private Dictionary<PlayerId, Points> CalculateScoresOfCurrentRound()
     {
-        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId);
-        var amountOfPlayersWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
-
         var pointsByPlayer = PlayerIds.ToDictionary(x => x, _ => Points.Zero);
+        var submittedCardsByPlayerId = SubmittedCards.ToDictionary(x => x.PlayerId);
+
+        var amountOfPlayersWhoVotedStoryTellerCard = submittedCardsByPlayerId[CurrentStoryTeller.PlayerId].Voters.Count;
         if (amountOfPlayersWhoVotedStoryTellerCard > 0 && amountOfPlayersWhoVotedStoryTellerCard < GetCurrentGuessingPlayerIds().Count)
             pointsByPlayer[CurrentStoryTeller.PlayerId] += new Points(3);
 

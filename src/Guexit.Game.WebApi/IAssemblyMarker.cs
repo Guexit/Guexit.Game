@@ -1,5 +1,3 @@
 ﻿namespace Guexit.Game.WebApi;
 
-public interface IAssemblyMarker
-{
-}
+public interface IAssemblyMarker;

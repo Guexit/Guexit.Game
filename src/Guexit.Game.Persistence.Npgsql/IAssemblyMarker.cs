@@ -1,5 +1,3 @@
 ﻿namespace Guexit.Game.Persistence.Npgsql;
 
-public interface IAssemblyMarker
-{
-}
+public interface IAssemblyMarker;

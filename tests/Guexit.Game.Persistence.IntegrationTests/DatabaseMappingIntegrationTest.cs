@@ -21,9 +21,7 @@ public sealed class IntegrationTestFixture
 }
 
 [CollectionDefinition(nameof(MappingIntegrationTestCollectionDefinition))]
-public sealed class MappingIntegrationTestCollectionDefinition : ICollectionFixture<IntegrationTestFixture>
-{
-}
+public sealed class MappingIntegrationTestCollectionDefinition : ICollectionFixture<IntegrationTestFixture>;
 
 [Collection(nameof(MappingIntegrationTestCollectionDefinition))]
 public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime

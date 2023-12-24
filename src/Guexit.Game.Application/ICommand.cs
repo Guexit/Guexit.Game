@@ -2,6 +2,4 @@
 
 namespace Guexit.Game.Application;
 
-public interface ICommand : IRequest<Unit>
-{
-}
+public interface ICommand : IRequest<Unit>;
