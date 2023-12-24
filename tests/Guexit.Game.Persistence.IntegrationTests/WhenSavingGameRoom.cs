@@ -19,7 +19,7 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         var createdAt = new DateTimeOffset(2022, 1, 2, 3, 5, 6, TimeSpan.Zero);
         var repository = new GameRoomRepository(DbContext);
         var submittedStory = "Some story";
-        var guessingPlayerdIdsThatSubmittedCard = new PlayerId[] { "invitedPlayer1", "invitedPlayer2" };
+        var guessingPlayerIdsThatSubmittedCard = new PlayerId[] { "invitedPlayer1", "invitedPlayer2" };
 
         await repository.Add(new GameRoomBuilder()
             .WithId(gameRoomId)
@@ -29,7 +29,7 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
             .Started()
             .WithAssignedDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
             .WithStoryTellerStory(submittedStory)
-            .WithGuessingPlayerThatSubmittedCard(guessingPlayerdIdsThatSubmittedCard)
+            .WithGuessingPlayerThatSubmittedCard(guessingPlayerIdsThatSubmittedCard)
             .Build());
         await SaveChanges();
 
@@ -45,7 +45,8 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         gameRoom.CurrentStoryTeller.Story.Should().Be(submittedStory);
         gameRoom.SubmittedCards.Should().HaveCount(3);
         gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(x => x == initialStoryTeller);
-        gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(guessingPlayerdIdsThatSubmittedCard[0]);
-        gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(guessingPlayerdIdsThatSubmittedCard[1]);
+        gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(guessingPlayerIdsThatSubmittedCard[0]);
+        gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(guessingPlayerIdsThatSubmittedCard[1]);
+        gameRoom.NextGameRoomId.Should().Be(GameRoomId.Empty);
     }
 }
