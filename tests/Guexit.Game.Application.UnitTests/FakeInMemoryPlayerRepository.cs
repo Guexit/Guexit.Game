@@ -4,16 +4,16 @@ namespace Guexit.Game.Application.UnitTests;
 
 public sealed class FakeInMemoryPlayerRepository : IPlayerRepository
 {
-    private readonly List<Player> _players = new();
+    private readonly Dictionary<PlayerId, Player> _players = new();
 
     public Task Add(Player player, CancellationToken cancellationToken = default)
     {
-        _players.Add(player);
+        _players.Add(player.Id, player);
         return Task.CompletedTask;
     }
 
     public Task<Player?> GetBy(PlayerId id, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(_players.FirstOrDefault(x => x.Id == id));
+        return Task.FromResult(_players.GetValueOrDefault(id));
     }
 }

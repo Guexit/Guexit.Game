@@ -5,11 +5,11 @@ namespace Guexit.Game.Application.UnitTests;
 
 public sealed class FakeInMemoryImageRepository : IImageRepository
 {
-    private readonly Dictionary<ImageId, Image> _imagesById = new();
+    private readonly Dictionary<ImageId, Image> _images = new();
 
     public ValueTask Add(Image gameRoom, CancellationToken ct = default)
     {
-        _imagesById.Add(gameRoom.Id, gameRoom);
+        _images.Add(gameRoom.Id, gameRoom);
         return ValueTask.CompletedTask;
     }
 
@@ -17,7 +17,7 @@ public sealed class FakeInMemoryImageRepository : IImageRepository
     {
         foreach (var image in images)
         {
-            _imagesById.Add(image.Id, image);
+            _images.Add(image.Id, image);
         }
 
         return ValueTask.CompletedTask;
@@ -25,18 +25,18 @@ public sealed class FakeInMemoryImageRepository : IImageRepository
 
     public Task<int> CountAvailableImages(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(_imagesById.Values.Where(x => x.GameRoomId == GameRoomId.Empty).Count());
+        return Task.FromResult(_images.Values.Where(x => x.GameRoomId == GameRoomId.Empty).Count());
     }
 
     public Task<Image[]> GetAvailableImages(int take, CancellationToken _ = default)
     {
-        return Task.FromResult(_imagesById.Values.Take(take)
+        return Task.FromResult(_images.Values.Take(take)
             .Where(x => x.GameRoomId == GameRoomId.Empty).ToArray());
     }
 
     public Task<Image?> GetBy(ImageId imageId, CancellationToken ct = default)
     {
-        return Task.FromResult(_imagesById.GetValueOrDefault(imageId));
+        return Task.FromResult(_images.GetValueOrDefault(imageId));
     }
 }
 

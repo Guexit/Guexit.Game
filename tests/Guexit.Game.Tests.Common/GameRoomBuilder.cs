@@ -16,6 +16,7 @@ public sealed class GameRoomBuilder
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = new();
     private bool _withNoCardsLeftInDeck = false;
+    private GameRoomId _nextGameRoomId = GameRoomId.Empty;
 
     public GameRoom Build()
     {
@@ -54,7 +55,10 @@ public sealed class GameRoomBuilder
             var cardId = gameRoom.SubmittedCards.Single(x => x.PlayerId == vote.VotedCardSubmitter).Card.Id;
             gameRoom.VoteCard(vote.VotingPlayerId, cardId);
         }
-
+        
+        if (_nextGameRoomId != GameRoomId.Empty)
+            gameRoom.LinkToNextGameRoom(_nextGameRoomId);
+        
         gameRoom.ClearDomainEvents();
         return gameRoom;
     }
@@ -81,7 +85,6 @@ public sealed class GameRoomBuilder
             .WithVote(playersThatJoined[0], creator)
             .WithVote(playersThatJoined[1], creator);
         return gameRoomBuilder;
-
     }
 
     public GameRoomBuilder WithId(GameRoomId id)
@@ -157,6 +160,12 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithoutCardsLeftInDeck()
     {
         _withNoCardsLeftInDeck = true;
+        return this;
+    }
+
+    public GameRoomBuilder WithNextGameRoomId(GameRoomId id)
+    {
+        _nextGameRoomId = id;
         return this;
     }
 }
