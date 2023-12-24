@@ -6,8 +6,8 @@ public sealed class FinishedRound : Entity<FinishedRoundId>
 {
     public GameRoomId GameRoomId { get; private init; } = default!;
     public DateTimeOffset FinishedAt { get; private init; }
-    public ICollection<Score> Scores { get; private init; } = default!;
-    public ICollection<SubmittedCardSnapshot> SubmittedCardSnapshots { get; private init; } = default!;
+    public ICollection<Score> Scores { get; private init; } = new List<Score>();
+    public ICollection<SubmittedCardSnapshot> SubmittedCardSnapshots { get; private init; } = new List<SubmittedCardSnapshot>();
     public StoryTeller StoryTeller { get; private init; } = default!;
 
     public FinishedRound() 

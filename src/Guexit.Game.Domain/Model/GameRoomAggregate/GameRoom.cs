@@ -21,6 +21,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<SubmittedCard> SubmittedCards { get; private init; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
     public ICollection<FinishedRound> FinishedRounds { get; private init; } = new List<FinishedRound>();
+    public GameRoomId NextGameRoomId { get; private set; } = GameRoomId.Empty;
 
     public IReadOnlySet<PlayerId> GetCurrentGuessingPlayerIds() => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
     public int GetPlayersCount() => PlayerIds.Count;
@@ -63,14 +64,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void Start(PlayerId playerId)
     {
+        EnsurePlayersContains(playerId);
+        
         if (Status != GameStatus.NotStarted)
             throw new StartAlreadyStartedGameException(Id);
 
         if (!RequiredMinPlayers.IsSatisfiedBy(PlayerIds.Count))
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
-        
-        if (!PlayerIds.Contains(playerId))
-            throw new PlayerNotInGameRoomException(Id, playerId);
 
         if (CreatedBy != playerId)
             throw new GameStartPermissionDeniedException(Id, playerId);
@@ -85,6 +85,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void SubmitStory(PlayerId storyTellerId, CardId cardId, string story)
     {
+        EnsurePlayersContains(storyTellerId);
+        
         if (Status != GameStatus.InProgress)
             throw new SubmittingCardToGameNotInProgressException(Id);
 
@@ -162,8 +164,26 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             CompleteCurrentRound();
     }
 
+    public void LinkToNextGameRoom(GameRoomId nextGameRoomId)
+    {
+        if (Status != GameStatus.Finished)
+            throw new CannotLinkToNextGameRoomIfItsNotFinishedException(Id);
+        
+        NextGameRoomId = nextGameRoomId;
+        
+        AddDomainEvent(new NextGameRoomLinked(Id, nextGameRoomId));
+    }
+
+    public bool IsLinkedToNextGameRoom() => NextGameRoomId != GameRoomId.Empty;
+
     private PlayerHand GetCurrentStoryTellerHand() => PlayerHands.Single(x => x.PlayerId == CurrentStoryTeller.PlayerId);
 
+    private void EnsurePlayersContains(PlayerId playerId)
+    {
+        if (!PlayerIds.Contains(playerId))
+            throw new PlayerNotInGameRoomException(Id, playerId);
+    }
+    
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
     {
         if (!GetCurrentGuessingPlayerIds().Contains(playerId))
@@ -205,12 +225,6 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         return pointsByPlayer;
     }
 
-    private void End()
-    {
-        Status = GameStatus.Finished;
-        AddDomainEvent(new GameFinished(Id));
-    }
-
     private void ShiftToNextRound()
     {
         var playerIds = PlayerIds.ToList();
@@ -227,6 +241,12 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         SubmittedCards.Clear();
         AddDomainEvent(new NewRoundStarted(Id));
+    }
+
+    private void End()
+    {
+        Status = GameStatus.Finished;
+        AddDomainEvent(new GameFinished(Id));
     }
 }
 
