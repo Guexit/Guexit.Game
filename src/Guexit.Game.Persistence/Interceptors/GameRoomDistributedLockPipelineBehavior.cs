@@ -4,7 +4,7 @@ using Mediator;
 namespace Guexit.Game.Persistence.Interceptors;
 
 public sealed class GameRoomDistributedLockPipelineBehavior<TCommand, TResponse> : IPipelineBehavior<TCommand, TResponse>
-    where TCommand : IGameRoomCommand
+    where TCommand : IGameRoomCommand<TResponse>
 {
     private readonly GameRoomDistributedLock _gameRoomLock;
 

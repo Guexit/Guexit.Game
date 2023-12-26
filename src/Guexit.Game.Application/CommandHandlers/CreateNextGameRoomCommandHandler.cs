@@ -7,7 +7,7 @@ using Mediator;
 
 namespace Guexit.Game.Application.CommandHandlers;
 
-public sealed class CreateNextGameRoomCommandHandler : ICommandHandler<CreateNextGameRoomCommand>
+public sealed class CreateNextGameRoomCommandHandler : ICommandHandler<CreateNextGameRoomCommand, GameRoomId>
 {
     private readonly IPlayerRepository _playerRepository;
     private readonly IGameRoomRepository _gameRoomRepository;
@@ -23,7 +23,7 @@ public sealed class CreateNextGameRoomCommandHandler : ICommandHandler<CreateNex
         _clock = clock;
     }
 
-    public async ValueTask<Unit> Handle(CreateNextGameRoomCommand command, CancellationToken ct = default)
+    public async ValueTask<GameRoomId> Handle(CreateNextGameRoomCommand command, CancellationToken ct = default)
     {
         var player = await _playerRepository.GetBy(command.PlayerId, ct);
         if (player is null)
@@ -34,13 +34,13 @@ public sealed class CreateNextGameRoomCommandHandler : ICommandHandler<CreateNex
             throw new GameRoomNotFoundException(command.GameRoomId);
 
         if (gameRoom.IsLinkedToNextGameRoom())
-            return Unit.Value;
+            return gameRoom.NextGameRoomId;
         
         var newGameRoom = new GameRoom(_guidProvider.NewGuid(), command.PlayerId, _clock.UtcNow);
         gameRoom.LinkToNextGameRoom(newGameRoom.Id);
         
         await _gameRoomRepository.Add(newGameRoom, ct);
         
-        return Unit.Value;
+        return gameRoom.NextGameRoomId;
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-
-namespace Guexit.Game.Application;
+﻿namespace Guexit.Game.Application;
 
 public interface IUnitOfWork
 {
