@@ -2,6 +2,7 @@
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.WebApi.Contracts.Requests;
+using Guexit.Game.WebApi.Contracts.Responses;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ public static class GameRoomEndpoints
         group.MapPost("/storyteller/submit-card-story", SubmitStoryTellerCardStory);
         group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
         group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
+        group.MapPost("/create-next", CreateNext).Produces<CreateNextGameRoomResponse>();
 
         group.MapGet("/lobby", GetLobby).Produces<LobbyReadModel>();
         group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
@@ -89,6 +91,16 @@ public static class GameRoomEndpoints
     {
         await sender.Send(new VoteCardCommand(userId, gameRoomId, cardId), ct);
         return Results.Ok();
+    }
+
+    private static async Task<IResult> CreateNext(
+        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromRoute] Guid gameRoomId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        var nextGameRoomId = await sender.Send(new CreateNextGameRoomCommand(userId, gameRoomId), ct);
+        return Results.Ok(new CreateNextGameRoomResponse(nextGameRoomId));
     }
 
     private static async Task<IResult> GetLobby(

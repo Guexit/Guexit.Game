@@ -4,7 +4,7 @@ using Mediator;
 namespace Guexit.Game.Persistence.Interceptors;
 
 public sealed class UnitOfWorkCommandPipelineBehavior<TCommand, TResponse> : IPipelineBehavior<TCommand, TResponse>
-    where TCommand : Application.ICommand
+    where TCommand : Application.ICommand<TResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
 

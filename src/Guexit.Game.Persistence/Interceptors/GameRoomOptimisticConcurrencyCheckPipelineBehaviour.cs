@@ -4,7 +4,7 @@ using Mediator;
 namespace Guexit.Game.Persistence.Interceptors;
 
 public sealed class GameRoomOptimisticConcurrencyCheckPipelineBehaviour<TGameRoomCommand, TResponse> : IPipelineBehavior<TGameRoomCommand, TResponse>
-    where TGameRoomCommand : IGameRoomCommand
+    where TGameRoomCommand : IGameRoomCommand<TResponse>
 {
     private readonly GameRoomOptimisticConcurrencyCheckEnforcer _gameRoomConcurrencyCheckEnforcer;
 

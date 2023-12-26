@@ -2,4 +2,6 @@
 
 namespace Guexit.Game.Application;
 
-public interface ICommand : IRequest<Unit>;
+internal interface ICommand : ICommand<Unit>;
+
+public interface ICommand<out TResponse> : IRequest<TResponse>;
