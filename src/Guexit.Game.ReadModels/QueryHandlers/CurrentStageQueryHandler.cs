@@ -24,12 +24,13 @@ public sealed class CurrentStageQuery : IQuery<GameStageReadModel>
 
 public sealed class CurrentStageQueryHandler : QueryHandler<CurrentStageQuery, GameStageReadModel>
 {
-    private static readonly IGameStageSpecification[] _allGameStageSpecifications = { 
+    private static readonly IGameStageSpecification[] _allGameStageSpecifications =
+    [
         new BoardSpecification(),
         new VotingSpecification(),
         new LobbySpecification(),
         new EndSpecification()
-    };
+    ];
 
     public CurrentStageQueryHandler(GameDbContext dbContext, ILogger<QueryHandler<CurrentStageQuery, GameStageReadModel>> logger) 
         : base(dbContext, logger)

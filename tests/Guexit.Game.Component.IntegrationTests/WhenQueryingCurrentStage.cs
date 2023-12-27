@@ -34,7 +34,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
     public async Task ReturnsBoardIfGameRoomIsInProgressAndNotAllPlayersHaveSubmittedCard()
     {
         var creatorId = new PlayerId("unai");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, creatorId, new PlayerId[] { "poysky", "pablo" }).Build();
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, creatorId, ["poysky", "pablo"]).Build();
 
         await Save(gameRoom);
 
@@ -50,7 +50,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
     public async Task ReturnsVotingIfGameRoomIsInProgressAndEveryPlayerHaveSubmittedACard()
     {
         var creatorId = new PlayerId("unai");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, creatorId, new PlayerId[] { "poysky", "pablo" })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, creatorId, ["poysky", "pablo"])
             .WithStoryTellerStory("Pickle rick")
             .WithGuessingPlayerThatSubmittedCard("poysky", "pablo")
             .Build();
@@ -69,7 +69,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
     public async Task ReturnsEndIfGameRoomIsHasFinished()
     {
         var creatorId = new PlayerId("unai");
-        var gameRoom = GameRoomBuilder.CreateFinished(GameRoomId, creatorId, new PlayerId[] { "poysky", "pablo" }).Build();
+        var gameRoom = GameRoomBuilder.CreateFinished(GameRoomId, creatorId, ["poysky", "pablo"]).Build();
 
         await Save(gameRoom);
 

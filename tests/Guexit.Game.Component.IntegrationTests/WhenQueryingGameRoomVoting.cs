@@ -26,7 +26,7 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         var guessingPlayer1 = new PlayerId("player2");
         var guessingPlayer2 = new PlayerId("player3");
         
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayer1, guessingPlayer2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayer1, guessingPlayer2])
             .WithStoryTellerStory(story)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
             .Build();

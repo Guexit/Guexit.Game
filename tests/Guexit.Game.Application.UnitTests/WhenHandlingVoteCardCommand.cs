@@ -26,7 +26,7 @@ public sealed class WhenHandlingVoteCardCommand
     public async Task VotingPlayerIsAddedToSubmittedCardVoters()
     {
         var votingPlayerId = new PlayerId("votingPlayer");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId, new PlayerId("player3") })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, "player3"])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, "player3")
             .Build();
@@ -46,7 +46,7 @@ public sealed class WhenHandlingVoteCardCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var votingPlayerId1 = new PlayerId("votingPlayer1");
         var votingPlayerId2 = new PlayerId("votingPlayer2");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [votingPlayerId1, votingPlayerId2])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
             .Build();
@@ -70,7 +70,7 @@ public sealed class WhenHandlingVoteCardCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var votingPlayerId1 = new PlayerId("votingPlayer1");
         var votingPlayerId2 = new PlayerId("votingPlayer2");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [votingPlayerId1, votingPlayerId2])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
             .Build();
@@ -91,7 +91,8 @@ public sealed class WhenHandlingVoteCardCommand
     public async Task GuessingPlayerVotedEventIsRaised()
     {
         var votingPlayerId = new PlayerId("votingPlayer");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId, new PlayerId("player3") })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, new PlayerId("player3")
+            ])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, "player3")
             .Build();
@@ -113,7 +114,7 @@ public sealed class WhenHandlingVoteCardCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var votingPlayerId1 = new PlayerId("votingPlayer1");
         var votingPlayerId2 = new PlayerId("votingPlayer2");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [votingPlayerId1, votingPlayerId2])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
             .Build();
@@ -138,7 +139,7 @@ public sealed class WhenHandlingVoteCardCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var votingPlayerId1 = new PlayerId("votingPlayer1");
         var votingPlayerId2 = new PlayerId("votingPlayer2");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { votingPlayerId1, votingPlayerId2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [votingPlayerId1, votingPlayerId2])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId1, votingPlayerId2)
             .Build();
@@ -161,7 +162,7 @@ public sealed class WhenHandlingVoteCardCommand
 
         var votingPlayerId2 = new PlayerId("votingPlayer2");
 
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, pastStoryTeller, new[] { nextStoryTeller, votingPlayerId2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, pastStoryTeller, [nextStoryTeller, votingPlayerId2])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(nextStoryTeller, votingPlayerId2)
             .Build();
@@ -187,7 +188,7 @@ public sealed class WhenHandlingVoteCardCommand
         var player1 = new PlayerId("thanos");
         var player2 = new PlayerId("spiderman");
         var player3 = new PlayerId("ironman");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, new[] { player2, player3 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, [player2, player3])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(player2, player3)
             .WithoutCardsLeftInDeck()
@@ -238,7 +239,7 @@ public sealed class WhenHandlingVoteCardCommand
     {
         var storyTellerId = new PlayerId("storyTellerId");
         var anyCardId = new CardId(Guid.NewGuid());
-        await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new PlayerId[] { "player2", "player3" })
+        await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, ["player2", "player3"])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard("player2", "player3")
             .Build());
@@ -253,7 +254,8 @@ public sealed class WhenHandlingVoteCardCommand
     public async Task ThrowsCardNotFoundInSubmittedCardException()
     {
         var votingPlayerId = new PlayerId("votingPlayer");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId, new PlayerId("player3") })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, new PlayerId("player3")
+            ])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, "player3")
             .Build();
@@ -271,7 +273,8 @@ public sealed class WhenHandlingVoteCardCommand
     {
         var votingPlayerId = new PlayerId("votingPlayer");
         var otherGuessingPlayerId = new PlayerId("player3");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId, otherGuessingPlayerId })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, otherGuessingPlayerId
+            ])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, "player3")
             .Build();
@@ -289,7 +292,8 @@ public sealed class WhenHandlingVoteCardCommand
     {
         var votingPlayerId = new PlayerId("votingPlayer");
         var playerPendingToSubmitCard = new PlayerId("player3");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { votingPlayerId, playerPendingToSubmitCard })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, playerPendingToSubmitCard
+            ])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId)
             .Build();

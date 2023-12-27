@@ -43,7 +43,8 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
             GameRoomId = gameRoom.Id,
             Scores = GetScores(gameRoom, players),
             RoundSummaries = GetRoundSummaries(gameRoom, players),
-            Status = gameRoom.Status.Value
+            Status = gameRoom.Status.Value,
+            NextGameRoomId = gameRoom.NextGameRoomId
         };
     }
 

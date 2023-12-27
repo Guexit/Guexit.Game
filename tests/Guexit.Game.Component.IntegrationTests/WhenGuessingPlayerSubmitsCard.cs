@@ -25,7 +25,7 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
             new PlayerBuilder().WithId("player3").Build()
         );
 
-        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, "storyTellerId", new PlayerId[] { guessingPlayerId, "player3" })
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, "storyTellerId", [guessingPlayerId, "player3"])
             .WithStoryTellerStory("Any card story")
             .Build();
 

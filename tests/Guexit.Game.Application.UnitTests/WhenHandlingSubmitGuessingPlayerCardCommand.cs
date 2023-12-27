@@ -26,7 +26,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     public async Task CardIsSubmitted()
     {
         var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [guessingPlayerId, "player3"])
             .WithStoryTellerStory("Any story")
             .Build();
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
@@ -41,7 +41,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     public async Task AllPlayerCardsSubmittedEventIsRaisedWhenAllPlayersSubmittedTheCard()
     {
         var lastPlayerPendingToSubmitCard = new PlayerId("lastPendingToSubmitCard");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { lastPlayerPendingToSubmitCard, new PlayerId("player3") })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [lastPlayerPendingToSubmitCard, "player3"])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard("player3")
             .Build();
@@ -59,7 +59,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     public async Task DoesNotRaiseAllPlayerCardsSubmittedEventIsRaisedIfAnyPlayerIsPendingToSubmitCard()
     {
         var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [guessingPlayerId, "player3"])
             .WithStoryTellerStory("Any story")
             .Build();
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
@@ -105,7 +105,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         var storyTellerId = new PlayerId("storyTellerId");
         var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
         var anyCardId = new CardId(Guid.NewGuid());
-        await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayerId, new PlayerId("player3") })
+        await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayerId, "player3"])
             .WithStoryTellerStory("Any story")
             .Build());
 
@@ -121,7 +121,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
     {
         var guessingPlayerId = new PlayerId("lastPendingToSubmitCard");
         var gameRoom = GameRoomBuilder
-            .CreateStarted(GameRoomId, "storyTellerId", new[] { guessingPlayerId, new PlayerId("player3") })
+            .CreateStarted(GameRoomId, "storyTellerId", [guessingPlayerId, "player3"])
             .Build();
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
         await _gameRoomRepository.Add(gameRoom);

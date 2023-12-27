@@ -19,7 +19,7 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         var storyTellerId = new PlayerId("thanos");
         var guessingPlayer1 = new PlayerId("ironman");
         var guessingPlayer2 = new PlayerId("starlord");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayer1, guessingPlayer2 })
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayer1, guessingPlayer2])
             .WithStoryTellerStory("Infinity gems")
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
             .WithVote(guessingPlayer1, storyTellerId)
@@ -46,8 +46,34 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == storyTellerId);
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == guessingPlayer1);
         readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == guessingPlayer2);
+        readModel.IsNextGameRoomLinked.Should().BeFalse();
+        readModel.NextGameRoomId.Should().Be(Guid.Empty);
     }
 
+    [Fact]
+    public async Task ReturnsIfNextGameRoomIsCreatedItsId()
+    {
+        var playerId = new PlayerId("thanos");
+        var nextGameRoomId = new GameRoomId(Guid.NewGuid());
+        var gameRoom = GameRoomBuilder.CreateFinished(GameRoomId, playerId, ["ironman", "gamora"])
+            .WithNextGameRoomId(nextGameRoomId)
+            .Build();
+        await Save(gameRoom);
+        await Save(
+            new PlayerBuilder().WithId(playerId).WithUsername("thanos").Build(),
+            new PlayerBuilder().WithId("ironman").WithUsername("ironman").Build(),
+            new PlayerBuilder().WithId("gamora").WithUsername("gamora").Build());
+        
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/summary", playerId);
+
+        await response.ShouldHaveSuccessStatusCode();
+        var readModel = await response.Content.ReadFromJsonAsync<GameSummaryReadModel>();
+        readModel.Should().NotBeNull();
+        readModel!.GameRoomId.Should().Be(GameRoomId);
+        readModel.IsNextGameRoomLinked.Should().BeTrue();
+        readModel.NextGameRoomId.Should().Be(nextGameRoomId);
+    }
+    
     private static void AssumeStoryTellerSubmittedStory(GameRoom gameRoom)
     {
         var storyTellerId = gameRoom.CurrentStoryTeller.PlayerId;

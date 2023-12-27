@@ -22,12 +22,12 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .WithCreator(creatorId)
             .WithPlayersThatJoined("player2", "player3")
             .Build());
-        await Save(new[]
-        {
+        await Save(
+        [
             new PlayerBuilder().WithId("player1").WithUsername("thanos").Build(),
             new PlayerBuilder().WithId("player2").WithUsername("hulk").Build(),
             new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
-        });
+        ]);
 
         using var response = await Send(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby", creatorId);
 
@@ -54,12 +54,12 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .WithCreator(creatorId)
             .WithPlayersThatJoined(nonCreatorId, "player3")
             .Build());
-        await Save(new[]
-        {
+        await Save(
+        [
             new PlayerBuilder().WithId("player1").WithUsername("thanos").Build(),
             new PlayerBuilder().WithId("player2").WithUsername("hulk").Build(),
             new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
-        });
+        ]);
 
         using var response = await Send(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby", authenticatedPlayerId: nonCreatorId);
 

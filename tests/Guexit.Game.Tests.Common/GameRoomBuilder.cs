@@ -14,7 +14,7 @@ public sealed class GameRoomBuilder
     private bool _isStarted = false;
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
-    private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = new();
+    private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = [];
     private bool _withNoCardsLeftInDeck = false;
     private GameRoomId _nextGameRoomId = GameRoomId.Empty;
 

@@ -6,6 +6,8 @@ public sealed class GameSummaryReadModel
     public required PlayerScoreDto[] Scores { get; init; }
     public required RoundSummaryDto[] RoundSummaries { get; init; }
     public required string Status { get; init; }
+    public bool IsNextGameRoomLinked => NextGameRoomId != Guid.Empty;
+    public Guid NextGameRoomId { get; init; }
 
     public sealed class RoundSummaryDto
     {

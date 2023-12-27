@@ -18,7 +18,7 @@ public sealed class WhenVotingSubmittedCard : ComponentTest
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var votingPlayerId = new PlayerId("player2");
         var otherGuessingPlayerId = new PlayerId("player3");
-        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, "storyTellerId", new[] { votingPlayerId, otherGuessingPlayerId })
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, "storyTellerId", [votingPlayerId, otherGuessingPlayerId])
             .WithStoryTellerStory("Any card story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, otherGuessingPlayerId)
             .Build();

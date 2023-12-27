@@ -77,14 +77,14 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var initialStoryTeller = new PlayerId("storyTellerId");
         var playerId2 = new PlayerId("player2");
         var playerId3 = new PlayerId("player3");
-        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, initialStoryTeller, new[] { playerId2, playerId3 }).Build();
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, initialStoryTeller, [playerId2, playerId3]).Build();
         await Save(gameRoom);
-        await Save(new[]
-        {
+        await Save(
+        [
             new PlayerBuilder().WithId(initialStoryTeller).WithUsername("gamora").Build(),
             new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),
             new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
-        });
+        ]);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId3);
 
@@ -106,12 +106,12 @@ public sealed class WhenQueryingGameBoard : ComponentTest
             .WithCreator(playerId1).WithPlayersThatJoined(playerId2, playerId3)
             .Build();
         await Save(gameRoom);
-        await Save(new[]
-        {
+        await Save(
+        [
             new PlayerBuilder().WithId(playerId1).WithUsername("gamora").Build(),
             new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),
             new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
-        });
+        ]);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId1);
 

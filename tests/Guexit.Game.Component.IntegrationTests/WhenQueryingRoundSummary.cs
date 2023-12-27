@@ -27,7 +27,7 @@ public sealed class WhenQueryingRoundSummary : ComponentTest
             new PlayerBuilder().WithId(guessingPlayer1).WithUsername("ironman").Build(),
             new PlayerBuilder().WithId(guessingPlayer2).WithUsername("starlord").Build());
 
-        await Save(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, new[] { guessingPlayer1, guessingPlayer2 })
+        await Save(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayer1, guessingPlayer2])
             .WithStoryTellerStory(story)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
             .WithVote(guessingPlayer1, storyTellerId)

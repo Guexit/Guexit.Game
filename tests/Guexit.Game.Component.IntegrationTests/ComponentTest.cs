@@ -15,7 +15,7 @@ public sealed class ComponentTestCollectionDefinition : ICollectionFixture<GameW
 [Collection(nameof(ComponentTestCollectionDefinition))]
 public abstract class ComponentTest : IAsyncLifetime
 {
-    private static readonly ITestDataCleaner[] _testDataCleaners = { new PersistenceDataCleaner() };
+    private static readonly ITestDataCleaner[] _testDataCleaners = [new PersistenceDataCleaner()];
     
     protected GameWebApplicationFactory WebApplicationFactory { get; }
 

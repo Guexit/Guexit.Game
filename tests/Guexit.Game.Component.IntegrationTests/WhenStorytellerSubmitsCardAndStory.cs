@@ -23,14 +23,14 @@ public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
         var playerId3 = new PlayerId("player3");
         var story = "El tipico abuelo adolescente";
         
-        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, new[] { playerId2, playerId3 }).Build();
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, [playerId2, playerId3]).Build();
         await Save(gameRoom);
-        await Save(new[]
-        {
+        await Save(
+        [
             new PlayerBuilder().WithId(storyTellerId).WithUsername("gamora").Build(),
             new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),
             new PlayerBuilder().WithId(playerId3).WithUsername("wroot").Build()
-        });
+        ]);
 
         var selectedCardId = gameRoom.PlayerHands.Single(x => x.PlayerId == storyTellerId).Cards.First().Id;
 
