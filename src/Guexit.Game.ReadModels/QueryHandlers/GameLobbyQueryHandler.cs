@@ -34,6 +34,7 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyRe
             throw new GameRoomNotFoundException(query.GameRoomId);
 
         var playersInGame = await DbContext.Players.AsNoTracking().Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(ct);
+        var creator = playersInGame.First(x => gameRoom.CreatedBy == x.Id);
 
         return new LobbyReadModel
         {
@@ -41,7 +42,7 @@ public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyRe
             Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Username, Id = x.Id.Value }).ToArray(),
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
             CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length && gameRoom.CreatedBy == query.PlayerId,
-            CreatedBy = gameRoom.CreatedBy,
+            Creator = new LobbyPlayerDto { Id = creator.Id, Username = creator.Username },
             GameStatus = gameRoom.Status.Value
         };
     }

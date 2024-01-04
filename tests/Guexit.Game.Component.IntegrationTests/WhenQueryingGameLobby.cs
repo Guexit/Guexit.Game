@@ -17,6 +17,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var creatorId = new PlayerId("player1");
+        var creatorUsername = "thanos";
         await Save(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(creatorId)
@@ -24,7 +25,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .Build());
         await Save(
         [
-            new PlayerBuilder().WithId("player1").WithUsername("thanos").Build(),
+            new PlayerBuilder().WithId(creatorId).WithUsername("thanos").Build(),
             new PlayerBuilder().WithId("player2").WithUsername("hulk").Build(),
             new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
         ]);
@@ -34,14 +35,14 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         var lobbyReadModel = await response.Content.ReadFromJsonAsync<LobbyReadModel>();
         lobbyReadModel.Should().NotBeNull();
         lobbyReadModel!.GameRoomId.Should().Be(gameRoomId.Value);
-        lobbyReadModel.CreatedBy.Should().Be(creatorId);
+        lobbyReadModel.Creator.Id.Should().Be(creatorId);
+        lobbyReadModel.Creator.Username.Should().Be(creatorUsername);
         lobbyReadModel.CanStartGame.Should().BeTrue();
         lobbyReadModel.RequiredMinPlayers.Should().Be(3);
         lobbyReadModel.Players.Select(x => x.Id).Should().BeEquivalentTo("player1", "player2", "player3");
         lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo("thanos", "hulk", "ironman");
         lobbyReadModel.GameStatus.Should().Be(GameStatus.NotStarted.Value);
     }
-    
     
     [Fact]
     public async Task CannotStartIfItsNotTheCreatorOfTheGameRoom()

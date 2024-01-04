@@ -7,7 +7,7 @@ public sealed class LobbyReadModel
     public required LobbyPlayerDto[] Players { get; init; }
     public required bool CanStartGame { get; init; }
     public required string GameStatus { get; init; }
-    public required string CreatedBy { get; init; }
+    public required LobbyPlayerDto Creator { get; init; }
 }
 
 public sealed class LobbyPlayerDto
