@@ -32,20 +32,4 @@ public sealed class WhenAddingImage
         image.Url.Should().Be(url);
         image.CreatedAt.Should().Be(UtcNow);
     }
-    
-    [Fact]
-    public async Task DoesNothingIfImageAlreadyExists()
-    {
-        var imageId = new ImageId(Guid.NewGuid());
-        var url = new Uri("https://guexit.ai/images/imagename");
-        await _imageRepository.Add(new Image(imageId, url, UtcNow));
-
-        await _imageManagementService.AddImage(imageId.Value, new Uri("https://guexit.ai/images/imagename"));
-
-        var image = await _imageRepository.GetBy(imageId, CancellationToken.None);
-        image.Should().NotBeNull();
-        image!.Id.Should().Be(imageId);
-        image.Url.Should().Be(url);
-        image.CreatedAt.Should().Be(UtcNow);
-    }
 }

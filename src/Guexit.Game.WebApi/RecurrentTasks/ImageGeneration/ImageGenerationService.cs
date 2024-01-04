@@ -14,11 +14,8 @@ public sealed class ImageGenerationService
     private readonly ILogger<ImageGenerationService> _logger;
     private readonly IOptions<ImageGenerationBackgroundServiceOptions> _options;
 
-    public ImageGenerationService(IBus bus, GameDbContext dbContext, ILogger<ImageGenerationService> logger,
-        IOptions<ImageGenerationBackgroundServiceOptions> options)
-    {
-        (_bus, _dbContext, _logger, _options) = (bus, dbContext, logger, options);
-    }
+    public ImageGenerationService(IBus bus, GameDbContext dbContext, ILogger<ImageGenerationService> logger, IOptions<ImageGenerationBackgroundServiceOptions> options) 
+        => (_bus, _dbContext, _logger, _options) = (bus, dbContext, logger, options);
 
     public async Task GenerateImages(CancellationToken cancellationToken = default)
     {

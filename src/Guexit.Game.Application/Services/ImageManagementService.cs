@@ -21,11 +21,8 @@ public sealed class ImageManagementService : IImageManagementService
 
     public async Task AddImage(Guid id, Uri url, CancellationToken cancellationToken = default)
     {
-        var imageId = new ImageId(id);
-        if (await _imageRepository.GetBy(imageId, cancellationToken) is not null) 
-            return;
-
-        var image = new Image(imageId, url,  _clock.UtcNow);
+        var image = new Image(new ImageId(id), url, _clock.UtcNow);
+        
         await _imageRepository.Add(image, cancellationToken);
     }
 }
