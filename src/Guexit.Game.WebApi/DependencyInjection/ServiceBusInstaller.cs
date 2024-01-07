@@ -22,9 +22,6 @@ public static class ServiceBusInstaller
 
             config.AddConsumers(typeof(Consumers.IAssemblyMarker).Assembly);
 
-            EndpointConvention.Map<GenerateImagesCommand>(new Uri("queue:guexit-cron-generate-image-command"));
-            EndpointConvention.Map<GenerateImagesCommandWithStyles>(new Uri("queue:guexit-cron-generate-image-command"));
-
             config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {
                 serviceBusConfiguration.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
