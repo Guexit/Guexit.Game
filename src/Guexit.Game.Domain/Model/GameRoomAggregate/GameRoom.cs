@@ -10,6 +10,7 @@ namespace Guexit.Game.Domain.Model.GameRoomAggregate;
 public sealed class GameRoom : AggregateRoot<GameRoomId>
 {
     public const int PlayerHandSize = 4;
+    private const int MaximumPlayers = 10;
 
     public PlayerId CreatedBy { get; private init; } = PlayerId.Empty;
     public ICollection<PlayerId> PlayerIds { get; private init; } = new List<PlayerId>();
@@ -45,6 +46,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         if (PlayerIds.Contains(playerId))
             return;
+        
+        if (GetPlayersCount() >= MaximumPlayers)
+            throw new CannotJoinFullGameRoomException(playerId, Id);
 
         if (Status != GameStatus.NotStarted)
             throw new JoinStartedGameException(playerId, Id);

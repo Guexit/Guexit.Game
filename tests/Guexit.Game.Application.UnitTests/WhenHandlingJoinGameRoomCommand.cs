@@ -30,7 +30,10 @@ public sealed class WhenHandlingJoinGameRoomCommand
 
         await AssumePlayerInRepository(creator);
         await AssumePlayerInRepository(playerJoining);
-        await AssumeGameInRepository(gameRoomId, creator);
+        await _gameRoomRepository.Add(new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creator)
+            .Build());
 
         await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
 
@@ -59,7 +62,8 @@ public sealed class WhenHandlingJoinGameRoomCommand
 
         var action = async () => await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
 
-        await action.Should().ThrowAsync<JoinStartedGameException>();
+        await action.Should().ThrowAsync<JoinStartedGameException>()
+            .WithMessage($"Player with id {playerJoining.Value} cannot join game with id {gameRoomId.Value} because game already started");
     }
 
     [Fact]
@@ -104,10 +108,47 @@ public sealed class WhenHandlingJoinGameRoomCommand
             .WithMessage($"Game room with id {nonExistingGameRoomId} not found.");
     }
 
-    private async Task AssumeGameInRepository(GameRoomId gameRoomId, PlayerId creatorId)
+    [Fact]
+    public async Task ThrowsCannotJoinFullGameRoomException()
     {
-        var game = new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 1, 2, 3, TimeSpan.Zero));
-        await _gameRoomRepository.Add(game);
+        var creator = new PlayerId("creator");
+        var playerJoining = new PlayerId("playerJoining");
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var alreadyFullGameRoom = new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creator)
+            .WithPlayersThatJoined(Enumerable.Range(0, 9).Select(x => new PlayerId($"invitedPlayer{x}")).ToArray())
+            .Build();
+
+        await AssumePlayerInRepository(creator);
+        await AssumePlayerInRepository(playerJoining);
+        await _gameRoomRepository.Add(alreadyFullGameRoom);
+
+        var act = async () => await _commandHandler.Handle(new JoinGameRoomCommand(playerJoining.Value, gameRoomId.Value));
+
+        await act.Should().ThrowAsync<CannotJoinFullGameRoomException>()
+            .WithMessage($"Player with id {playerJoining.Value} cannot join game room with id {gameRoomId.Value} because it is already full");
+    }
+
+    [Fact]
+    public async Task DoesNotThrowExceptionIfGameIsFullButPlayerJoiningWasAlreadyIn()
+    {
+        var creator = new PlayerId("creator");
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var alreadyFullGameRoom = new GameRoomBuilder()
+            .WithId(gameRoomId)
+            .WithCreator(creator)
+            .WithPlayersThatJoined(Enumerable.Range(0, 9).Select(x => new PlayerId($"invitedPlayer{x}")).ToArray())
+            .Build();
+
+        await AssumePlayerInRepository(creator);
+        await _gameRoomRepository.Add(alreadyFullGameRoom);
+
+        await _commandHandler.Handle(new JoinGameRoomCommand(creator.Value, gameRoomId.Value));
+
+        var gameRoom = await _gameRoomRepository.GetBy(gameRoomId);
+        gameRoom.Should().NotBeNull();
+        gameRoom!.PlayerIds.Should().Contain(creator);
     }
 
     private async Task AssumeGameInRepositoryWithPlayersThatJoined(GameRoomId gameRoomId, PlayerId creatorId, params PlayerId[] playersThatJoined)
