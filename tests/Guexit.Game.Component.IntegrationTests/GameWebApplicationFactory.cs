@@ -3,7 +3,6 @@ using Guexit.Game.Component.IntegrationTests.TestDoubles;
 using Guexit.Game.Consumers;
 using Guexit.Game.Domain;
 using Guexit.Game.Tests.Common;
-using Guexit.Game.WebApi.RecurrentTasks.ImageGeneration;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -19,9 +18,6 @@ public sealed class GameWebApplicationFactory : WebApplicationFactory<Game.WebAp
         builder.ConfigureTestServices(services =>
         {
             services.AddMassTransitTestHarness();
-
-            var imageGenerationBackgroundService = services.Single(d => d.ImplementationType == typeof(ImageGenerationRecurrentTask));
-            services.Remove(imageGenerationBackgroundService);
 
             var consumerContext = services.Single(d => d.ImplementationType == typeof(ImageGeneratedConsumerDefinition));
             services.Remove(consumerContext);

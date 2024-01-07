@@ -12,7 +12,6 @@ builder.Services.AddDomain();
 builder.Services.AddApplication();
 builder.Services.AddServiceBus(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration);
-builder.Services.AddRecurrentTasks();
 
 var app = builder.Build();
 
