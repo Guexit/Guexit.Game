@@ -202,10 +202,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         
         FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
 
-        if (Deck.Count >= PlayerIds.Count)
-            ShiftToNextRound();
+        var gameHasFinished = FinishedRounds.Count == GetPlayersCount();
+        if (gameHasFinished)
+            EndGame();
         else
-            End();
+            ShiftToNextRound();
     }
 
     private Dictionary<PlayerId, Points> CalculateScoresOfCurrentRound()
@@ -247,7 +248,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new NewRoundStarted(Id));
     }
 
-    private void End()
+    private void EndGame()
     {
         Status = GameStatus.Finished;
         AddDomainEvent(new GameFinished(Id));
