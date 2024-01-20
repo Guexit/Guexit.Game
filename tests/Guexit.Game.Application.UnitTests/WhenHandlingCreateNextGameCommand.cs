@@ -5,7 +5,8 @@ using Guexit.Game.Domain;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Guexit.Game.Tests.Common;
+using Guexit.Game.Tests.Common.Builders;
+using Guexit.Game.Tests.Common.ObjectMothers;
 
 namespace Guexit.Game.Application.UnitTests;
 
@@ -38,7 +39,7 @@ public sealed class WhenHandlingCreateNextGameCommand
         var playerId = new PlayerId("player1");
         
         await _playerRepository.Add(new PlayerBuilder().WithId(playerId).Build());
-        await _gameRoomRepository.Add(GameRoomBuilder.CreateFinished(finishedGameRoomId, playerId, ["player2", "player3"]).Build());
+        await _gameRoomRepository.Add(GameRoomObjectMother.Finished(finishedGameRoomId, playerId, ["player2", "player3"]));
 
         _guidProvider.NewGuid().Returns(nextGameRoomId.Value);
         
@@ -65,10 +66,7 @@ public sealed class WhenHandlingCreateNextGameCommand
         var playerId = new PlayerId("player1");
         
         await _playerRepository.Add(new PlayerBuilder().WithId(playerId).Build());
-        await _gameRoomRepository.Add(GameRoomBuilder
-            .CreateFinished(finishedGameRoomId, playerId, ["player2", "player3"])
-            .WithNextGameRoomId(alreadyLinkedGameRoomId)
-            .Build());
+        await _gameRoomRepository.Add(GameRoomObjectMother.Finished(finishedGameRoomId, playerId, ["player2", "player3"], alreadyLinkedGameRoomId));
 
         var nextGameRoomId = new GameRoomId(Guid.Parse("22403be9-75dd-458a-9e70-16badde8d932"));
         _guidProvider.NewGuid().Returns(nextGameRoomId.Value);
@@ -82,7 +80,7 @@ public sealed class WhenHandlingCreateNextGameCommand
         var createdNextGameRoo = await _gameRoomRepository.GetBy(nextGameRoomId);
         createdNextGameRoo.Should().BeNull();
     }
-    
+
     [Fact]
     public async Task NextGameRoomLinkedEventIsRaised()
     {
@@ -91,7 +89,7 @@ public sealed class WhenHandlingCreateNextGameCommand
         var playerId = new PlayerId("player1");
         
         await _playerRepository.Add(new PlayerBuilder().WithId(playerId).Build());
-        await _gameRoomRepository.Add(GameRoomBuilder.CreateFinished(finishedGameRoomId, playerId, ["player2", "player3"]).Build());
+        await _gameRoomRepository.Add(GameRoomObjectMother.Finished(finishedGameRoomId, playerId, ["player2", "player3"]));
 
         _guidProvider.NewGuid().Returns(nextGameRoomId.Value);
         

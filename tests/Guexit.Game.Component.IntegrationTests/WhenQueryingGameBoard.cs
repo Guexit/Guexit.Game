@@ -5,6 +5,7 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Tests.Common;
+using Guexit.Game.Tests.Common.Builders;
 
 namespace Guexit.Game.Component.IntegrationTests;
 

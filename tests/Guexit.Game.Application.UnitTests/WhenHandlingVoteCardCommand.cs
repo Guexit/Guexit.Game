@@ -5,7 +5,8 @@ using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Guexit.Game.Tests.Common;
+using Guexit.Game.Tests.Common.Builders;
+using Guexit.Game.Tests.Common.ObjectMothers;
 
 namespace Guexit.Game.Application.UnitTests;
 
@@ -183,22 +184,18 @@ public sealed class WhenHandlingVoteCardCommand
     }
 
     [Fact]
-    public async Task GameIsFinishedIfThereAreNoMoreCardsToDealInDeck()
+    public async Task GameIsFinishedWhenEveryPlayerHasBeenStoryTellerOnce()
     {
         var player1 = new PlayerId("thanos");
         var player2 = new PlayerId("spiderman");
         var player3 = new PlayerId("ironman");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, [player2, player3])
-            .WithStoryTellerStory("Any story")
-            .WithGuessingPlayerThatSubmittedCard(player2, player3)
-            .WithoutCardsLeftInDeck()
-            .Build();
-        var cardVotedByPlayer2 = gameRoom.SubmittedCards.First(x => x.PlayerId == player1).Card.Id;
-        var cardVotedByPlayer3 = gameRoom.SubmittedCards.First(x => x.PlayerId != player2).Card.Id;
+        var gameRoom = GameRoomObjectMother.OneVotePendingToFinish(GameRoomId, player1, [player2, player3]);
         await _gameRoomRepository.Add(gameRoom);
 
-        await _commandHandler.Handle(new VoteCardCommand(player2, GameRoomId, cardVotedByPlayer2));
-        await _commandHandler.Handle(new VoteCardCommand(player3, GameRoomId, cardVotedByPlayer3));
+        var playerPendingToVote = gameRoom.GetCurrentGuessingPlayerIds().Except(gameRoom.SubmittedCards.SelectMany(x => x.Voters)).Single();
+        var card = gameRoom.SubmittedCards.First(x => x.PlayerId != playerPendingToVote).Card.Id;
+
+        await _commandHandler.Handle(new VoteCardCommand(playerPendingToVote, GameRoomId, card));
 
         gameRoom.Status.Should().Be(GameStatus.Finished);
         gameRoom.DomainEvents.OfType<GameFinished>().Should().HaveCount(1);
