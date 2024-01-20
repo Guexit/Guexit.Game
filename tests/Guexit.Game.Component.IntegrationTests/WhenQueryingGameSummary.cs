@@ -4,6 +4,8 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Tests.Common;
+using Guexit.Game.Tests.Common.Builders;
+using Guexit.Game.Tests.Common.ObjectMothers;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
@@ -55,9 +57,7 @@ public sealed class WhenQueryingGameSummary : ComponentTest
     {
         var playerId = new PlayerId("thanos");
         var nextGameRoomId = new GameRoomId(Guid.NewGuid());
-        var gameRoom = GameRoomBuilder.CreateFinished(GameRoomId, playerId, ["ironman", "gamora"])
-            .WithNextGameRoomId(nextGameRoomId)
-            .Build();
+        var gameRoom = GameRoomObjectMother.Finished(GameRoomId, playerId, ["ironman", "gamora"], nextGameRoomId);
         await Save(gameRoom);
         await Save(
             new PlayerBuilder().WithId(playerId).WithUsername("thanos").Build(),

@@ -2,7 +2,7 @@
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Domain.Services;
 
-namespace Guexit.Game.Tests.Common;
+namespace Guexit.Game.Tests.Common.Builders;
 
 public sealed class GameRoomBuilder
 {
@@ -15,7 +15,6 @@ public sealed class GameRoomBuilder
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = [];
-    private bool _withNoCardsLeftInDeck = false;
     private GameRoomId _nextGameRoomId = GameRoomId.Empty;
 
     public GameRoom Build()
@@ -25,13 +24,11 @@ public sealed class GameRoomBuilder
         foreach (var player in _playersThatJoined)
             gameRoom.Join(player);
 
-        if (_cards.Any()) 
+        if (_cards.Any())
             gameRoom.AssignDeck(_cards.Select(x => x.Build()).ToArray());
-        
+
         if (_isStarted)
-        {
             gameRoom.Start(_creatorId);
-        }
 
         if (!string.IsNullOrEmpty(_storyTellerCardStory))
         {
@@ -47,18 +44,12 @@ public sealed class GameRoomBuilder
             gameRoom.SubmitGuessingPlayerCard(guessingPlayerId, card.Id);
         }
 
-        if (_withNoCardsLeftInDeck)
-            gameRoom.Deck.Clear();
-
         foreach (var vote in _votes)
         {
             var cardId = gameRoom.SubmittedCards.Single(x => x.PlayerId == vote.VotedCardSubmitter).Card.Id;
             gameRoom.VoteCard(vote.VotingPlayerId, cardId);
         }
-        
-        if (_nextGameRoomId != GameRoomId.Empty)
-            gameRoom.LinkToNextGameRoom(_nextGameRoomId);
-        
+
         gameRoom.ClearDomainEvents();
         return gameRoom;
     }
@@ -73,17 +64,6 @@ public sealed class GameRoomBuilder
                 .Select(_ => new CardBuilder())
                 .ToArray())
             .Started();
-        return gameRoomBuilder;
-    }
-
-    public static GameRoomBuilder CreateFinished(GameRoomId gameRoomId, PlayerId creator, PlayerId[] playersThatJoined)
-    {
-        var gameRoomBuilder = CreateStarted(gameRoomId, creator, playersThatJoined)
-            .WithoutCardsLeftInDeck()
-            .WithStoryTellerStory("Any story")
-            .WithGuessingPlayerThatSubmittedCard(playersThatJoined[0], playersThatJoined[1])
-            .WithVote(playersThatJoined[0], creator)
-            .WithVote(playersThatJoined[1], creator);
         return gameRoomBuilder;
     }
 
@@ -124,7 +104,7 @@ public sealed class GameRoomBuilder
         WithAssignedDeck(Enumerable.Range(0, count).Select(_ => new CardBuilder()).ToArray());
         return this;
     }
-    
+
     public GameRoomBuilder WithValidDeckAssigned()
     {
         WithAssignedDeck(Enumerable.Range(0, DeckSizeService.Calculate(_playersThatJoined.Length + 1))
@@ -132,7 +112,7 @@ public sealed class GameRoomBuilder
             .ToArray());
         return this;
     }
-    
+
     public GameRoomBuilder Started()
     {
         _isStarted = true;
@@ -154,18 +134,6 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithVote(PlayerId votingPlayer, PlayerId cardSubmittedBy)
     {
         _votes.Add((votingPlayer, cardSubmittedBy));
-        return this;
-    }
-
-    public GameRoomBuilder WithoutCardsLeftInDeck()
-    {
-        _withNoCardsLeftInDeck = true;
-        return this;
-    }
-
-    public GameRoomBuilder WithNextGameRoomId(GameRoomId id)
-    {
-        _nextGameRoomId = id;
         return this;
     }
 }

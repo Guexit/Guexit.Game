@@ -3,7 +3,8 @@ using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
-using Guexit.Game.Tests.Common;
+using Guexit.Game.Tests.Common.Builders;
+using Guexit.Game.Tests.Common.ObjectMothers;
 
 namespace Guexit.Game.Component.IntegrationTests;
 
@@ -69,7 +70,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
     public async Task ReturnsEndIfGameRoomIsHasFinished()
     {
         var creatorId = new PlayerId("unai");
-        var gameRoom = GameRoomBuilder.CreateFinished(GameRoomId, creatorId, ["poysky", "pablo"]).Build();
+        var gameRoom = GameRoomObjectMother.Finished(GameRoomId, creatorId, ["poysky", "pablo"]);
 
         await Save(gameRoom);
 

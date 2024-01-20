@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.PlayerAggregate;
 
-namespace Guexit.Game.Tests.Common;
+namespace Guexit.Game.Tests.Common.Builders;
 
 public sealed class PlayerBuilder
 {
@@ -11,7 +11,7 @@ public sealed class PlayerBuilder
     {
         return new Player(_id, _username);
     }
-    
+
     public PlayerBuilder WithId(PlayerId id)
     {
         _id = id;

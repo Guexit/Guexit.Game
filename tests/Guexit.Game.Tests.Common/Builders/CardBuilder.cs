@@ -1,6 +1,6 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 
-namespace Guexit.Game.Tests.Common;
+namespace Guexit.Game.Tests.Common.Builders;
 
 public class CardBuilder
 {
@@ -21,10 +21,10 @@ public class CardBuilder
         return this;
     }
 
+    public CardBuilder WithUrl(string url) => WithUrl(new Uri(url));
     public CardBuilder WithUrl(Uri url)
     {
         _url = url;
         return this;
     }
-
 }

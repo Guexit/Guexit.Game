@@ -1,6 +1,6 @@
 using Guexit.Game.Domain.Model.ImageAggregate;
 
-namespace Guexit.Game.Tests.Common;
+namespace Guexit.Game.Tests.Common.Builders;
 
 public sealed class ImageBuilder
 {
@@ -15,7 +15,7 @@ public sealed class ImageBuilder
             .WithId(imageId)
             .WithUrl(new Uri($"https://guexit.io/images/{imageId.Value}"));
     }
-    
+
     public Image Build()
     {
         var image = new Image(_id, _url, _createdAt);
