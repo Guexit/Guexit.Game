@@ -17,17 +17,6 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                 maxLength: 320,
                 nullable: false,
                 defaultValue: "");
-
-            MigrateExistingPlayerNicknames(migrationBuilder);
-        }
-
-        private static void MigrateExistingPlayerNicknames(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.Sql("""
-                UPDATE public."Players"
-                SET "Nickname" = REGEXP_REPLACE(SUBSTRING("Username", 1, POSITION('@' IN "Username") - 1), '[^a-zA-Z0-9]', '', 'g')
-                WHERE POSITION('@' IN "Username") > 0;
-            """);
         }
 
         /// <inheritdoc />
