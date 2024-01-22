@@ -166,7 +166,7 @@ public sealed class WhenHandlingJoinGameRoomCommand
     private async Task AssumePlayerInRepository(PlayerId creatorId)
     {
         await _playerRepository.Add(
-            new Player(creatorId, string.Empty)
+            new Player(creatorId, "anyusername@acme.com")
         );
     }
 }

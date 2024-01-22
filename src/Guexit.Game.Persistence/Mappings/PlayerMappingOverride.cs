@@ -16,5 +16,7 @@ internal sealed class PlayerMappingOverride : IEntityTypeConfiguration<Player>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Username).IsRequired().HasMaxLength(MaxEmailLength);
+        builder.Property(x => x.Nickname).IsRequired().HasMaxLength(MaxEmailLength)
+            .HasConversion(to => to.Value, from => new Nickname(from));
     }
 }
