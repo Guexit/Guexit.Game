@@ -14,7 +14,8 @@ public sealed class WhenSavingPlayer : DatabaseMappingIntegrationTest
     public async Task IsPersisted()
     {
         var playerId = new PlayerId(Guid.NewGuid().ToString());
-        var username = Guid.NewGuid().ToString();
+        var username = "batman@acme.com";
+        var nickname = Nickname.From(username);
         var repository = new PlayerRepository(DbContext);
 
         await repository.Add(new Player(playerId, username));
@@ -24,5 +25,6 @@ public sealed class WhenSavingPlayer : DatabaseMappingIntegrationTest
         player.Should().NotBeNull();
         player!.Id.Should().Be(playerId);
         player.Username.Should().Be(username);
+        player.Nickname.Should().Be(nickname);
     }
 }

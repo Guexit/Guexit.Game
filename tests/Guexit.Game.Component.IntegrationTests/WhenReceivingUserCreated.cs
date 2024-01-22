@@ -32,5 +32,6 @@ public sealed class WhenReceivingUserCreated : ComponentTest
         player.Should().NotBeNull();
         player!.Id.Should().NotBeNull(userCreatedEvent.Id);
         player.Username.Should().NotBeNull(userCreatedEvent.Username);
+        player.Nickname.Should().Be(Nickname.From(userCreatedEvent.Username));
     }
 }

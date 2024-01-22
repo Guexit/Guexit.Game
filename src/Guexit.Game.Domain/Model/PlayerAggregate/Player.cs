@@ -1,7 +1,10 @@
-﻿namespace Guexit.Game.Domain.Model.PlayerAggregate;
+﻿using Guexit.Game.Domain.Exceptions;
+
+namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
 public sealed class Player : AggregateRoot<PlayerId>
 {
+    public Nickname Nickname { get; private set; } = default!;
     public string Username { get; private set; } = default!;
 
     private Player()
@@ -11,7 +14,11 @@ public sealed class Player : AggregateRoot<PlayerId>
 
     public Player(PlayerId id, string username)
     {
+        if (string.IsNullOrWhiteSpace(username))
+            throw new EmptyUsernameException();
+        
         Id = id;
         Username = username;
+        Nickname = Nickname.From(Username);
     }
 }

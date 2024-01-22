@@ -30,7 +30,7 @@ public sealed class WhenHandlingCreateGameRoomCommand
         var command = new CreateGameRoomCommand(gameRoomId, playerId);
         var createdAt = new DateTimeOffset(2022, 1, 1, 2, 3, 4, TimeSpan.Zero);
         _systemClock.UtcNow.Returns(createdAt);
-        await _playerRepository.Add(new Player(new PlayerId(playerId), string.Empty));
+        await _playerRepository.Add(new Player(new PlayerId(playerId), "batman@acme.com"));
 
         await _commandHandler.Handle(command);
 
