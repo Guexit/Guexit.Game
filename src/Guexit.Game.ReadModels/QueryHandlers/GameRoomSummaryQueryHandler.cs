@@ -61,14 +61,16 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
                 {
                     PlayerId = round.StoryTeller.PlayerId,
                     Story = round.StoryTeller.Story,
-                    Username = players[round.StoryTeller.PlayerId].Username
+                    Username = players[round.StoryTeller.PlayerId].Username,
+                    Nickname = players[round.StoryTeller.PlayerId].Nickname.Value
                 },
                 Scores = round.Scores.Select(x => new GameSummaryReadModel.RoundSummaryDto.ScoreInRoundDto
                 {
                     Player = new PlayerDto
                     {
                         PlayerId = x.PlayerId,
-                        Username = players[x.PlayerId].Username
+                        Username = players[x.PlayerId].Username,
+                        Nickname = players[x.PlayerId].Nickname.Value
                     },
                     Points = x.Points.Value
                 }).ToArray(),
@@ -76,11 +78,17 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
                 {
                     CardId = x.Card.Id,
                     CardUrl = x.Card.Url,
-                    SubmittedBy = new PlayerDto { PlayerId = x.PlayerId, Username = players[x.PlayerId].Username },
+                    SubmittedBy = new PlayerDto
+                    {
+                        PlayerId = x.PlayerId, 
+                        Username = players[x.PlayerId].Username, 
+                        Nickname = players[x.PlayerId].Nickname.Value
+                    },
                     Voters = x.Voters.Select(voterId => new PlayerDto
                     {
                         PlayerId = voterId,
-                        Username = players[voterId].Username
+                        Username = players[voterId].Username,
+                        Nickname = players[voterId].Nickname.Value
                     }).ToArray(),
                 }).ToArray(),
             });
@@ -102,7 +110,8 @@ public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQu
                 Player = new PlayerDto 
                 { 
                     PlayerId = playerId, 
-                    Username = players[playerId].Username 
+                    Username = players[playerId].Username,
+                    Nickname = players[playerId].Nickname.Value
                 },
                 Points = points
             });

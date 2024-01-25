@@ -53,6 +53,7 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
             {
                 PlayerId = gameRoom.CurrentStoryTeller.PlayerId.Value,
                 Username = playersInGameRoom[gameRoom.CurrentStoryTeller.PlayerId].Username,
+                Nickname = playersInGameRoom[gameRoom.CurrentStoryTeller.PlayerId].Nickname.Value,
                 Story = gameRoom.CurrentStoryTeller.Story
             },
             PlayerHand = currentUserPlayerHand,
@@ -84,7 +85,8 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
         {
             HasSubmittedCardAlready = playerIdsThatSubmittedTheCardAlready.Contains(playerId),
             PlayerId = playerId,
-            Username = playersInGameRoom[playerId].Username
+            Username = playersInGameRoom[playerId].Username,
+            Nickname = playersInGameRoom[playerId].Nickname.Value
         }).ToArray();
 
         return guessingPlayersDtos;

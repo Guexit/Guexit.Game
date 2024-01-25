@@ -18,7 +18,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var creatorId = new PlayerId("player1");
-        var creatorUsername = "thanos";
+        var creatorUsername = "thanos@guexit.com";
         await Save(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(creatorId)
@@ -26,9 +26,9 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .Build());
         await Save(
         [
-            new PlayerBuilder().WithId(creatorId).WithUsername("thanos").Build(),
-            new PlayerBuilder().WithId("player2").WithUsername("hulk").Build(),
-            new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
+            new PlayerBuilder().WithId(creatorId).WithUsername("thanos@guexit.com").Build(),
+            new PlayerBuilder().WithId("player2").WithUsername("hulk@guexit.com").Build(),
+            new PlayerBuilder().WithId("player3").WithUsername("ironman@guexit.com").Build()
         ]);
 
         using var response = await Send(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby", creatorId);
@@ -41,7 +41,8 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         lobbyReadModel.CanStartGame.Should().BeTrue();
         lobbyReadModel.RequiredMinPlayers.Should().Be(3);
         lobbyReadModel.Players.Select(x => x.Id).Should().BeEquivalentTo("player1", "player2", "player3");
-        lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo("thanos", "hulk", "ironman");
+        lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo(creatorUsername, "hulk@guexit.com", "ironman@guexit.com");
+        lobbyReadModel.Players.Select(x => x.Nickname).Should().BeEquivalentTo("thanos", "hulk", "ironman");
         lobbyReadModel.GameStatus.Should().Be(GameStatus.NotStarted.Value);
     }
     
@@ -58,9 +59,9 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .Build());
         await Save(
         [
-            new PlayerBuilder().WithId("player1").WithUsername("thanos").Build(),
-            new PlayerBuilder().WithId("player2").WithUsername("hulk").Build(),
-            new PlayerBuilder().WithId("player3").WithUsername("ironman").Build()
+            new PlayerBuilder().WithId("player1").WithUsername("thanos@guexit.com").Build(),
+            new PlayerBuilder().WithId("player2").WithUsername("hulk@guexit.com").Build(),
+            new PlayerBuilder().WithId("player3").WithUsername("ironman@guexit.com").Build()
         ]);
 
         using var response = await Send(HttpMethod.Get, $"game-rooms/{gameRoomId.Value}/lobby", authenticatedPlayerId: nonCreatorId);

@@ -45,7 +45,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
         var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds();
         var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
         var playerIdsWhoAlreadyVoted = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
-        var currentStoryTeller = playersInGameRoom.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
+        var storyTeller = playersInGameRoom.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
 
         return new VotingReadModel
         {
@@ -54,6 +54,7 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
                 {
                     PlayerId = x.Id,
                     Username = x.Username,
+                    Nickname = x.Nickname.Value,
                     HasVotedAlready = playerIdsWhoAlreadyVoted.Contains(x.Id)
                 }) 
                 .ToArray(),
@@ -61,8 +62,9 @@ public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, Votin
             IsCurrentUserStoryTeller = gameRoom.CurrentStoryTeller.PlayerId == query.PlayerId,
             CurrentStoryTeller = new StoryTellerDto                                                              
             {
-                PlayerId = currentStoryTeller.Id.Value,
-                Username = currentStoryTeller.Username,
+                PlayerId = storyTeller.Id.Value,
+                Username = storyTeller.Username,
+                Nickname = storyTeller.Nickname.Value,
                 Story = gameRoom.CurrentStoryTeller.Story
             }
         };

@@ -18,36 +18,58 @@ public sealed class WhenQueryingGameSummary : ComponentTest
     [Fact]
     public async Task ReturnsGameSummaryReadModel()
     {
-        var storyTellerId = new PlayerId("thanos");
-        var guessingPlayer1 = new PlayerId("ironman");
-        var guessingPlayer2 = new PlayerId("starlord");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayer1, guessingPlayer2])
-            .WithStoryTellerStory("Infinity gems")
-            .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
-            .WithVote(guessingPlayer1, storyTellerId)
-            .WithVote(guessingPlayer2, storyTellerId)
+        var thanos = new PlayerBuilder().WithId("thanos").WithUsername("thanos@guexit.com").Build();
+        var ironMan = new PlayerBuilder().WithId("ironman").WithUsername("ironman@guexit.com").Build();
+        var starLord = new PlayerBuilder().WithId("starlord").WithUsername("starlord@guexit.com").Build();
+        
+        var firstRoundStory = "Infinity gems";
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, thanos.Id, [ironMan.Id, starLord.Id])
+            .WithStoryTellerStory(firstRoundStory)
+            .WithGuessingPlayerThatSubmittedCard(ironMan.Id, starLord.Id)
+            .WithVote(ironMan.Id, thanos.Id)
+            .WithVote(starLord.Id, thanos.Id)
             .Build();
         AssumeStoryTellerSubmittedStory(gameRoom);
         AssumeAllPlayersSubmittedCard(gameRoom);
         AssumeAllGuessersVoted(gameRoom);
+        
         await Save(gameRoom);
-        await Save(
-            new PlayerBuilder().WithId(storyTellerId).WithUsername("thanos").Build(),
-            new PlayerBuilder().WithId(guessingPlayer1).WithUsername("ironman").Build(),
-            new PlayerBuilder().WithId(guessingPlayer2).WithUsername("starlord").Build());
+        await Save(thanos, ironMan, starLord);
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/summary", storyTellerId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/summary", thanos.Id);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<GameSummaryReadModel>();
         readModel.Should().NotBeNull();
         readModel!.GameRoomId.Should().Be(GameRoomId);
+        
         readModel.RoundSummaries.Should().HaveCount(2).And.BeInAscendingOrder(x => x.RoundFinishedAt);
+        
+        var firstRound = readModel.RoundSummaries.First();
+        firstRound.StoryTeller.Story.Should().Be(firstRoundStory);
+        firstRound.StoryTeller.Username.Should().Be(thanos.Username);
+        firstRound.StoryTeller.PlayerId.Should().Be(thanos.Id.Value);
+        firstRound.StoryTeller.Nickname.Should().Be(thanos.Nickname.Value);
+        
         readModel.Scores.Should().HaveCount(3);
         readModel.Scores.Should().BeInDescendingOrder(x => x.Points);
-        readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == storyTellerId);
-        readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == guessingPlayer1);
-        readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == guessingPlayer2);
+        readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == thanos.Id);
+        readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == ironMan.Id);
+        readModel.Scores.Should().ContainSingle(x => x.Player.PlayerId == starLord.Id);
+
+        var thanosFirstRoundCard = firstRound.SubmittedCardSummaries.First(x => x.SubmittedBy.PlayerId == thanos.Id);
+        thanosFirstRoundCard.SubmittedBy.Username.Should().Be(thanos.Username);
+        thanosFirstRoundCard.SubmittedBy.Nickname.Should().Be(thanos.Nickname.Value);
+        thanosFirstRoundCard.Voters.Should().BeEquivalentTo(new[]
+        {
+            new PlayerDto { Nickname = starLord.Nickname.Value, PlayerId = starLord.Id, Username = starLord.Username },
+            new PlayerDto { Nickname = ironMan.Nickname.Value, PlayerId = ironMan.Id, Username = ironMan.Username }
+        });
+        
+        var thanosScore = firstRound.Scores.First(x => x.Player.PlayerId == thanos.Id);
+        thanosScore.Player.Username.Should().Be(thanos.Username);
+        thanosScore.Player.Nickname.Should().Be(thanos.Nickname.Value);
+        
         readModel.IsNextGameRoomLinked.Should().BeFalse();
         readModel.NextGameRoomId.Should().Be(Guid.Empty);
     }

@@ -21,35 +21,37 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
     public async Task ReturnsGameBoardReadModel()
     {
         var storyTellerId = new PlayerId("storyTellerId");
-        var storyTellerUsername = "antman";
+        var storyTellerUsername = "antman@guexit.com";
         var story = "El tipico adolescente abuelo";
+        var storyTeller = new PlayerBuilder().WithId(storyTellerId).WithUsername(storyTellerUsername).Build();
+        var guessingPlayer1 = new PlayerBuilder().WithId("player2").WithUsername("spiderman@guexit.com").Build();
+        var guessingPlayer2 = new PlayerBuilder().WithId("player3").WithUsername("fury@guexit.com").Build();
         
-        var guessingPlayer1 = new PlayerId("player2");
-        var guessingPlayer2 = new PlayerId("player3");
-        
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayer1, guessingPlayer2])
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTeller.Id, [guessingPlayer1.Id, guessingPlayer2.Id])
             .WithStoryTellerStory(story)
-            .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
+            .WithGuessingPlayerThatSubmittedCard(guessingPlayer1.Id, guessingPlayer2.Id)
             .Build();
         
+        
         await Save(gameRoom);
-        await Save(
-            new PlayerBuilder().WithId(storyTellerId).WithUsername(storyTellerUsername).Build(),
-            new PlayerBuilder().WithId(guessingPlayer1).WithUsername("spiderman").Build(),
-            new PlayerBuilder().WithId(guessingPlayer2).WithUsername("fury").Build()
-        );
+        await Save(storyTeller, guessingPlayer1, guessingPlayer2);
         
         var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId);
-        var guessingPlayer1Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1);
-        var guessingPlayer2Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer2);
+        var guessingPlayer1Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1.Id);
+        var guessingPlayer2Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer2.Id);
 
-        using var voteResponse = await Send(HttpMethod.Post, $"/game-rooms/{GameRoomId.Value}/submitted-cards/{storyTellerCard.Card.Id.Value}/vote", guessingPlayer1);
+        using var voteResponse = await Send(
+            HttpMethod.Post, 
+            $"/game-rooms/{GameRoomId.Value}/submitted-cards/{storyTellerCard.Card.Id.Value}/vote", 
+            authenticatedPlayerId: guessingPlayer1.Id
+        );
         await voteResponse.ShouldHaveSuccessStatusCode();
 
-        using var votingReadModelResponse = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", storyTellerId);
-        await votingReadModelResponse.ShouldHaveSuccessStatusCode();
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", storyTellerId);
+        await response.ShouldHaveSuccessStatusCode();
 
-        var votingReadModel = await votingReadModelResponse.Content.ReadFromJsonAsync<VotingReadModel>();
+        var votingReadModel = await response.Content.ReadFromJsonAsync<VotingReadModel>();
+        
         votingReadModel.Should().NotBeNull();
         votingReadModel!.IsCurrentUserStoryTeller.Should().BeTrue();
         votingReadModel.CurrentStoryTeller.PlayerId.Should().Be(storyTellerId.Value);
@@ -63,11 +65,15 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
             .And.Contain(x => x.Id == guessingPlayer2Card.Card.Id && x.Url == guessingPlayer2Card.Card.Url && !x.WasSubmittedByQueryingPlayer);
 
         votingReadModel.GuessingPlayers.Should().HaveCount(2);
-        var spiderMan = votingReadModel.GuessingPlayers.Single(x => x.PlayerId == guessingPlayer1);
+        
+        var spiderMan = votingReadModel.GuessingPlayers.Single(x => x.PlayerId == guessingPlayer1.Id);
         spiderMan.HasVotedAlready.Should().BeTrue();
-        spiderMan.Username.Should().Be("spiderman");
-        var fury = votingReadModel.GuessingPlayers.Single(x => x.PlayerId == guessingPlayer2);
+        spiderMan.Username.Should().Be(guessingPlayer1.Username);
+        spiderMan.Nickname.Should().Be(guessingPlayer1.Nickname.Value);
+        
+        var fury = votingReadModel.GuessingPlayers.Single(x => x.PlayerId == guessingPlayer2.Id);
         fury.HasVotedAlready.Should().BeFalse();
-        fury.Username.Should().Be("fury");
+        fury.Username.Should().Be(guessingPlayer2.Username);
+        fury.Nickname.Should().Be(guessingPlayer2.Nickname.Value);
     }
 }
