@@ -50,14 +50,16 @@ public sealed class LastRoundSummaryQueryHandler : QueryHandler<LastRoundSummary
             {
                 PlayerId = lastFinishedRound.StoryTeller.PlayerId,
                 Story = lastFinishedRound.StoryTeller.Story,
-                Username = players[lastFinishedRound.StoryTeller.PlayerId].Username
+                Username = players[lastFinishedRound.StoryTeller.PlayerId].Username,
+                Nickname = players[lastFinishedRound.StoryTeller.PlayerId].Nickname.Value
             },
             Scores = lastFinishedRound.Scores.Select(x => new RoundSummaryReadModel.ScoreDto
             {
                 Player = new PlayerDto 
                 { 
                     PlayerId = x.PlayerId, 
-                    Username = players[x.PlayerId].Username 
+                    Username = players[x.PlayerId].Username,
+                    Nickname = players[x.PlayerId].Nickname.Value
                 },
                 Points = x.Points.Value
             }).ToArray(),
@@ -65,11 +67,17 @@ public sealed class LastRoundSummaryQueryHandler : QueryHandler<LastRoundSummary
             { 
                 CardId = x.Card.Id,
                 CardUrl = x.Card.Url,
-                SubmittedBy = new PlayerDto { PlayerId = x.PlayerId, Username = players[x.PlayerId].Username },
+                SubmittedBy = new PlayerDto
+                {
+                    PlayerId = x.PlayerId, 
+                    Username = players[x.PlayerId].Username,
+                    Nickname = players[x.PlayerId].Nickname.Value,
+                },
                 Voters = x.Voters.Select(voterId => new PlayerDto 
                 { 
                     PlayerId = voterId, 
-                    Username = players[voterId].Username 
+                    Username = players[voterId].Username,
+                    Nickname = players[voterId].Nickname.Value
                 }).ToArray(),
             }).ToArray(),
         };

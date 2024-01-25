@@ -19,40 +19,40 @@ public sealed class WhenQueryingRoundSummary : ComponentTest
     [Fact]
     public async Task ReturnsRoundSummaryReadModel()
     {
-        var storyTellerId = new PlayerId("thanos");
-        var guessingPlayer1 = new PlayerId("ironman");
-        var guessingPlayer2 = new PlayerId("starlord");
+        var thanos = new PlayerBuilder().WithId("thanos").WithUsername("thanos69@guexit.com").Build();
+        var ironMan = new PlayerBuilder().WithId("ironman").WithUsername("ironman420@guexit.com").Build();
+        var starLord = new PlayerBuilder().WithId("starlord").WithUsername("starlordxd@guexit.com").Build();
         var story = "Infinity gems";
         await Save(
-            new PlayerBuilder().WithId(storyTellerId).WithUsername("thanos").Build(),
-            new PlayerBuilder().WithId(guessingPlayer1).WithUsername("ironman").Build(),
-            new PlayerBuilder().WithId(guessingPlayer2).WithUsername("starlord").Build());
+            thanos,
+            ironMan,
+            starLord);
 
-        await Save(GameRoomBuilder.CreateStarted(GameRoomId, storyTellerId, [guessingPlayer1, guessingPlayer2])
+        await Save(GameRoomBuilder.CreateStarted(GameRoomId, thanos.Id, [ironMan.Id, starLord.Id])
             .WithStoryTellerStory(story)
-            .WithGuessingPlayerThatSubmittedCard(guessingPlayer1, guessingPlayer2)
-            .WithVote(guessingPlayer1, storyTellerId)
-            .WithVote(guessingPlayer2, storyTellerId)
+            .WithGuessingPlayerThatSubmittedCard(ironMan.Id, starLord.Id)
+            .WithVote(ironMan.Id, thanos.Id)
+            .WithVote(starLord.Id, thanos.Id)
             .Build());
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/round-summaries/last", storyTellerId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/round-summaries/last", thanos.Id);
 
         await response.ShouldHaveSuccessStatusCode();
         var readModel = await response.Content.ReadFromJsonAsync<RoundSummaryReadModel>();
         readModel.Should().NotBeNull();
         readModel!.GameRoomId.Should().Be(GameRoomId.Value);
-        readModel.StoryTeller.PlayerId.Should().Be(storyTellerId);
-        readModel.StoryTeller.Username.Should().Be("thanos");
+        readModel.StoryTeller.PlayerId.Should().Be(thanos.Id);
+        readModel.StoryTeller.Username.Should().Be(thanos.Username);
+        readModel.StoryTeller.Nickname.Should().Be(thanos.Nickname.Value);
         readModel.StoryTeller.Story.Should().Be(story);
         readModel.SubmittedCardSummaries.Should().HaveCount(3);
-        readModel.SubmittedCardSummaries.Single(x => x.SubmittedBy.PlayerId == storyTellerId.Value)
-            .Voters.Should().HaveCount(2)
-            .And.Subject.Should().Contain(x => x.PlayerId == guessingPlayer1.Value && x.Username == "ironman")
-            .And.Subject.Should().Contain(x => x.PlayerId == guessingPlayer2.Value && x.Username == "starlord"); 
+        readModel.SubmittedCardSummaries.Single(x => x.SubmittedBy.PlayerId == thanos.Id.Value).Voters.Should().HaveCount(2)
+            .And.Subject.Should().Contain(x => x.PlayerId == ironMan.Id.Value && x.Username == ironMan.Username && x.Nickname == ironMan.Nickname.Value)
+            .And.Subject.Should().Contain(x => x.PlayerId == starLord.Id.Value && x.Username == starLord.Username && x.Nickname == starLord.Nickname.Value); 
 
         readModel.Scores.Should().HaveCount(3);
-        readModel.Scores.Single(x => x.Player.PlayerId == storyTellerId).Points.Should().Be(0);
-        readModel.Scores.Single(x => x.Player.PlayerId == guessingPlayer1).Points.Should().Be(3);
-        readModel.Scores.Single(x => x.Player.PlayerId == guessingPlayer2).Points.Should().Be(3);
+        readModel.Scores.Single(x => x.Player.PlayerId == thanos.Id).Points.Should().Be(0);
+        readModel.Scores.Single(x => x.Player.PlayerId == ironMan.Id).Points.Should().Be(3);
+        readModel.Scores.Single(x => x.Player.PlayerId == starLord.Id).Points.Should().Be(3);
     }
 }

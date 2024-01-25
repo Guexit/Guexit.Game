@@ -18,9 +18,9 @@ public sealed class WhenQueryingGameBoard : ComponentTest
     public async Task ReturnsGameBoardReadModel()
     {
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        var player1 = new PlayerBuilder().WithId("storyTellerId").WithUsername("gamora").Build(); 
-        var player2 = new PlayerBuilder().WithId("playerId2").WithUsername("starlord").Build(); 
-        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("wroot").Build();
+        var player1 = new PlayerBuilder().WithId("storyTellerId").WithUsername("gamora@guexit.com").Build(); 
+        var player2 = new PlayerBuilder().WithId("playerId2").WithUsername("starlord@guexit.com").Build(); 
+        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("wroot@guexit.com").Build();
         var story = "El tipico adolescente abuelo";
 
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, player1.Id, [player2.Id, player3.Id])
@@ -42,7 +42,8 @@ public sealed class WhenQueryingGameBoard : ComponentTest
 
         responseContent.CurrentStoryTeller.PlayerId.Should().Be(player1.Id);
         responseContent.CurrentStoryTeller.Story.Should().Be(story);
-        responseContent.CurrentStoryTeller.Username.Should().Be("gamora");
+        responseContent.CurrentStoryTeller.Username.Should().Be(player1.Username);
+        responseContent.CurrentStoryTeller.Nickname.Should().Be(player1.Nickname.Value);
         responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
         responseContent.CurrentUserSubmittedCard.Should().NotBeNull();
 
@@ -53,9 +54,11 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         responseContent.GuessingPlayers.Should().HaveCount(2);
 
         responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).Username.Should().Be(player2.Username);
+        responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).Nickname.Should().Be(player2.Nickname.Value);
         responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).HasSubmittedCardAlready.Should().BeTrue();
 
         responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).Username.Should().Be(player3.Username);
+        responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).Nickname.Should().Be(player3.Nickname.Value);
         responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).HasSubmittedCardAlready.Should().BeFalse();
     }
 

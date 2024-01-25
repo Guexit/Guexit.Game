@@ -5,7 +5,7 @@ namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
 public sealed class Nickname : ValueObject
 {
-    private static readonly FrozenSet<char> CharactersToTrim = new[] { '.', '_', '-', '+' }.ToFrozenSet();
+    private static readonly FrozenSet<char> _charactersToTrim = new[] { '.', '_', '-', '+' }.ToFrozenSet();
     
     public string Value { get; }
 
@@ -27,7 +27,7 @@ public sealed class Nickname : ValueObject
         var sb = new StringBuilder();
         foreach (var character in span)
         {
-            if (CharactersToTrim.Contains(character))
+            if (_charactersToTrim.Contains(character))
                 continue;
 
             sb.Append(character);
