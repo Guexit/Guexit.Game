@@ -4,6 +4,7 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.ReadModels.Extensions;
 using Guexit.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,41 +22,43 @@ public sealed class GameVotingQuery : IQuery<VotingReadModel>
     }
 }
 
-public sealed class GameVotingQueryHandler : QueryHandler<GameVotingQuery, VotingReadModel>
+public sealed class GameVotingQueryHandler : IQueryHandler<GameVotingQuery, VotingReadModel>
 {
-    public GameVotingQueryHandler(GameDbContext dbContext, ILogger<GameVotingQueryHandler> logger)
-        : base(dbContext, logger)
-    { }
+    private readonly ReadOnlyGameRoomRepository _gameRoomRepository;
+    private readonly ReadOnlyPlayersRepository _playersRepository;
 
-    protected override async Task<VotingReadModel> Process(GameVotingQuery query, CancellationToken ct)
+    public GameVotingQueryHandler(ReadOnlyGameRoomRepository gameRoomRepository, ReadOnlyPlayersRepository playersRepository)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery()
-            .SingleOrDefaultAsync(x => x.Id == query.GameRoomId, cancellationToken: ct);
+        _gameRoomRepository = gameRoomRepository;
+        _playersRepository = playersRepository;
+    }
+
+    public async ValueTask<VotingReadModel> Handle(GameVotingQuery query, CancellationToken ct)
+    {
+        var gameRoom = await _gameRoomRepository.GetBy(query.GameRoomId, ct);
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var playersInGameRoom = await DbContext.Players.AsNoTracking()
-            .Where(x => gameRoom.PlayerIds.Contains(x.Id))
-            .ToArrayAsync(ct);
+        var playersInGameRoom = (await _playersRepository.GetBy(gameRoom.PlayerIds, ct)).ToDictionary(x => x.Id);
         
         var submittedCards = gameRoom.SubmittedCards
             .Select(x => new VotingReadModel.SubmittedCardDto { Id = x.Card.Id, Url = x.Card.Url, WasSubmittedByQueryingPlayer = x.PlayerId == query.PlayerId })
             .OrderBy(x => x.Id)
             .ToArray();
         var guessingPlayersIds = gameRoom.GetCurrentGuessingPlayerIds();
-        var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Id)).ToArray();
+        var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Key)).ToArray();
         var playerIdsWhoAlreadyVoted = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
-        var storyTeller = playersInGameRoom.Single(x => x.Id == gameRoom.CurrentStoryTeller.PlayerId);
+        var storyTeller = playersInGameRoom[gameRoom.CurrentStoryTeller.PlayerId];
 
         return new VotingReadModel
         {
             Cards = submittedCards,
             GuessingPlayers = guessingPlayers.Select(x => new VotingReadModel.VotingPlayerDto
                 {
-                    PlayerId = x.Id,
-                    Username = x.Username,
-                    Nickname = x.Nickname.Value,
-                    HasVotedAlready = playerIdsWhoAlreadyVoted.Contains(x.Id)
+                    PlayerId = x.Value.Id,
+                    Username = x.Value.Username,
+                    Nickname = x.Value.Nickname.Value,
+                    HasVotedAlready = playerIdsWhoAlreadyVoted.Contains(x.Key)
                 }) 
                 .ToArray(),
             CurrentUserHasAlreadyVoted = playerIdsWhoAlreadyVoted.Contains(query.PlayerId),

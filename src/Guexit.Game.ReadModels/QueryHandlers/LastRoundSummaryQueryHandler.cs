@@ -4,6 +4,7 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.ReadModels.Exceptions;
 using Guexit.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -22,21 +23,24 @@ public sealed class LastRoundSummaryQuery : IQuery<RoundSummaryReadModel>
     }
 }
 
-public sealed class LastRoundSummaryQueryHandler : QueryHandler<LastRoundSummaryQuery, RoundSummaryReadModel>
+public sealed class LastRoundSummaryQueryHandler : IQueryHandler<LastRoundSummaryQuery, RoundSummaryReadModel>
 {
-    public LastRoundSummaryQueryHandler(GameDbContext dbContext, ILogger<LastRoundSummaryQueryHandler> logger)
-        : base(dbContext, logger)
-    { }
+    private readonly ReadOnlyGameRoomRepository _gameRoomRepository;
+    private readonly ReadOnlyPlayersRepository _playersRepository;
 
-    protected override async Task<RoundSummaryReadModel> Process(LastRoundSummaryQuery query, CancellationToken ct)
+    public LastRoundSummaryQueryHandler(ReadOnlyGameRoomRepository gameRoomRepository, ReadOnlyPlayersRepository playersRepository)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        _gameRoomRepository = gameRoomRepository;
+        _playersRepository = playersRepository;
+    }
+
+    public async ValueTask<RoundSummaryReadModel> Handle(LastRoundSummaryQuery query, CancellationToken ct)
+    {
+        var gameRoom = await _gameRoomRepository.GetBy(query.GameRoomId, ct);
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var players = await DbContext.Players.AsNoTracking()
-            .Where(x => gameRoom.PlayerIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, ct);
+        var players = (await _playersRepository.GetBy(gameRoom.PlayerIds, ct)).ToDictionary(x => x.Id);
 
         var lastFinishedRound = gameRoom.FinishedRounds.MaxBy(x => x.FinishedAt)
             ?? throw new CannotReadLastFinishedRoundSummaryIfHasNotAnyFinishedRound(query.GameRoomId);

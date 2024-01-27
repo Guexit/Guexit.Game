@@ -23,11 +23,7 @@ public sealed class WhenQueryingRoundSummary : ComponentTest
         var ironMan = new PlayerBuilder().WithId("ironman").WithUsername("ironman420@guexit.com").Build();
         var starLord = new PlayerBuilder().WithId("starlord").WithUsername("starlordxd@guexit.com").Build();
         var story = "Infinity gems";
-        await Save(
-            thanos,
-            ironMan,
-            starLord);
-
+        await Save(thanos, ironMan, starLord);
         await Save(GameRoomBuilder.CreateStarted(GameRoomId, thanos.Id, [ironMan.Id, starLord.Id])
             .WithStoryTellerStory(story)
             .WithGuessingPlayerThatSubmittedCard(ironMan.Id, starLord.Id)

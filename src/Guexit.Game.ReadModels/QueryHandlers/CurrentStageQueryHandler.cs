@@ -1,12 +1,9 @@
 ﻿using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Guexit.Game.Persistence;
 using Guexit.Game.ReadModels.Exceptions;
 using Guexit.Game.ReadModels.ReadModels;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
@@ -22,7 +19,7 @@ public sealed class CurrentStageQuery : IQuery<GameStageReadModel>
     }
 }
 
-public sealed class CurrentStageQueryHandler : QueryHandler<CurrentStageQuery, GameStageReadModel>
+public sealed class CurrentStageQueryHandler : IQueryHandler<CurrentStageQuery, GameStageReadModel>
 {
     private static readonly IGameStageSpecification[] _allGameStageSpecifications =
     [
@@ -32,13 +29,16 @@ public sealed class CurrentStageQueryHandler : QueryHandler<CurrentStageQuery, G
         new EndSpecification()
     ];
 
-    public CurrentStageQueryHandler(GameDbContext dbContext, ILogger<QueryHandler<CurrentStageQuery, GameStageReadModel>> logger) 
-        : base(dbContext, logger)
-    { }
+    private readonly ReadOnlyGameRoomRepository _gameRoomRepository;
 
-    protected override async Task<GameStageReadModel> Process(CurrentStageQuery query, CancellationToken ct)
+    public CurrentStageQueryHandler(ReadOnlyGameRoomRepository gameRoomRepository)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        _gameRoomRepository = gameRoomRepository;
+    }
+
+    public async ValueTask<GameStageReadModel> Handle(CurrentStageQuery query, CancellationToken ct)
+    {
+        var gameRoom = await _gameRoomRepository.GetBy(query.GameRoomId, ct);
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 

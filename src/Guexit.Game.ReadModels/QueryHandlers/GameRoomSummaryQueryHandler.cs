@@ -3,6 +3,7 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.ReadModels.ReadModels;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,23 +21,25 @@ public sealed class GameRoomSummaryQuery : IQuery<GameSummaryReadModel>
     }
 }
 
-public sealed class GameRoomSummaryQueryHandler : QueryHandler<GameRoomSummaryQuery, GameSummaryReadModel>
+public sealed class GameRoomSummaryQueryHandler : IQueryHandler<GameRoomSummaryQuery, GameSummaryReadModel>
 {
-    public GameRoomSummaryQueryHandler(GameDbContext dbContext, ILogger<QueryHandler<GameRoomSummaryQuery, GameSummaryReadModel>> logger) 
-        : base(dbContext, logger)
-    { }
+    private readonly ReadOnlyGameRoomRepository _gameRoomRepository;
+    private readonly ReadOnlyPlayersRepository _playersRepository;
 
-    protected override async Task<GameSummaryReadModel> Process(GameRoomSummaryQuery query, CancellationToken ct)
+    public GameRoomSummaryQueryHandler(ReadOnlyGameRoomRepository gameRoomRepository, ReadOnlyPlayersRepository playersRepository)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery()
-            .FirstOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        _gameRoomRepository = gameRoomRepository;
+        _playersRepository = playersRepository;
+    }
+
+    public async ValueTask<GameSummaryReadModel> Handle(GameRoomSummaryQuery query, CancellationToken ct)
+    {
+        var gameRoom = await _gameRoomRepository.GetBy(query.GameRoomId, ct);
         
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var players = await DbContext.Players.AsNoTracking()
-            .Where(x => gameRoom.PlayerIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, ct);
+        var players = (await _playersRepository.GetBy(gameRoom.PlayerIds, ct)).ToDictionary(x => x.Id);
 
         return new GameSummaryReadModel
         {

@@ -5,6 +5,8 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Persistence;
 using Guexit.Game.Persistence.Interceptors;
 using Guexit.Game.Persistence.Repositories;
+using Guexit.Game.ReadModels;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.WebApi.DependencyInjection;
@@ -32,6 +34,8 @@ public static class PersistenceInstaller
         return services.AddScoped<IGameRoomRepository, GameRoomRepository>()
             .AddScoped<IPlayerRepository, PlayerRepository>()
             .AddScoped<IImageRepository, ImageRepository>()
+            .AddScoped<ReadOnlyGameRoomRepository>()
+            .AddScoped<ReadOnlyPlayersRepository>()
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<GameDbContextMigrator>();
     }

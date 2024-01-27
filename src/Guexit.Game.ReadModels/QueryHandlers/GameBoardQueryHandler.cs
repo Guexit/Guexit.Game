@@ -6,6 +6,7 @@ using Guexit.Game.Domain.Model.PlayerAggregate;
 using Microsoft.EntityFrameworkCore;
 using Guexit.Game.Application.Exceptions;
 using Guexit.Game.ReadModels.Exceptions;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
@@ -21,16 +22,20 @@ public sealed class GameBoardQuery : IQuery<BoardReadModel>
     }
 }
 
-public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardReadModel>
+public sealed class GameBoardQueryHandler : IQueryHandler<GameBoardQuery, BoardReadModel>
 {
-    public GameBoardQueryHandler(GameDbContext dbContext, ILogger<GameBoardQueryHandler> logger) 
-        : base(dbContext, logger)
+    private readonly ReadOnlyGameRoomRepository _gameRoomRepository;
+    private readonly ReadOnlyPlayersRepository _playersRepository;
+
+    public GameBoardQueryHandler(ReadOnlyGameRoomRepository gameRoomRepository, ReadOnlyPlayersRepository playersRepository)
     {
+        _gameRoomRepository = gameRoomRepository;
+        _playersRepository = playersRepository;
     }
 
-    protected override async Task<BoardReadModel> Process(GameBoardQuery query, CancellationToken ct)
+    public async ValueTask<BoardReadModel> Handle(GameBoardQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery().SingleOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        var gameRoom = await _gameRoomRepository.GetBy(query.GameRoomId, ct);
 
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
@@ -38,9 +43,7 @@ public sealed class GameBoardQueryHandler : QueryHandler<GameBoardQuery, BoardRe
         if (gameRoom.Status != GameStatus.InProgress)
             throw new CannotReadBoardIfGameIsNotInProgressException(gameRoom.Id, gameRoom.Status);
 
-        var playersInGameRoom = await DbContext.Players.AsNoTracking()
-            .Where(x => gameRoom.PlayerIds.Contains(x.Id))
-            .ToDictionaryAsync(x => x.Id, ct);
+        var playersInGameRoom = (await _playersRepository.GetBy(gameRoom.PlayerIds, ct)).ToDictionary(x => x.Id);
 
         var currentUserSubmittedCard = GetCurrentUserSubmittedCard(gameRoom, query.PlayerId);
         var guessingPlayers = GetGuessingPlayers(gameRoom, playersInGameRoom);

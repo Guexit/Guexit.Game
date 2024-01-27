@@ -5,6 +5,7 @@ using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Domain.Model.PlayerAggregate;
+using Guexit.Game.ReadModels.ReadOnlyRepositories;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
@@ -20,28 +21,32 @@ public sealed class GameLobbyQuery : IQuery<LobbyReadModel>
     }
 }
 
-public sealed class GameLobbyQueryHandler : QueryHandler<GameLobbyQuery, LobbyReadModel>
+public sealed class GameLobbyQueryHandler : IQueryHandler<GameLobbyQuery, LobbyReadModel>
 {
-    public GameLobbyQueryHandler(GameDbContext dbContext, ILogger<QueryHandler<GameLobbyQuery, LobbyReadModel>> logger) 
-        : base(dbContext, logger)
+    private readonly ReadOnlyGameRoomRepository _gameRoomRepository;
+    private readonly ReadOnlyPlayersRepository _playersRepository;
+
+    public GameLobbyQueryHandler(ReadOnlyGameRoomRepository gameRoomRepository, ReadOnlyPlayersRepository playersRepository)
     {
+        _gameRoomRepository = gameRoomRepository;
+        _playersRepository = playersRepository;
     }
 
-    protected override async Task<LobbyReadModel> Process(GameLobbyQuery query, CancellationToken ct)
+    public async ValueTask<LobbyReadModel> Handle(GameLobbyQuery query, CancellationToken ct)
     {
-        var gameRoom = await DbContext.GameRooms.AsNoTracking().AsSplitQuery().SingleOrDefaultAsync(x => x.Id == query.GameRoomId, ct);
+        var gameRoom = await _gameRoomRepository.GetBy(query.GameRoomId, ct);
         if (gameRoom is null)
             throw new GameRoomNotFoundException(query.GameRoomId);
 
-        var playersInGame = await DbContext.Players.AsNoTracking().Where(x => gameRoom.PlayerIds.Contains(x.Id)).ToArrayAsync(ct);
-        var creator = playersInGame.First(x => gameRoom.CreatedBy == x.Id);
+        var playersInGame = (await _playersRepository.GetBy(gameRoom.PlayerIds, ct)).ToDictionary(x => x.Id);
+        var creator = playersInGame[gameRoom.CreatedBy];
 
         return new LobbyReadModel
         {
             GameRoomId = gameRoom.Id.Value,
-            Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Username, Id = x.Id.Value, Nickname = x.Nickname.Value }).ToArray(),
+            Players = playersInGame.Select(x => new LobbyPlayerDto { Username = x.Value.Username, Id = x.Key.Value, Nickname = x.Value.Nickname.Value }).ToArray(),
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
-            CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Length && gameRoom.CreatedBy == query.PlayerId,
+            CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Count && gameRoom.CreatedBy == query.PlayerId,
             Creator = new LobbyPlayerDto { Id = creator.Id, Username = creator.Username, Nickname = creator.Nickname.Value },
             GameStatus = gameRoom.Status.Value
         };
