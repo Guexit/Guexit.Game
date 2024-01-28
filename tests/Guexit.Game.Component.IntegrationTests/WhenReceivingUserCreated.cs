@@ -16,7 +16,7 @@ public sealed class WhenReceivingUserCreated : ComponentTest
     [Fact]
     public async Task PlayerIsCreated()
     {
-        var userCreatedEvent = new UserCreated(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        var userCreatedEvent = new UserCreated(Guid.NewGuid().ToString(), "newplayer@guexit.com");
 
         await ConsumeMessage(userCreatedEvent);
 

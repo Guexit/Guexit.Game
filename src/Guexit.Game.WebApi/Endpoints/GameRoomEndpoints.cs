@@ -31,135 +31,135 @@ public static class GameRoomEndpoints
     }
 
     private static async Task<IResult> CreateGameRoom(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        await sender.Send(new CreateGameRoomCommand(gameRoomId, userId), ct);
+        await sender.Send(new CreateGameRoomCommand(gameRoomId, authenticatedUserId), ct);
         return Results.Ok();
     }
 
     private static async Task<IResult> JoinGameRoom(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        await sender.Send(new JoinGameRoomCommand(userId, gameRoomId), ct);
+        await sender.Send(new JoinGameRoomCommand(authenticatedUserId, gameRoomId), ct);
         return Results.Ok();
     }
 
     private static async Task<IResult> StartGame(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        await sender.Send(new StartGameCommand(gameRoomId, userId), ct);
+        await sender.Send(new StartGameCommand(gameRoomId, authenticatedUserId), ct);
         return Results.Ok();
     }
 
     private static async Task<IResult> SubmitStoryTellerCardStory(
-       [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+       [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
        [FromRoute] Guid gameRoomId,
        [FromBody] SubmitStoryTellerCardStoryRequest request,
        [FromServices] ISender sender,
        CancellationToken ct)
     {
-        await sender.Send(new SubmitStoryTellerCardStoryCommand(userId, gameRoomId, request.CardId, request.Story), ct);
+        await sender.Send(new SubmitStoryTellerCardStoryCommand(authenticatedUserId, gameRoomId, request.CardId, request.Story), ct);
         return Results.Ok();
     }
 
     private static async Task<IResult> SubmitGuessingPlayerCard(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromBody] SubmitCardForGuessingPlayerRequest request,
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        await sender.Send(new SubmitGuessingPlayerCardCommand(userId, gameRoomId, request.CardId), ct);
+        await sender.Send(new SubmitGuessingPlayerCardCommand(authenticatedUserId, gameRoomId, request.CardId), ct);
         return Results.Ok();
     }
     
     private static async Task<IResult> VoteCard(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromRoute] Guid cardId,
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        await sender.Send(new VoteCardCommand(userId, gameRoomId, cardId), ct);
+        await sender.Send(new VoteCardCommand(authenticatedUserId, gameRoomId, cardId), ct);
         return Results.Ok();
     }
 
     private static async Task<IResult> CreateNext(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var nextGameRoomId = await sender.Send(new CreateNextGameRoomCommand(userId, gameRoomId), ct);
+        var nextGameRoomId = await sender.Send(new CreateNextGameRoomCommand(authenticatedUserId, gameRoomId), ct);
         return Results.Ok(new CreateNextGameRoomResponse(nextGameRoomId));
     }
 
     private static async Task<IResult> GetLobby(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId, userId), ct);
+        var readModel = await sender.Send(new GameLobbyQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 
     private static async Task<IResult> GetBoard(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameBoardQuery(gameRoomId, userId), ct);
+        var readModel = await sender.Send(new GameBoardQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 
     private static async Task<IResult> GetVoting(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameVotingQuery(gameRoomId, userId), ct);
+        var readModel = await sender.Send(new GameVotingQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 
     private static async Task<IResult> GetLastRoundSummary(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId, 
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new LastRoundSummaryQuery(gameRoomId, userId), ct);
+        var readModel = await sender.Send(new LastRoundSummaryQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 
     private static async Task<IResult> GetSummary(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new GameRoomSummaryQuery(gameRoomId, userId), ct);
+        var readModel = await sender.Send(new GameRoomSummaryQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 
     private static async Task<IResult> GetStage(
-        [FromHeader(Name = GuexitHttpHeaders.UserId)] string userId,
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new CurrentStageQuery(gameRoomId, userId), ct);
+        var readModel = await sender.Send(new CurrentStageQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 }

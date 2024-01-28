@@ -24,6 +24,7 @@ if (app.Environment.IsDevelopment())
 app.MapExceptionsToProblemDetails();
 app.UseHttpsRedirection();
 app.MapGameRoomEndpoints();
+app.MapPlayerEndpoints();
 
 var databaseOptions = app.Services.GetRequiredService<IOptions<DatabaseOptions>>();
 if (databaseOptions.Value.MigrateOnStartup)

@@ -5,7 +5,7 @@ namespace Guexit.Game.Domain.Model.PlayerAggregate;
 public sealed class Player : AggregateRoot<PlayerId>
 {
     public Nickname Nickname { get; private set; } = default!;
-    public string Username { get; private set; } = default!;
+    public string Username { get; private init; } = default!;
 
     private Player()
     {
@@ -20,5 +20,10 @@ public sealed class Player : AggregateRoot<PlayerId>
         Id = id;
         Username = username;
         Nickname = Nickname.From(Username);
+    }
+
+    public void ChangeNickname(Nickname nickname)
+    {
+        Nickname = nickname;
     }
 }

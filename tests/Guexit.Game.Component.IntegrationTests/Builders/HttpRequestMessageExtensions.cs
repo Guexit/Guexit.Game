@@ -7,6 +7,6 @@ public static class HttpRequestMessageExtensions
 {
     public static void AddPlayerIdHeader(this HttpRequestMessage request, PlayerId playerId)
     {
-        request.Headers.Add(GuexitHttpHeaders.UserId, playerId.Value);
+        request.Headers.Add(GuexitHttpHeaders.AuthenticatedUserId, playerId.Value);
     }
 }

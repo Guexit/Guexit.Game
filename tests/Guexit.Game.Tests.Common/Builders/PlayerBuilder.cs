@@ -5,7 +5,7 @@ namespace Guexit.Game.Tests.Common.Builders;
 public sealed class PlayerBuilder
 {
     private PlayerId _id = new(Guid.NewGuid().ToString());
-    private string _username = Guid.NewGuid().ToString();
+    private string _username = "username@guexit.com";
 
     public Player Build()
     {

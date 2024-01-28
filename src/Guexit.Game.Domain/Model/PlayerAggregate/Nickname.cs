@@ -1,17 +1,19 @@
 using System.Collections.Frozen;
 using System.Text;
+using Guexit.Game.Domain.Exceptions;
 
 namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
 public sealed class Nickname : ValueObject
 {
     private static readonly FrozenSet<char> _charactersToTrim = new[] { '.', '_', '-', '+' }.ToFrozenSet();
-    
+
     public string Value { get; }
 
     public Nickname(string value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        if (string.IsNullOrWhiteSpace(value))
+            throw new InvalidNicknameException();
         
         Value = value;
     }

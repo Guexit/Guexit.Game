@@ -2,5 +2,5 @@
 
 public static class GuexitHttpHeaders
 {
-    public const string UserId = "Gxt-User-Id";
+    public const string AuthenticatedUserId = "Gxt-User-Id";
 }
