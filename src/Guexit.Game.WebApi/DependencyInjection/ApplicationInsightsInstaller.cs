@@ -1,19 +1,39 @@
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility;
+using Azure.Monitor.OpenTelemetry.Exporter;
+using MassTransit.Logging;
+using MassTransit.Monitoring;
+using Npgsql;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace Guexit.Game.WebApi.DependencyInjection;
 
-public static class ApplicationInsightsInstaller
+public static class OpenTelemetryInstaller
 {
-    public static IServiceCollection AddAppInsights(this IServiceCollection services)
+    public static void AddTelemetry(this WebApplicationBuilder builder)
     {
-        services.AddApplicationInsightsTelemetry();
-        services.AddSingleton<ITelemetryInitializer, GuexitFrontendTelemetryInitializer>();
-        return services;
-    }
-    
-    public sealed class GuexitFrontendTelemetryInitializer : ITelemetryInitializer
-    {
-        public void Initialize(ITelemetry telemetry) => telemetry.Context.Cloud.RoleName = "Game";
+        var connectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
+        if (string.IsNullOrWhiteSpace(connectionString))
+            return;
+
+        builder.Logging.AddOpenTelemetry(options =>
+        {
+            options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName));
+            options.AddAzureMonitorLogExporter(o => o.ConnectionString = connectionString);
+        });
+        
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(b => b.AddService(builder.Environment.ApplicationName))
+            .WithTracing(b => b
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddNpgsql()
+                .AddSource(DiagnosticHeaders.DefaultListenerName)
+                .AddAzureMonitorTraceExporter(o => o.ConnectionString = connectionString))
+            .WithMetrics(b => b
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddMeter(InstrumentationOptions.MeterName)
+                .AddAzureMonitorMetricExporter(o => o.ConnectionString = connectionString));
     }
 }
