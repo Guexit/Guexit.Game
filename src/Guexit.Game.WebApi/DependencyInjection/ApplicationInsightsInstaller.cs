@@ -14,6 +14,6 @@ public static class ApplicationInsightsInstaller
     
     public sealed class GuexitFrontendTelemetryInitializer : ITelemetryInitializer
     {
-        public void Initialize(ITelemetry telemetry) => telemetry.Context.Cloud.RoleName = "Frontend";
+        public void Initialize(ITelemetry telemetry) => telemetry.Context.Cloud.RoleName = "Game";
     }
 }
