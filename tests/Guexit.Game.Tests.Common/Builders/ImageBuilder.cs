@@ -6,6 +6,7 @@ public sealed class ImageBuilder
 {
     private ImageId _id = new(Guid.NewGuid());
     private Uri _url = new("https://example.com/image.png");
+    private Tag[] _tags = Array.Empty<Tag>();
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
 
     public static ImageBuilder CreateValid()
@@ -18,7 +19,7 @@ public sealed class ImageBuilder
 
     public Image Build()
     {
-        var image = new Image(_id, _url, _createdAt);
+        var image = new Image(_id, _url, _tags, _createdAt);
 
         return image;
     }
@@ -39,6 +40,13 @@ public sealed class ImageBuilder
     public ImageBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         _createdAt = createdAt;
+        return this;
+    }
+
+    public ImageBuilder WithTags(IEnumerable<string> tags) => WithTags(tags.Select(x => new Tag(x)).ToArray());
+    public ImageBuilder WithTags(Tag[] tags)
+    {
+        _tags = tags;
         return this;
     }
 }

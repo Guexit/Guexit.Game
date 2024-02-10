@@ -22,9 +22,9 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBeh
 
         try
         {
-            _logger.LogInformation("Handling {requestType}", typeof(TRequest).Name);
+            _logger.LogRequestHandlingStart(typeof(TRequest).Name);
             var response = await next(message, cancellationToken);
-            _logger.LogInformation("{requestType} handled successfully in {elapsed}", typeof(TRequest).Name, Stopwatch.GetElapsedTime(timestamp));
+            _logger.LogRequestHandlingCompleted(typeof(TRequest).Name, Stopwatch.GetElapsedTime(timestamp));
 
             return response;
         }
@@ -34,4 +34,14 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBeh
             throw;
         }
     }
+}
+
+public static partial class LoggingPipelineLogExtensions
+{
+    [LoggerMessage(EventId = 11, Level = LogLevel.Information, Message = "Handling {requestTypeName}")]
+    public static partial void LogRequestHandlingStart(this ILogger logger, string requestTypeName);
+
+
+    [LoggerMessage(EventId = 22, Level = LogLevel.Information, Message = "{requestTypeName} handled successfully in {elapsed}")]
+    public static partial void LogRequestHandlingCompleted(this ILogger logger, string requestTypeName, TimeSpan elapsed);
 }

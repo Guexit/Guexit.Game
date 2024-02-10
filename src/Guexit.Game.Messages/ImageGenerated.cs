@@ -8,4 +8,4 @@
 /// -->
 /// </summary>
 /// <param name="Url">Url where image can be downloaded</param>
-public sealed record ImageGenerated(string Url);
+public sealed record ImageGenerated(string Url, string[] Tags);

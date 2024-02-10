@@ -5,7 +5,7 @@ namespace Guexit.Game.Application.Services;
 
 public interface IImageManagementService
 {
-    Task AddImage(Guid imageId, Uri url, CancellationToken cancellationToken = default);
+    Task AddImage(Guid imageId, Uri url, string[] tags, CancellationToken cancellationToken = default);
 }
 
 public sealed class ImageManagementService : IImageManagementService
@@ -19,9 +19,9 @@ public sealed class ImageManagementService : IImageManagementService
         _clock = clock;
     }
 
-    public async Task AddImage(Guid id, Uri url, CancellationToken cancellationToken = default)
+    public async Task AddImage(Guid id, Uri url, string[] tags, CancellationToken cancellationToken = default)
     {
-        var image = new Image(new ImageId(id), url, _clock.UtcNow);
+        var image = new Image(new ImageId(id), url, tags.Select(x => new Tag(x)).ToArray(), _clock.UtcNow);
         
         await _imageRepository.Add(image, cancellationToken);
     }

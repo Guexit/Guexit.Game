@@ -16,7 +16,8 @@ public sealed class WhenReceivingImageGenerated : ComponentTest
     public async Task ImageIsAdded()
     {
         var imageUrl = "https://pablocompany.com";
-        var imageGenerated = new ImageGenerated(imageUrl);
+        var tags = new[] { new Tag("style:mange"), new Tag("model:turbo_v1") };
+        var imageGenerated = new ImageGenerated(imageUrl, tags.Select(x => x.Value).ToArray());
 
         await ConsumeMessage(imageGenerated);
 
@@ -25,5 +26,6 @@ public sealed class WhenReceivingImageGenerated : ComponentTest
 
         var image = await dbContext.Images.SingleAsync(x => x.Url == new Uri(imageUrl));
         image.Url.Should().Be(new Uri(imageUrl));
+        image.Tags.Should().BeEquivalentTo(tags);
     }
 }
