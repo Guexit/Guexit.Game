@@ -18,6 +18,18 @@ internal sealed class ImageMappingOverride : IEntityTypeConfiguration<Image>
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.GameRoomId).HasConversion(to => to.Value, from => new GameRoomId(from));
 
+        builder.OwnsMany(x => x.Tags, tags =>
+        {
+            tags.ToTable("Tags");
+            
+            tags.Property<Guid>("Id");
+            tags.HasKey("Id");
+            
+            tags.Property(x => x.Value);
+
+            tags.HasIndex(x => x.Value);
+        });
+        
         builder.HasIndex(x => x.CreatedAt);
     }
 }

@@ -184,7 +184,7 @@ public sealed class WhenHandlingStartGameCommand
         
         imagesToAssign.Should().AllSatisfy(image =>
         {
-            image.IsAssignedToGameRoom.Should().BeTrue();
+            image.IsAssignedToAGameRoom.Should().BeTrue();
             image.GameRoomId.Should().Be(gameRoom.Id);
         });
     }

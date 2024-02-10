@@ -24,7 +24,8 @@ public sealed class ImageGeneratedConsumer : MessageConsumer<ImageGenerated>
 
     protected override async Task Process(ImageGenerated imageGenerated, CancellationToken cancellationToken)
     {
-        await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(imageGenerated.Url), cancellationToken);
+        await _imageManagementService.AddImage(_guidProvider.NewGuid(), new Uri(imageGenerated.Url), 
+            imageGenerated.Tags, cancellationToken);
     }
 }
 
