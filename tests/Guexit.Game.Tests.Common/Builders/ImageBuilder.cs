@@ -14,6 +14,7 @@ public sealed class ImageBuilder
         var imageId = new ImageId(Guid.NewGuid());
         return new ImageBuilder()
             .WithId(imageId)
+            .WithTags(new Tag[] { new("model:turbo_v1"), new("style:comic") })
             .WithUrl(new Uri($"https://guexit.io/images/{imageId.Value}"));
     }
 

@@ -1,7 +1,6 @@
 ﻿using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
-using Guexit.Game.Tests.Common;
 using Guexit.Game.Tests.Common.Builders;
 using Microsoft.Extensions.DependencyInjection;
 
