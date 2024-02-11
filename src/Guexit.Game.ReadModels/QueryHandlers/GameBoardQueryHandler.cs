@@ -99,11 +99,12 @@ public sealed class GameBoardQueryHandler : IQueryHandler<GameBoardQuery, BoardR
     {
         var playerHand = gameRoom.PlayerHands.First(x => x.PlayerId == currentPlayerId);
 
-        var cardDtos = playerHand.Cards.Select(x => new BoardReadModel.CardDto
-        {
-            Id = x.Id,
-            Url = x.Url
-        }).ToArray();
+        var cardDtos = playerHand.Cards.OrderBy(x => x.Id)
+            .Select(x => new BoardReadModel.CardDto
+            {
+                Id = x.Id,
+                Url = x.Url
+            }).ToArray();
 
         return cardDtos;
     }
