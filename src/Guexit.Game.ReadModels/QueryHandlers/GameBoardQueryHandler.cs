@@ -62,7 +62,13 @@ public sealed class GameBoardQueryHandler : IQueryHandler<GameBoardQuery, BoardR
             PlayerHand = currentUserPlayerHand,
             IsCurrentUserStoryTeller = query.PlayerId == gameRoom.CurrentStoryTeller.PlayerId,
             CurrentUserSubmittedCard = currentUserSubmittedCard,
-            GuessingPlayers = guessingPlayers
+            GuessingPlayers = guessingPlayers,
+            CurrentPlayer = new PlayerDto
+            {
+                PlayerId = query.PlayerId.Value,
+                Nickname = playersInGameRoom[query.PlayerId].Nickname.Value,
+                Username = playersInGameRoom[query.PlayerId].Username,
+            }
         };
         return readModel;
     }

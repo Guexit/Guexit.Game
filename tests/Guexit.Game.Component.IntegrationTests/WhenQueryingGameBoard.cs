@@ -51,6 +51,10 @@ public sealed class WhenQueryingGameBoard : ComponentTest
             .Cards.Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url });
         responseContent.PlayerHand.Should().BeEquivalentTo(expectedPlayerHand);
 
+        responseContent.CurrentPlayer.PlayerId.Should().Be(player1.Id.Value);
+        responseContent.CurrentPlayer.Nickname.Should().Be(player1.Nickname.Value);
+        responseContent.CurrentPlayer.Username.Should().Be(player1.Username);
+        
         responseContent.GuessingPlayers.Should().HaveCount(2);
 
         responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).Username.Should().Be(player2.Username);
