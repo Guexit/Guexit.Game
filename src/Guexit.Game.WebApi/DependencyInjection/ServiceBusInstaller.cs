@@ -22,8 +22,12 @@ public static class ServiceBusInstaller
 
             config.AddConsumers(typeof(Consumers.IAssemblyMarker).Assembly);
 
+            config.AddServiceBusMessageScheduler();
+            
             config.UsingAzureServiceBus((context, serviceBusConfiguration) =>
             {
+                serviceBusConfiguration.UseServiceBusMessageScheduler();
+
                 serviceBusConfiguration.Host(configuration.GetConnectionString("Guexit_ServiceBus"));
                 serviceBusConfiguration.ConfigureEndpoints(context);
                 
@@ -32,6 +36,8 @@ public static class ServiceBusInstaller
 
                 serviceBusConfiguration.UseMessageRetry(r => r.Incremental(10, TimeSpan.Zero, TimeSpan.FromSeconds(1)));
             });
+            
+            
         });
 
         return services;

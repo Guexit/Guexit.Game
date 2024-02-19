@@ -1,6 +1,7 @@
 ﻿using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Domain;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
@@ -13,16 +14,20 @@ namespace Guexit.Game.Application.UnitTests;
 public sealed class WhenHandlingStartGameCommand
 {
     private readonly GameRoomId GameRoomId = new(Guid.NewGuid());
+    private static readonly DateTimeOffset Now = new(2024, 1, 1, 1, 2, 3, TimeSpan.Zero);
     
     private readonly IImageRepository _imageRepository;
     private readonly IGameRoomRepository _gameRoomRepository;
+    private readonly ISystemClock _clock;
     private readonly StartGameCommandHandler _commandHandler;
 
     public WhenHandlingStartGameCommand()
     {
         _imageRepository = new FakeInMemoryImageRepository();
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new StartGameCommandHandler(_gameRoomRepository, _imageRepository);
+        _clock = Substitute.For<ISystemClock>();
+        
+        _commandHandler = new StartGameCommandHandler(_gameRoomRepository, _imageRepository, _clock);
     }
 
     [Fact]
@@ -116,6 +121,39 @@ public sealed class WhenHandlingStartGameCommand
         gameRoom.DomainEvents.OfType<GameStarted>().Single().Should().BeEquivalentTo(new GameStarted(GameRoomId));
     }
 
+    [Fact]
+    public async Task StartsNewTimerForFirstStoryTeller()
+    {
+        var creatorId = new PlayerId("1");
+        var gameRoom = new GameRoomBuilder()
+            .WithId(GameRoomId)
+            .WithCreator(creatorId)
+            .WithPlayersThatJoined(new PlayerId("2"), new PlayerId("3"), new PlayerId("4"))
+            .Build();
+        await _imageRepository.AddRange(CreateImages(gameRoom.GetRequiredNumberOfCardsInDeck()));
+        await _gameRoomRepository.Add(gameRoom);
+        _clock.UtcNow.Returns(Now);
+        
+        await _commandHandler.Handle(new StartGameCommand(GameRoomId, creatorId));
+        gameRoom.Should().NotBeNull();
+        gameRoom.PlayerTimers.Should().HaveCount(1);
+        
+        var timer = gameRoom.PlayerTimers.Single();
+        timer.PlayerId.Should().Be(creatorId);
+        timer.StartedAt.Should().Be(Now);
+        timer.Duration.Should().Be(TimeSpan.FromSeconds(30));
+        timer.Action.Should().Be(TimedAction.SubmitStory);
+        timer.WasMet.Should().BeFalse();
+        
+        gameRoom.DomainEvents.OfType<PlayerTimerStarted>().Should().HaveCount(1);
+        var timerStartedEvent = gameRoom.DomainEvents.OfType<PlayerTimerStarted>().Single();
+        timerStartedEvent.GameRoomId.Should().Be(gameRoom.Id);
+        timerStartedEvent.PlayerId.Should().Be(timer.PlayerId.Value);
+        timerStartedEvent.StartedAt.Should().Be(timer.StartedAt);
+        timerStartedEvent.Duration.Should().Be(timer.Duration);
+        timerStartedEvent.Action.Should().Be(timer.Action.Value);
+    }
+    
     [Fact]
     public async Task ThrowsGameRoomNotFoundExceptionIfGameRoomDoesNotExist()
     {

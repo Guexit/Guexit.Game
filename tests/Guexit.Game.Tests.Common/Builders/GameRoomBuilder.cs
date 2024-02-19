@@ -9,13 +9,13 @@ public sealed class GameRoomBuilder
     private GameRoomId _id = new(Guid.NewGuid());
     private PlayerId _creatorId = new(Guid.NewGuid().ToString());
     private PlayerId[] _playersThatJoined = Array.Empty<PlayerId>();
+    private DateTimeOffset _startedAt = new(2024, 1, 1, 2, 5, 4, TimeSpan.Zero);
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
     private CardBuilder[] _cards = Array.Empty<CardBuilder>();
     private bool _isStarted = false;
     private string _storyTellerCardStory = string.Empty;
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = [];
-    private GameRoomId _nextGameRoomId = GameRoomId.Empty;
 
     public GameRoom Build()
     {
@@ -28,7 +28,7 @@ public sealed class GameRoomBuilder
             gameRoom.AssignDeck(_cards.Select(x => x.Build()).ToArray());
 
         if (_isStarted)
-            gameRoom.Start(_creatorId);
+            gameRoom.Start(_creatorId, _startedAt);
 
         if (!string.IsNullOrEmpty(_storyTellerCardStory))
         {
@@ -113,8 +113,10 @@ public sealed class GameRoomBuilder
         return this;
     }
 
-    public GameRoomBuilder Started()
+    public GameRoomBuilder Started() => Started(DateTimeOffset.UtcNow);
+    public GameRoomBuilder Started(DateTimeOffset at)
     {
+        _startedAt = at;
         _isStarted = true;
         return this;
     }

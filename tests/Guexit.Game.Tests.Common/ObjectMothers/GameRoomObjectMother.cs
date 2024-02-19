@@ -16,7 +16,7 @@ public static class GameRoomObjectMother
         var cards = BuildCards(gameRoom);
 
         gameRoom.AssignDeck(cards);
-        gameRoom.Start(creator);
+        gameRoom.Start(creator, DateTimeOffset.UtcNow);
         ConductRounds(gameRoom, roundsToConduct: gameRoom.GetPlayersCount());
 
         return gameRoom;
@@ -41,7 +41,7 @@ public static class GameRoomObjectMother
         var cards = BuildCards(gameRoom);
 
         gameRoom.AssignDeck(cards);
-        gameRoom.Start(creator);
+        gameRoom.Start(creator, DateTimeOffset.UtcNow);
         ConductRounds(gameRoom, roundsToConduct: gameRoom.GetPlayersCount() - 1);
         ConductLastRoundLeavingOnePlayerWithNoVote(gameRoom);
 

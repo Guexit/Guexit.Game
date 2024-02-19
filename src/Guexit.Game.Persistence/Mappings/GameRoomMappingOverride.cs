@@ -41,6 +41,18 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
         builder.Property(x => x.NextGameRoomId)
             .HasConversion(to => to.Value, from => new GameRoomId(from))
             .HasDefaultValue(GameRoomId.Empty);
+
+        builder.OwnsMany(x => x.PlayerTimers, b =>
+        {
+            b.ToTable("PlayerTimers");
+
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Id).HasConversion(to => to.Value, from => new PlayerTimerId(from));
+            b.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
+            b.Property(x => x.Action).HasConversion(to => to.Value, from => TimedAction.From(from));
+            b.Property(x => x.Duration).IsRequired();
+            b.Property(x => x.WasMet).IsRequired();
+        });
         
         builder.HasMany(x => x.PlayerHands).WithOne().HasForeignKey(x => x.GameRoomId);
         builder.HasMany(x => x.Deck).WithOne().HasForeignKey("GameRoomId");

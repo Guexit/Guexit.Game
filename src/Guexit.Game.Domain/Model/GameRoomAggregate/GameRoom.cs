@@ -14,6 +14,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public PlayerId CreatedBy { get; private init; } = PlayerId.Empty;
     public ICollection<PlayerId> PlayerIds { get; private init; } = new List<PlayerId>();
+    public ICollection<PlayerTimer> PlayerTimers { get; private init; } = new List<PlayerTimer>();
     public DateTimeOffset CreatedAt { get; private set; }
     public RequiredMinPlayers RequiredMinPlayers { get; private set; } = RequiredMinPlayers.Default;
     public GameStatus Status { get; private set; } = GameStatus.NotStarted;
@@ -66,7 +67,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         Deck = new List<Card>(cards);
     }
 
-    public void Start(PlayerId playerId)
+    public void Start(PlayerId playerId, DateTimeOffset now)
     {
         EnsurePlayersContains(playerId);
         
@@ -82,9 +83,10 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         DealInitialPlayerHands();
         
         CurrentStoryTeller = StoryTeller.Create(PlayerIds.First());
-        Status = GameStatus.InProgress;
+        StartTimer(CurrentStoryTeller.PlayerId, now, TimeSpan.FromSeconds(30), TimedAction.SubmitStory);
         
-        AddDomainEvent(new GameStarted(Id));
+        Status = GameStatus.InProgress;
+        AddDomainEvents(new GameStarted(Id));
     }
 
     public void SubmitStory(PlayerId storyTellerId, CardId cardId, string story)
@@ -104,6 +106,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         SubmittedCards.Add(new SubmittedCard(storyTellerId, card, Id));
         CurrentStoryTeller = CurrentStoryTeller.SubmitStory(story);
 
+        
         AddDomainEvent(new StoryTellerCardStorySubmitted(Id, storyTellerId, cardId, story));
     }
 
@@ -248,6 +251,22 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new NewRoundStarted(Id));
     }
 
+    private void StartTimer(PlayerId playerId, DateTimeOffset now, TimeSpan duration, TimedAction timedAction)
+    {
+        var timer = new PlayerTimer(new PlayerTimerId(Guid.NewGuid()), playerId, now, duration, timedAction);
+        PlayerTimers.Add(timer);
+        
+        AddDomainEvent(new PlayerTimerStarted(Id, timer.Id, timer.PlayerId, timer.Action, timer.StartedAt, timer.Duration));
+    }
+    
+    private void RemoveTimer(PlayerId playerId, TimedAction timedAction)
+    {
+        var timer = PlayerTimers.Single(x => x.PlayerId == playerId && x.Action == timedAction);
+        PlayerTimers.Remove(timer);
+
+        // AddDomainEvent(new TimerRemoved(Id, timer.Id, timer.PlayerId, timer.Action, timer.StartedAt, timer.Duration));
+    }
+    
     private void EndGame()
     {
         Status = GameStatus.Finished;

@@ -4,7 +4,7 @@ using Guexit.Game.Domain.Model.ImageAggregate;
 
 namespace Guexit.Game.Application.UnitTests;
 
-public sealed class WhenAddingImage
+public sealed class WhenAddingAnImage
 {
     private static readonly DateTimeOffset UtcNow = new(2023, 3, 3, 7, 9, 0, TimeSpan.Zero);
 
@@ -12,7 +12,7 @@ public sealed class WhenAddingImage
     private readonly IImageRepository _imageRepository = new FakeInMemoryImageRepository();
     private readonly IImageManagementService _imageManagementService;
     
-    public WhenAddingImage()
+    public WhenAddingAnImage()
     {
         _systemClock.UtcNow.Returns(UtcNow);
         _imageManagementService = new ImageManagementService(_imageRepository, _systemClock);
@@ -39,7 +39,7 @@ public sealed class WhenAddingImage
     public async Task DuplicatedTagsAreRemoved()
     {
         var imageId = new ImageId(Guid.NewGuid());
-        var url = new Uri("https://guexit.ai/images/imagename");
+        var url = new Uri("https://guexit.com/images/imagename");
         var tags = new[] { "style:manga", "style:manga", "model:turbo_v1" };
         
         await _imageManagementService.AddImage(imageId.Value, url, tags);
@@ -47,6 +47,6 @@ public sealed class WhenAddingImage
         var image = await _imageRepository.GetBy(imageId);
         image.Should().NotBeNull();
         image!.Tags.Should().HaveCount(2);
-        image.Tags.Should().BeEquivalentTo(new []{new Tag("style:manga"), new Tag("model:turbo_v1")});
+        image.Tags.Should().BeEquivalentTo(new[] { new Tag("style:manga"), new Tag("model:turbo_v1") });
     }
 }

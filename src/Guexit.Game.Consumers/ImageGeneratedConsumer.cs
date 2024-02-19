@@ -7,6 +7,23 @@ using Microsoft.Extensions.Logging;
 
 namespace Guexit.Game.Consumers;
 
+public sealed class TimerExpiredConsumer : MessageConsumer<TimerExpiredIntegrationEvent>
+{
+    private readonly ILogger<TimerExpiredConsumer> _logger;
+    
+    public TimerExpiredConsumer(IUnitOfWork unitOfWork, ILogger<TimerExpiredConsumer> logger) 
+        : base(unitOfWork, logger)
+    {
+        _logger = logger;
+    }
+
+    protected override Task Process(TimerExpiredIntegrationEvent message, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Timer expired!");
+        return Task.CompletedTask;
+    }
+}
+
 public sealed class ImageGeneratedConsumer : MessageConsumer<ImageGenerated>
 {
     private readonly IImageManagementService _imageManagementService;
