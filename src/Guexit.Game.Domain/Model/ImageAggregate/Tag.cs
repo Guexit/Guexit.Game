@@ -2,7 +2,7 @@ namespace Guexit.Game.Domain.Model.ImageAggregate;
 
 public sealed class Tag : ValueObject
 {
-    public string Value { get; init; }
+    public string Value { get; init; } = null!;
     
     private Tag() { /* Entity Framework required parameterless ctor */ }
     
