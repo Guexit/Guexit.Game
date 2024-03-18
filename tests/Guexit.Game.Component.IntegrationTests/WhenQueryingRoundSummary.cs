@@ -50,5 +50,6 @@ public sealed class WhenQueryingRoundSummary : ComponentTest
         readModel.Scores.Single(x => x.Player.PlayerId == thanos.Id).Points.Should().Be(0);
         readModel.Scores.Single(x => x.Player.PlayerId == ironMan.Id).Points.Should().Be(3);
         readModel.Scores.Single(x => x.Player.PlayerId == starLord.Id).Points.Should().Be(3);
+        readModel.Scores.Should().BeInDescendingOrder(x => x.Points);
     }
 }

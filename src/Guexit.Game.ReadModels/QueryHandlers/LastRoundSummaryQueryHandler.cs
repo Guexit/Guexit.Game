@@ -57,7 +57,7 @@ public sealed class LastRoundSummaryQueryHandler : IQueryHandler<LastRoundSummar
                 Username = players[lastFinishedRound.StoryTeller.PlayerId].Username,
                 Nickname = players[lastFinishedRound.StoryTeller.PlayerId].Nickname.Value
             },
-            Scores = lastFinishedRound.Scores.Select(x => new RoundSummaryReadModel.ScoreDto
+            Scores = lastFinishedRound.Scores.OrderByDescending(x => x.Points).Select(x => new RoundSummaryReadModel.ScoreDto
             {
                 Player = new PlayerDto 
                 { 
