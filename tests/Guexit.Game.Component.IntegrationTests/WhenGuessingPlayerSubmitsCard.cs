@@ -20,7 +20,7 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var guessingPlayerId = new PlayerId("player2");
 
-        await Save(
+        await SaveInRepository(
             new PlayerBuilder().WithId("storyTellerId").Build(),
             new PlayerBuilder().WithId("player2").Build(),
             new PlayerBuilder().WithId("player3").Build()
@@ -30,7 +30,7 @@ public sealed class WhenGuessingPlayerSubmitsCard : ComponentTest
             .WithStoryTellerStory("Any card story")
             .Build();
 
-        await Save(gameRoom);
+        await SaveInRepository(gameRoom);
         
         var card = gameRoom.PlayerHands.Single(x => x.PlayerId == guessingPlayerId).Cards.First();
 

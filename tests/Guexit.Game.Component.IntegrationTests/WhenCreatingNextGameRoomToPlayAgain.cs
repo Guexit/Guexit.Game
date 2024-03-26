@@ -22,11 +22,11 @@ public sealed class WhenCreatingNextGameRoomToPlayAgain : ComponentTest
         var finishedGameRoomId = new GameRoomId(Guid.NewGuid());
         var nextGameRoomId = new GameRoomId(Guid.NewGuid());
         var playerId = new PlayerId("player1");
-        await Save(
+        await SaveInRepository(
             new PlayerBuilder().WithId(playerId).Build(),
             new PlayerBuilder().WithId("player2").Build(),
             new PlayerBuilder().WithId("player3").Build());
-        await Save(GameRoomObjectMother.Finished(finishedGameRoomId, playerId, ["player2", "player3"]));
+        await SaveInRepository(GameRoomObjectMother.Finished(finishedGameRoomId, playerId, ["player2", "player3"]));
 
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         var fakeGuidProvider = scope.ServiceProvider.GetRequiredService<FakeGuidProvider>();

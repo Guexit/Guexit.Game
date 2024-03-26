@@ -19,12 +19,12 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var creatorId = new PlayerId("player1");
         var creatorUsername = "thanos@guexit.com";
-        await Save(new GameRoomBuilder()
+        await SaveInRepository(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined("player2", "player3")
             .Build());
-        await Save(
+        await SaveInRepository(
         [
             new PlayerBuilder().WithId(creatorId).WithUsername("thanos@guexit.com").Build(),
             new PlayerBuilder().WithId("player2").WithUsername("hulk@guexit.com").Build(),
@@ -52,12 +52,12 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var creatorId = new PlayerId("player1");
         var nonCreatorId = new PlayerId("player2");
-        await Save(new GameRoomBuilder()
+        await SaveInRepository(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined(nonCreatorId, "player3")
             .Build());
-        await Save(
+        await SaveInRepository(
         [
             new PlayerBuilder().WithId("player1").WithUsername("thanos@guexit.com").Build(),
             new PlayerBuilder().WithId("player2").WithUsername("hulk@guexit.com").Build(),

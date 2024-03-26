@@ -23,7 +23,7 @@ public sealed class WhenVotingSubmittedCard : ComponentTest
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, otherGuessingPlayerId)
             .Build();
         var votedCard = gameRoom.SubmittedCards.First(x => x.PlayerId != votingPlayerId).Card;
-        await Save(gameRoom);
+        await SaveInRepository(gameRoom);
 
         using var response = await Send(
             HttpMethod.Post, 

@@ -24,7 +24,7 @@ public sealed class WhenCreatingGameRoom : ComponentTest
     {
         var gameRoomId = Guid.NewGuid().ToString();
         var playerId = new PlayerId("player1");
-        await Save(new PlayerBuilder().WithId(playerId).Build());
+        await SaveInRepository(new PlayerBuilder().WithId(playerId).Build());
         
         using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId}", playerId);
 

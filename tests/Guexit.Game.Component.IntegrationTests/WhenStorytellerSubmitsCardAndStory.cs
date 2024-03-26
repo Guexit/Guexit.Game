@@ -25,8 +25,8 @@ public sealed class WhenStorytellerSubmitsCardAndStory : ComponentTest
         var story = "El tipico abuelo adolescente";
         
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, storyTellerId, [playerId2, playerId3]).Build();
-        await Save(gameRoom);
-        await Save(
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(
         [
             new PlayerBuilder().WithId(storyTellerId).WithUsername("gamora").Build(),
             new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),
