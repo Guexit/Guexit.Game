@@ -27,8 +27,8 @@ public sealed class WhenJoiningGameRoom : ComponentTest
         var creatorId = new PlayerId("player1");
         var playerJoiningId = new PlayerId("player2");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        await Save(new PlayerBuilder().WithId(playerJoiningId).Build());
-        await Save(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
+        await SaveInRepository(new PlayerBuilder().WithId(playerJoiningId).Build());
+        await SaveInRepository(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
         using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join", playerJoiningId);
 
@@ -43,8 +43,8 @@ public sealed class WhenJoiningGameRoom : ComponentTest
     {
         var creatorId = new PlayerId("player1");
         var gameRoomId = new GameRoomId(Guid.NewGuid());
-        await Save(new PlayerBuilder().WithId(creatorId).Build());
-        await Save(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
+        await SaveInRepository(new PlayerBuilder().WithId(creatorId).Build());
+        await SaveInRepository(new GameRoom(gameRoomId, creatorId, new DateTimeOffset(2023, 1, 1, 2, 3, 4, TimeSpan.Zero)));
 
         using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/join", creatorId);
 

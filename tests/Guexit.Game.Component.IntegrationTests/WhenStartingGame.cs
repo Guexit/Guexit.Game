@@ -22,17 +22,17 @@ public sealed class WhenStartingGame : ComponentTest
         var playerId1 = new PlayerId("1");
         var playerId2 = new PlayerId("2");
         var playerId3 = new PlayerId("3");
-        await Save(new GameRoomBuilder()
+        await SaveInRepository(new GameRoomBuilder()
             .WithId(gameRoomId)
             .WithCreator(playerId1).WithPlayersThatJoined(playerId2, playerId3)
             .Build());
-        await Save(new PlayerBuilder().WithId(playerId1).Build(),
+        await SaveInRepository(new PlayerBuilder().WithId(playerId1).Build(),
             new PlayerBuilder().WithId(playerId2).Build(),
             new PlayerBuilder().WithId(playerId3).Build());
         var images = Enumerable.Range(0, 200)
             .Select(_ => ImageBuilder.CreateValid().Build())
             .ToArray();
-        await Save(images);
+        await SaveInRepository(images);
         
         using var response = await Send(HttpMethod.Post, $"game-rooms/{gameRoomId.Value}/start", playerId1);
 

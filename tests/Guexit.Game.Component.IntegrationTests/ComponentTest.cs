@@ -41,7 +41,7 @@ public abstract class ComponentTest : IAsyncLifetime
         }
     }
 
-    protected async Task Save<TAggregateRoot>(params TAggregateRoot[] aggregateRoots) where TAggregateRoot : class, IAggregateRoot
+    protected async Task SaveInRepository<TAggregateRoot>(params TAggregateRoot[] aggregateRoots) where TAggregateRoot : class, IAggregateRoot
     {
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();

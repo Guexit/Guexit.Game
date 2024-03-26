@@ -18,7 +18,7 @@ public sealed class WhenChangingPlayerNickname : ComponentTest
         var newNickname = "newNickname";
         var playerId = new PlayerId("d3fd8605-5e5f-4ddd-9d53-f7f5deb560d0");
         var username = "oldnickname@guexit.com";
-        await Save(new PlayerBuilder()
+        await SaveInRepository(new PlayerBuilder()
             .WithId(playerId)
             .WithUsername(username)
             .Build());
@@ -46,7 +46,7 @@ public sealed class WhenChangingPlayerNickname : ComponentTest
         var newNickname = "newNickname";
         var playerId = new PlayerId("d3fd8605-5e5f-4ddd-9d53-f7f5deb560d0");
         var username = "oldnickname@guexit.com";
-        await Save(new PlayerBuilder()
+        await SaveInRepository(new PlayerBuilder()
             .WithId(playerId)
             .WithUsername(username)
             .Build());

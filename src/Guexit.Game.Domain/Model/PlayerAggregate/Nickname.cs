@@ -1,4 +1,4 @@
-using System.Collections.Frozen;
+using System.Buffers;
 using System.Text;
 using Guexit.Game.Domain.Exceptions;
 
@@ -6,7 +6,7 @@ namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
 public sealed class Nickname : ValueObject
 {
-    private static readonly FrozenSet<char> _charactersToTrim = new[] { '.', '_', '-', '+' }.ToFrozenSet();
+    private static readonly SearchValues<char> _charactersToTrim = SearchValues.Create(['.', '_', '-', '+']);
 
     public string Value { get; }
 
@@ -26,7 +26,7 @@ public sealed class Nickname : ValueObject
         if (atIndex is not -1) 
             span = span[..atIndex];
         
-        var sb = new StringBuilder();
+        var sb = new StringBuilder(span.Length);
         foreach (var character in span)
         {
             if (_charactersToTrim.Contains(character))

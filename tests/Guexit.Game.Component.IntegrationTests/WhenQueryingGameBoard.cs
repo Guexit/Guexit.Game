@@ -20,15 +20,15 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var gameRoomId = new GameRoomId(Guid.NewGuid());
         var player1 = new PlayerBuilder().WithId("storyTellerId").WithUsername("gamora@guexit.com").Build(); 
         var player2 = new PlayerBuilder().WithId("playerId2").WithUsername("starlord@guexit.com").Build(); 
-        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("wroot@guexit.com").Build();
+        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("groot@guexit.com").Build();
         var story = "El tipico adolescente abuelo";
 
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, player1.Id, [player2.Id, player3.Id])
             .WithStoryTellerStory(story)
             .WithGuessingPlayerThatSubmittedCard(player2.Id)
             .Build();
-        await Save(gameRoom);
-        await Save(player1, player2, player3);
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(player1, player2, player3);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", player1.Id);
 
@@ -71,7 +71,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
     {
         var nonExistingGameRoomId = new GameRoomId(Guid.NewGuid());
         var playerId = new PlayerId("storyTellerId"); 
-        await Save(new PlayerBuilder().WithId(playerId).WithUsername("gamora").Build());
+        await SaveInRepository(new PlayerBuilder().WithId(playerId).WithUsername("gamora").Build());
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{nonExistingGameRoomId.Value}/board", playerId);
 
@@ -86,8 +86,8 @@ public sealed class WhenQueryingGameBoard : ComponentTest
         var playerId2 = new PlayerId("player2");
         var playerId3 = new PlayerId("player3");
         var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, initialStoryTeller, [playerId2, playerId3]).Build();
-        await Save(gameRoom);
-        await Save(
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(
         [
             new PlayerBuilder().WithId(initialStoryTeller).WithUsername("gamora").Build(),
             new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),
@@ -113,8 +113,8 @@ public sealed class WhenQueryingGameBoard : ComponentTest
             .WithId(gameRoomId)
             .WithCreator(playerId1).WithPlayersThatJoined(playerId2, playerId3)
             .Build();
-        await Save(gameRoom);
-        await Save(
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(
         [
             new PlayerBuilder().WithId(playerId1).WithUsername("gamora").Build(),
             new PlayerBuilder().WithId(playerId2).WithUsername("starlord").Build(),

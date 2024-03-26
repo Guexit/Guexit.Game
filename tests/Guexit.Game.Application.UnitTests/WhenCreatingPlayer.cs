@@ -50,6 +50,7 @@ public sealed class WhenCreatingPlayer
     [Theory]
     [InlineData("@pablocom96@gmail.com", "@pablocom96@gmail.com")]
     [InlineData("._@gmail.com", "._@gmail.com")]
+    [InlineData("._+_-_", "._+_-_")]
     public async Task IfNickNameCalculatedIsEmptyItInitializesToItsEmail(string username, string expectedNickName)
     {
         var playerId = new PlayerId(Guid.NewGuid().ToString());

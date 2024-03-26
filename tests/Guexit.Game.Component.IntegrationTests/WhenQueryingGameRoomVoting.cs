@@ -18,7 +18,7 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
     { }
 
     [Fact]
-    public async Task ReturnsGameBoardReadModel()
+    public async Task ReturnsVotingReadModel()
     {
         var storyTellerId = new PlayerId("storyTellerId");
         var storyTellerUsername = "antman@guexit.com";
@@ -32,9 +32,8 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
             .WithGuessingPlayerThatSubmittedCard(guessingPlayer1.Id, guessingPlayer2.Id)
             .Build();
         
-        
-        await Save(gameRoom);
-        await Save(storyTeller, guessingPlayer1, guessingPlayer2);
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(storyTeller, guessingPlayer1, guessingPlayer2);
         
         var storyTellerCard = gameRoom.SubmittedCards.First(x => x.PlayerId == storyTellerId);
         var guessingPlayer1Card = gameRoom.SubmittedCards.First(x => x.PlayerId == guessingPlayer1.Id);
@@ -47,7 +46,7 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         );
         await voteResponse.ShouldHaveSuccessStatusCode();
 
-        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", storyTellerId);
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", authenticatedPlayerId: storyTellerId);
         await response.ShouldHaveSuccessStatusCode();
 
         var votingReadModel = await response.Content.ReadFromJsonAsync<VotingReadModel>();
@@ -64,6 +63,8 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
             .And.Contain(x => x.Id == guessingPlayer1Card.Card.Id && x.Url == guessingPlayer1Card.Card.Url && !x.WasSubmittedByQueryingPlayer)
             .And.Contain(x => x.Id == guessingPlayer2Card.Card.Id && x.Url == guessingPlayer2Card.Card.Url && !x.WasSubmittedByQueryingPlayer);
 
+        votingReadModel.CurrentUserVotedCard.Should().BeNull();
+        
         votingReadModel.GuessingPlayers.Should().HaveCount(2);
         
         var spiderMan = votingReadModel.GuessingPlayers.Single(x => x.PlayerId == guessingPlayer1.Id);
@@ -75,5 +76,33 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         fury.HasVotedAlready.Should().BeFalse();
         fury.Username.Should().Be(guessingPlayer2.Username);
         fury.Nickname.Should().Be(guessingPlayer2.Nickname.Value);
+    }
+
+    [Fact]
+    public async Task ReturnsVotedCardFromVotingPlayer()
+    {
+        var votingPlayerId = new PlayerId("player2");
+        var storyTeller = new PlayerBuilder().WithId("storyTellerId").WithUsername("antman@guexit.com").Build();
+        var guessingPlayer1 = new PlayerBuilder().WithId(votingPlayerId).WithUsername("spiderman@guexit.com").Build();
+        var guessingPlayer2 = new PlayerBuilder().WithId("player3").WithUsername("fury@guexit.com").Build();
+        
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, storyTeller.Id, [guessingPlayer1.Id, guessingPlayer2.Id])
+            .WithStoryTellerStory("El tipico adolescente abuelo")
+            .WithGuessingPlayerThatSubmittedCard(guessingPlayer1.Id, guessingPlayer2.Id)
+            .WithVote(votingPlayerId, storyTeller.Id)
+            .Build();
+
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(storyTeller, guessingPlayer1, guessingPlayer2);
+        
+        var cardVoted = gameRoom.SubmittedCards.First(x => x.Voters.Contains(votingPlayerId));
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/voting", votingPlayerId);
+        await response.ShouldHaveSuccessStatusCode();
+        
+        var votingReadModel = await response.Content.ReadFromJsonAsync<VotingReadModel>();
+        votingReadModel.Should().NotBeNull();
+        votingReadModel!.CurrentUserVotedCard.Should().NotBeNull();
+        votingReadModel.CurrentUserVotedCard!.Id.Should().Be(cardVoted.Id);
+        votingReadModel.CurrentUserVotedCard.Url.Should().Be(cardVoted.Card.Url);
     }
 }

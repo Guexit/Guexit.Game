@@ -49,7 +49,8 @@ public sealed class GameVotingQueryHandler : IQueryHandler<GameVotingQuery, Voti
         var guessingPlayers = playersInGameRoom.Where(x => guessingPlayersIds.Contains(x.Key)).ToArray();
         var playerIdsWhoAlreadyVoted = gameRoom.SubmittedCards.SelectMany(x => x.Voters).ToHashSet();
         var storyTeller = playersInGameRoom[gameRoom.CurrentStoryTeller.PlayerId];
-
+        var votedCard = gameRoom.SubmittedCards.FirstOrDefault(x => x.Voters.Contains(query.PlayerId));
+        
         return new VotingReadModel
         {
             Cards = submittedCards,
@@ -69,7 +70,10 @@ public sealed class GameVotingQueryHandler : IQueryHandler<GameVotingQuery, Voti
                 Username = storyTeller.Username,
                 Nickname = storyTeller.Nickname.Value,
                 Story = gameRoom.CurrentStoryTeller.Story
-            }
+            },
+            CurrentUserVotedCard = votedCard is not null 
+                ? new VotingReadModel.VotedCardDto { Id = votedCard.Id, Url = votedCard.Card.Url } 
+                : null
         };
     }
 }

@@ -21,7 +21,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
         var creatorId = new PlayerId("gameRoomCreator");
         var gameRoom = new GameRoomBuilder().WithId(GameRoomId).WithCreator(creatorId).Build();
 
-        await Save(gameRoom);
+        await SaveInRepository(gameRoom);
         
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
@@ -37,7 +37,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
         var creatorId = new PlayerId("unai");
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, creatorId, ["poysky", "pablo"]).Build();
 
-        await Save(gameRoom);
+        await SaveInRepository(gameRoom);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
@@ -56,7 +56,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
             .WithGuessingPlayerThatSubmittedCard("poysky", "pablo")
             .Build();
 
-        await Save(gameRoom);
+        await SaveInRepository(gameRoom);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 
@@ -72,7 +72,7 @@ public sealed class WhenQueryingCurrentStage : ComponentTest
         var creatorId = new PlayerId("unai");
         var gameRoom = GameRoomObjectMother.Finished(GameRoomId, creatorId, ["poysky", "pablo"]);
 
-        await Save(gameRoom);
+        await SaveInRepository(gameRoom);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/stages/current", creatorId);
 

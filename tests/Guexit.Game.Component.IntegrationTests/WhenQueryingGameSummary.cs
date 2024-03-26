@@ -33,8 +33,8 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         AssumeAllPlayersSubmittedCard(gameRoom);
         AssumeAllGuessersVoted(gameRoom);
         
-        await Save(gameRoom);
-        await Save(thanos, ironMan, starLord);
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(thanos, ironMan, starLord);
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{GameRoomId.Value}/summary", thanos.Id);
 
@@ -80,8 +80,8 @@ public sealed class WhenQueryingGameSummary : ComponentTest
         var playerId = new PlayerId("thanos");
         var nextGameRoomId = new GameRoomId(Guid.NewGuid());
         var gameRoom = GameRoomObjectMother.Finished(GameRoomId, playerId, ["ironman", "gamora"], nextGameRoomId);
-        await Save(gameRoom);
-        await Save(
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(
             new PlayerBuilder().WithId(playerId).WithUsername("thanos").Build(),
             new PlayerBuilder().WithId("ironman").WithUsername("ironman").Build(),
             new PlayerBuilder().WithId("gamora").WithUsername("gamora").Build());
