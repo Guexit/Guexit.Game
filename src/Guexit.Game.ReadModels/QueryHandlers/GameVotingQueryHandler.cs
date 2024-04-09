@@ -72,7 +72,7 @@ public sealed class GameVotingQueryHandler : IQueryHandler<GameVotingQuery, Voti
                 Story = gameRoom.CurrentStoryTeller.Story
             },
             CurrentUserVotedCard = votedCard is not null 
-                ? new VotingReadModel.VotedCardDto { Id = votedCard.Id, Url = votedCard.Card.Url } 
+                ? new VotingReadModel.VotedCardDto { Id = votedCard.Card.Id, Url = votedCard.Card.Url } 
                 : null
         };
     }

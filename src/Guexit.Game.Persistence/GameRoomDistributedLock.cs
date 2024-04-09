@@ -3,7 +3,7 @@ using System.Data.Common;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Guexit.Game.Persistence.Interceptors;
+namespace Guexit.Game.Persistence;
 
 public sealed class GameRoomDistributedLock
 {

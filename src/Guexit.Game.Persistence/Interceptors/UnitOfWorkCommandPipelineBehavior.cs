@@ -19,7 +19,7 @@ public sealed class UnitOfWorkCommandPipelineBehavior<TCommand, TResponse> : IPi
 
         try
         {
-            var response = await next.Invoke(command, ct);
+            var response = await next(command, ct);
             
             await _unitOfWork.Commit(ct);
             
