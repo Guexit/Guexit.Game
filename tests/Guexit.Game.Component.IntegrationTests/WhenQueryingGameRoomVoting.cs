@@ -102,7 +102,7 @@ public sealed class WhenQueryingGameRoomVoting : ComponentTest
         var votingReadModel = await response.Content.ReadFromJsonAsync<VotingReadModel>();
         votingReadModel.Should().NotBeNull();
         votingReadModel!.CurrentUserVotedCard.Should().NotBeNull();
-        votingReadModel.CurrentUserVotedCard!.Id.Should().Be(cardVoted.Id);
+        votingReadModel.CurrentUserVotedCard!.Id.Should().Be(cardVoted.Card.Id);
         votingReadModel.CurrentUserVotedCard.Url.Should().Be(cardVoted.Card.Url);
     }
 }

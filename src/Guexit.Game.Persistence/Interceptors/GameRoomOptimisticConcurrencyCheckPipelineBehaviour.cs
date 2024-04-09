@@ -15,7 +15,7 @@ public sealed class GameRoomOptimisticConcurrencyCheckPipelineBehaviour<TGameRoo
     
     public async ValueTask<TResponse> Handle(TGameRoomCommand command, CancellationToken ct, MessageHandlerDelegate<TGameRoomCommand, TResponse> next)
     {
-        var response = await next.Invoke(command, ct);
+        var response = await next(command, ct);
         
         _gameRoomConcurrencyCheckEnforcer.ForceConcurrencyTokenCheckFor(command.GameRoomId);
         

@@ -13,9 +13,7 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBeh
         _logger = logger;
     }
 
-    public async ValueTask<TResponse> Handle(
-        TRequest message,
-        CancellationToken cancellationToken,
+    public async ValueTask<TResponse> Handle(TRequest request, CancellationToken cancellationToken, 
         MessageHandlerDelegate<TRequest, TResponse> next)
     {
         var timestamp = Stopwatch.GetTimestamp();
@@ -23,7 +21,7 @@ public sealed class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBeh
         try
         {
             _logger.LogRequestHandlingStart(typeof(TRequest).Name);
-            var response = await next(message, cancellationToken);
+            var response = await next(request, cancellationToken);
             _logger.LogRequestHandlingCompleted(typeof(TRequest).Name, Stopwatch.GetElapsedTime(timestamp));
 
             return response;
