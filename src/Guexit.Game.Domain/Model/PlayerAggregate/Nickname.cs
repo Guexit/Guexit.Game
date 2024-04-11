@@ -1,4 +1,4 @@
-using System.Buffers;
+using System.Collections.Frozen;
 using System.Text;
 using Guexit.Game.Domain.Exceptions;
 
@@ -6,7 +6,7 @@ namespace Guexit.Game.Domain.Model.PlayerAggregate;
 
 public sealed class Nickname : ValueObject
 {
-    private static readonly SearchValues<char> _charactersToTrim = SearchValues.Create(['.', '_', '-', '+']);
+    private static readonly FrozenSet<char> _charactersToTrim = new char[] { '.', '_', '-', '+' }.ToFrozenSet();
 
     public string Value { get; }
 

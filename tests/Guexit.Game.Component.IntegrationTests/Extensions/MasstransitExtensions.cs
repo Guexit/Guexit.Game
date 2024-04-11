@@ -19,20 +19,13 @@ public static class MasstransitExtensions
         var cts = new CancellationTokenSource(timeout);
         var cancellationToken = cts.Token;
         
-        var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(200));
+        var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
 
-        try
+        while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
         {
-            while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
-            {
-                var hasBeenConsumed = await harness.Consumed.Any<TMessage>(x => x.Context.MessageId == messageId, cancellationToken);
-                if (hasBeenConsumed)
-                    return;
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            throw new TimeoutException($"Task was canceled. Timeout consuming message of type {typeof(TMessage)}.");
+            var hasBeenConsumed = await harness.Consumed.Any<TMessage>(x => x.Context.MessageId == messageId, cancellationToken);
+            if (hasBeenConsumed)
+                return;
         }
     }
     

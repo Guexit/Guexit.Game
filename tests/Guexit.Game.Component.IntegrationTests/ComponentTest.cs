@@ -24,8 +24,7 @@ public abstract class ComponentTest : IAsyncLifetime
         WebApplicationFactory = webApplicationFactory;
     }
 
-    protected async Task ConsumeMessage<TMessage>(TMessage message)
-        where TMessage : class
+    protected async Task ConsumeMessage<TMessage>(TMessage message) where TMessage : class
     {
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         var harness = scope.ServiceProvider.GetRequiredService<ITestHarness>();
@@ -45,12 +44,12 @@ public abstract class ComponentTest : IAsyncLifetime
     {
         await using var scope = WebApplicationFactory.Services.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+
         await dbContext.Set<TAggregateRoot>().AddRangeAsync(aggregateRoots);
         await dbContext.SaveChangesAsync();
     }
 
-    protected async Task<HttpResponseMessage> Send(HttpMethod httpMethod, string requestUri, HttpContent content, 
-        PlayerId authenticatedPlayerId)
+    protected async Task<HttpResponseMessage> Send(HttpMethod httpMethod, string requestUri, HttpContent content, PlayerId authenticatedPlayerId)
     {
         using var request = new HttpRequestMessage(httpMethod, requestUri);
         request.Content = content;
@@ -71,10 +70,10 @@ public abstract class ComponentTest : IAsyncLifetime
         return await client.SendAsync(request);
     }
 
-    public Task InitializeAsync() => CleanUp();
+    public Task InitializeAsync() => ExecuteTestDataCleaners();
     public Task DisposeAsync() => Task.CompletedTask;
 
-    private async Task CleanUp()
+    private async Task ExecuteTestDataCleaners()
     {
         foreach (var cleaner in _testDataCleaners)
             await cleaner.Clean(WebApplicationFactory);
