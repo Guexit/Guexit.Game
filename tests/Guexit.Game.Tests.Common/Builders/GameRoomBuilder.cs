@@ -16,6 +16,7 @@ public sealed class GameRoomBuilder
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = [];
     private GameRoomId _nextGameRoomId = GameRoomId.Empty;
+    private List<PlayerId> _playersThatReservedCardsForReRoll = new();
 
     public GameRoom Build()
     {
@@ -30,6 +31,15 @@ public sealed class GameRoomBuilder
         if (_isStarted)
             gameRoom.Start(_creatorId);
 
+        if (_playersThatReservedCardsForReRoll.Any())
+        {
+            foreach (var playerId in _playersThatReservedCardsForReRoll)
+            {
+                var cards = Enumerable.Range(0, 3).Select(_ => new CardBuilder().Build()).ToArray();
+                gameRoom.ReserveCardsForReRoll(playerId, cards);
+            }
+        }
+        
         if (!string.IsNullOrEmpty(_storyTellerCardStory))
         {
             var storyTellerId = gameRoom.CurrentStoryTeller.PlayerId;
@@ -134,6 +144,12 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithVote(PlayerId votingPlayer, PlayerId cardSubmittedBy)
     {
         _votes.Add((votingPlayer, cardSubmittedBy));
+        return this;
+    }
+
+    public GameRoomBuilder WithPlayerThatReservedCardsForReRoll(PlayerId playerId)
+    {
+        _playersThatReservedCardsForReRoll.Add(playerId);
         return this;
     }
 }

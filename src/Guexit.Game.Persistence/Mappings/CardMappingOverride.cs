@@ -16,4 +16,3 @@ internal sealed class CardMappingOverride : IEntityTypeConfiguration<Card>
         builder.Property(x => x.Url).IsRequired();
     }
 }
-

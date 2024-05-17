@@ -31,6 +31,7 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
             .WithAssignedDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
             .WithStoryTellerStory(submittedStory)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayerIdsThatSubmittedCard)
+            .WithPlayerThatReservedCardsForReRoll(initialStoryTeller)
             .Build());
         await SaveChanges();
 
@@ -49,5 +50,9 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(guessingPlayerIdsThatSubmittedCard[0]);
         gameRoom.SubmittedCards.Select(x => x.PlayerId).Should().Contain(guessingPlayerIdsThatSubmittedCard[1]);
         gameRoom.NextGameRoomId.Should().Be(GameRoomId.Empty);
+        gameRoom.CurrentCardReRolls.Should().HaveCount(1);
+        gameRoom.CurrentCardReRolls.Single().PlayerId.Should().Be(initialStoryTeller);
+        gameRoom.CurrentCardReRolls.Single().Status.Should().Be(CardReRollStatus.InProgress);
+        gameRoom.CurrentCardReRolls.Single().ReservedCards.Should().HaveCount(CardReRoll.RequiredReservedCardsSize);
     }
 }

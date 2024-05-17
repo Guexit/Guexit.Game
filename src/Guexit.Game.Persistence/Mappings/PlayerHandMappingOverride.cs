@@ -16,7 +16,7 @@ internal sealed class PlayerHandMappingOverride : IEntityTypeConfiguration<Playe
         builder.Property(x => x.PlayerId).HasConversion(x => x.Value, x => new PlayerId(x));
         builder.Property(x => x.GameRoomId).HasConversion(x => x.Value, x => new GameRoomId(x));
 
-        builder.HasMany(x => x.Cards);
+        builder.HasMany(x => x.Cards).WithOne().OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => new { x.GameRoomId, x.PlayerId }).IsUnique();
 
