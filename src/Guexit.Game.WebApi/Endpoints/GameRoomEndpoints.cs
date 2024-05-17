@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Application.Commands;
+﻿using Guexit.Game.Application.CommandHandlers;
+using Guexit.Game.Application.Commands;
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.WebApi.Contracts.Requests;
@@ -21,6 +22,7 @@ public static class GameRoomEndpoints
         group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
         group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
         group.MapPost("/create-next", CreateNext).Produces<CreateNextGameRoomResponse>();
+        group.MapPost("/reserve-cards-for-re-roll", ReserveCardsForReRoll);
 
         group.MapGet("/lobby", GetLobby).Produces<LobbyReadModel>();
         group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
@@ -101,6 +103,16 @@ public static class GameRoomEndpoints
     {
         var nextGameRoomId = await sender.Send(new CreateNextGameRoomCommand(authenticatedUserId, gameRoomId), ct);
         return Results.Ok(new CreateNextGameRoomResponse(nextGameRoomId));
+    }
+
+    private static async Task<IResult> ReserveCardsForReRoll(
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
+        [FromRoute] Guid gameRoomId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        await sender.Send(new ReserveCardsForReRollCommand(authenticatedUserId, gameRoomId), ct);
+        return Results.Ok();
     }
 
     private static async Task<IResult> GetLobby(

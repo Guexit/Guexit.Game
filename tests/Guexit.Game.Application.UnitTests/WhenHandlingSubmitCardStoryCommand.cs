@@ -69,7 +69,7 @@ public sealed class WhenHandlingSubmitCardStoryCommand
         var action = async () => 
             await _commandHandler.Handle(new SubmitStoryTellerCardStoryCommand(playerId, gameRoomId, anyCardId, "anyStory"));
 
-        await action.Should().ThrowAsync<SubmittingCardToGameNotInProgressException>();
+        await action.Should().ThrowAsync<InvalidOperationForInProgressGame>();
     }
 
     [Fact]

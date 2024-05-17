@@ -51,8 +51,6 @@ public abstract class DatabaseMappingIntegrationTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await DbContext.Cards.ExecuteDeleteAsync();
-        await DbContext.PlayerHands.ExecuteDeleteAsync();
         await DbContext.GameRooms.ExecuteDeleteAsync();
         await DbContext.Players.ExecuteDeleteAsync();
         await DbContext.Images.ExecuteDeleteAsync();

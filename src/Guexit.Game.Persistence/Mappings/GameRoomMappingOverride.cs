@@ -42,15 +42,17 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .HasConversion(to => to.Value, from => new GameRoomId(from))
             .HasDefaultValue(GameRoomId.Empty);
         
-        builder.HasMany(x => x.PlayerHands).WithOne().HasForeignKey(x => x.GameRoomId);
-        builder.HasMany(x => x.Deck).WithOne().HasForeignKey("GameRoomId");
-        builder.HasMany(x => x.SubmittedCards).WithOne().HasForeignKey(x => x.GameRoomId);
-        builder.HasMany(x => x.FinishedRounds).WithOne().HasForeignKey(x => x.GameRoomId);
+        builder.HasMany(x => x.PlayerHands).WithOne().HasForeignKey(x => x.GameRoomId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.Deck).WithOne().HasForeignKey("GameRoomId").OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.SubmittedCards).WithOne().HasForeignKey(x => x.GameRoomId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.FinishedRounds).WithOne().HasForeignKey(x => x.GameRoomId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.CurrentCardReRolls).WithOne().HasForeignKey("GameRoomId").OnDelete(DeleteBehavior.Cascade);
 
         builder.Navigation(x => x.PlayerHands).AutoInclude();
         builder.Navigation(x => x.Deck).AutoInclude();
         builder.Navigation(x => x.SubmittedCards).AutoInclude();
         builder.Navigation(x => x.FinishedRounds).AutoInclude();
+        builder.Navigation(x => x.CurrentCardReRolls).AutoInclude();
 
         builder.HasIndex(x => x.NextGameRoomId);
     }

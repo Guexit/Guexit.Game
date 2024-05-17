@@ -22,6 +22,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<SubmittedCard> SubmittedCards { get; private init; } = new List<SubmittedCard>();
     public StoryTeller CurrentStoryTeller { get; private set; } = StoryTeller.Empty;
     public ICollection<FinishedRound> FinishedRounds { get; private init; } = new List<FinishedRound>();
+    public ICollection<CardReRoll> CurrentCardReRolls { get; private init; } = new List<CardReRoll>();
     public GameRoomId NextGameRoomId { get; private set; } = GameRoomId.Empty;
 
     public IReadOnlySet<PlayerId> GetCurrentGuessingPlayerIds() => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
@@ -92,7 +93,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         EnsurePlayersContains(storyTellerId);
         
         if (Status != GameStatus.InProgress)
-            throw new SubmittingCardToGameNotInProgressException(Id);
+            throw new InvalidOperationForInProgressGame(Id, storyTellerId);
 
         if (CurrentStoryTeller.PlayerId != storyTellerId)
             throw new InvalidCardStorySubmissionForNonStoryTellerException(Id, storyTellerId);
@@ -110,7 +111,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void SubmitGuessingPlayerCard(PlayerId guessingPlayerId, CardId cardId)
     {
         if (Status != GameStatus.InProgress)
-            throw new SubmittingCardToGameNotInProgressException(Id);
+            throw new InvalidOperationForInProgressGame(Id, guessingPlayerId);
 
         EnsureCurrentGuessingPlayersContains(guessingPlayerId);
 
@@ -252,6 +253,19 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         Status = GameStatus.Finished;
         AddDomainEvent(new GameFinished(Id));
+    }
+
+    public void ReserveCardsForReRoll(PlayerId playerId, Card[] cards)
+    {
+        EnsurePlayersContains(playerId);
+
+        if (Status != GameStatus.InProgress)
+            throw new InvalidOperationForInProgressGame(Id, playerId);
+
+        if (CurrentCardReRolls.Any(x => x.PlayerId == playerId))
+            throw new OnlyOneReRollAvailablePerRoundException(Id, playerId);
+        
+        CurrentCardReRolls.Add(new CardReRoll(new(Guid.NewGuid()), playerId, cards));
     }
 }
 

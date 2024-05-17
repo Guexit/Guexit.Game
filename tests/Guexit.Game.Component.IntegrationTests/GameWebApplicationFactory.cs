@@ -2,8 +2,10 @@
 using Guexit.Game.Component.IntegrationTests.TestDoubles;
 using Guexit.Game.Consumers;
 using Guexit.Game.Domain;
+using Guexit.Game.Persistence;
 using Guexit.Game.Tests.Common;
 using MassTransit;
+using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -18,6 +20,8 @@ public sealed class GameWebApplicationFactory : WebApplicationFactory<Game.WebAp
         builder.ConfigureTestServices(services =>
         {
             services.AddMassTransitTestHarness();
+            var outboxBackgroundService = services.First(x => x.ImplementationType == typeof(BusOutboxDeliveryService<GameDbContext>));
+            services.Remove(outboxBackgroundService);
 
             var consumerContext = services.Single(d => d.ImplementationType == typeof(ImageGeneratedConsumerDefinition));
             services.Remove(consumerContext);
