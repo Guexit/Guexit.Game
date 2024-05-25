@@ -31,9 +31,8 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PlayerId = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: true),
-                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
+                    GameRoomId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {

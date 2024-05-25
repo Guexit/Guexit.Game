@@ -29,4 +29,6 @@ public sealed class Image : AggregateRoot<ImageId>
 
         GameRoomId = gameRoomId;
     }
+
+    public void UnassignFromGameRoom() => GameRoomId = GameRoomId.Empty;
 }

@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.Application.Services;
+using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain;
 using Guexit.Game.Domain.Model.ImageAggregate;
 

@@ -48,7 +48,7 @@ public sealed class WhenHandlingCreateNextGameCommand
         var finishedGameRoom = await _gameRoomRepository.GetBy(finishedGameRoomId);
         finishedGameRoom.Should().NotBeNull();
         finishedGameRoom!.NextGameRoomId.Should().Be(nextGameRoomId);
-        
+
         var nextGameRoom = await _gameRoomRepository.GetBy(nextGameRoomId);
         nextGameRoom.Should().NotBeNull();
         nextGameRoom!.Id.Should().Be(finishedGameRoom.NextGameRoomId);

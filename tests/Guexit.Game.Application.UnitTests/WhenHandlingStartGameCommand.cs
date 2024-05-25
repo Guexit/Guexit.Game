@@ -1,6 +1,7 @@
 ﻿using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;

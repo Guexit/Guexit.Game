@@ -104,7 +104,7 @@ public static class GameRoomEndpoints
         var nextGameRoomId = await sender.Send(new CreateNextGameRoomCommand(authenticatedUserId, gameRoomId), ct);
         return Results.Ok(new CreateNextGameRoomResponse(nextGameRoomId));
     }
-
+    
     private static async Task<IResult> ReserveCardsForReRoll(
         [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,

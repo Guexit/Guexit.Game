@@ -15,7 +15,7 @@ internal sealed class CardReRollMappingOverride : IEntityTypeConfiguration<CardR
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.PlayerId).HasConversion(to => to.Value, from => new PlayerId(from));
-        builder.Property(x => x.Status).HasConversion(to => to.Value, from => CardReRollStatus.From(from));
+        builder.Property(x => x.IsCompleted);
         builder.HasMany(x => x.ReservedCards).WithOne().HasForeignKey("CardReRollId").OnDelete(DeleteBehavior.Cascade);
 
         builder.Navigation(x => x.ReservedCards).AutoInclude();

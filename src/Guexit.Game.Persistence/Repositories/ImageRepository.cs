@@ -19,15 +19,21 @@ public sealed class ImageRepository : IImageRepository
     public async Task<int> CountAvailableImages(CancellationToken ct = default) 
         => await _dbContext.Images.CountAsync(x => x.GameRoomId == GameRoomId.Empty, ct);
 
-    public async Task<Image[]> GetAvailableImages(int amount, CancellationToken cancellationToken = default)
+    public async Task<Image[]> GetAvailableImages(int limit, CancellationToken ct = default)
     {
         FormattableString imagesWithRowLockQuery = $"""
             SELECT *, xmin FROM public."Images" i WHERE i."GameRoomId" = {GameRoomId.Empty.Value} 
-            FOR UPDATE SKIP LOCKED LIMIT {amount}
+            FOR UPDATE SKIP LOCKED LIMIT {limit}
             """;
 
         var images = await _dbContext.Images.FromSqlInterpolated(imagesWithRowLockQuery)
-            .ToArrayAsync(cancellationToken);
+            .ToArrayAsync(ct);
+        return images;
+    }
+
+    public async Task<Image[]> GetBy(IEnumerable<Uri> imageUrls, CancellationToken ct)
+    {
+        var images = await _dbContext.Images.Where(x => imageUrls.Contains(x.Url)).ToArrayAsync(ct);
         return images;
     }
 

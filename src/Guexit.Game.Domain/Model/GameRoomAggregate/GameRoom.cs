@@ -164,8 +164,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
         submittedCard.RecordVote(votingPlayerId);
         AddDomainEvent(new GuessingPlayerVoted(Id, votingPlayerId, submittedCard.Card.Id));
-
-        if (AllPlayersHaveVoted())
+        
+        if (HaveAllPlayersVoted())
             CompleteCurrentRound();
     }
 
@@ -195,7 +195,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 
-    private bool AllPlayersHaveVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == GetCurrentGuessingPlayerIds().Count;
+    private bool HaveAllPlayersVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == GetPlayersCount() - 1;
 
     private void CompleteCurrentRound()
     {
@@ -203,11 +203,23 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         
         FinishedRounds.Add(new FinishedRound(Id, DateTimeOffset.UtcNow, pointsByPlayer.AsReadOnly(), SubmittedCards.ToArray(), CurrentStoryTeller));
 
+        if (CurrentCardReRolls.Count > 0)
+        {
+            var unusedReservedCardImageUrls = CurrentCardReRolls.SelectMany(x => x.ReservedCards).Select(x => x.Url).ToArray();
+            if (unusedReservedCardImageUrls.Length > 0)
+                AddDomainEvent(new ReserveCardsForReRollDiscarded(Id, unusedReservedCardImageUrls));
+        }
+        
         var gameHasFinished = FinishedRounds.Count == GetPlayersCount();
         if (gameHasFinished)
-            EndGame();
+        {
+            Status = GameStatus.Finished;
+            AddDomainEvent(new GameFinished(Id));
+        }
         else
+        {
             ShiftToNextRound();
+        }
     }
 
     private Dictionary<PlayerId, Points> CalculateScoresOfCurrentRound()
@@ -244,15 +256,11 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             PlayerHands.Single(x => x.PlayerId == playerId).AddCard(card);
             Deck.Remove(card);
         }
-
+        
         SubmittedCards.Clear();
-        AddDomainEvent(new NewRoundStarted(Id));
-    }
-
-    private void EndGame()
-    {
-        Status = GameStatus.Finished;
-        AddDomainEvent(new GameFinished(Id));
+        CurrentCardReRolls.Clear();
+        
+        AddDomainEvents(new NewRoundStarted(Id));
     }
 
     public void ReserveCardsForReRoll(PlayerId playerId, Card[] cards)
@@ -266,6 +274,13 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new OnlyOneReRollAvailablePerRoundException(Id, playerId);
         
         CurrentCardReRolls.Add(new CardReRoll(new(Guid.NewGuid()), playerId, cards));
+    }
+
+    public Uri[] GetImageUrlsInNonCompletedCardReRolls()
+    {
+        var nonCompletedReRolls = CurrentCardReRolls.Where(x => !x.IsCompleted);
+        var imageUrls = nonCompletedReRolls.SelectMany(x => x.ReservedCards).Select(x => x.Url).ToArray();
+        return imageUrls;
     }
 }
 
