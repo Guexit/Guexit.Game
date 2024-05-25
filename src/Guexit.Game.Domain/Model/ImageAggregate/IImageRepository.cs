@@ -7,5 +7,5 @@ public interface IImageRepository
     Task<Image?> GetBy(ImageId imageId, CancellationToken ct = default);
     Task<int> CountAvailableImages(CancellationToken cancellationToken = default);
     Task<Image[]> GetAvailableImages(int limit, CancellationToken ct = default);
-    Task<Image[]> GetBy(IEnumerable<Uri> imageUrls, CancellationToken ct);
+    Task<Image[]> GetBy(IEnumerable<Uri> imageUrls, CancellationToken ct = default);
 }   
