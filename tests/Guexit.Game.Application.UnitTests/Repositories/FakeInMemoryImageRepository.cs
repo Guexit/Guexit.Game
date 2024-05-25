@@ -1,7 +1,7 @@
 ﻿using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
 
-namespace Guexit.Game.Application.UnitTests;
+namespace Guexit.Game.Application.UnitTests.Repositories;
 
 public sealed class FakeInMemoryImageRepository : IImageRepository
 {
@@ -25,13 +25,19 @@ public sealed class FakeInMemoryImageRepository : IImageRepository
 
     public Task<int> CountAvailableImages(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(_images.Values.Where(x => x.GameRoomId == GameRoomId.Empty).Count());
+        return Task.FromResult(_images.Values.Count(x => x.GameRoomId == GameRoomId.Empty));
     }
 
-    public Task<Image[]> GetAvailableImages(int take, CancellationToken _ = default)
+    public Task<Image[]> GetAvailableImages(int limit, CancellationToken ct = default)
     {
-        return Task.FromResult(_images.Values.Take(take)
+        return Task.FromResult(_images.Values.Take(limit)
             .Where(x => x.GameRoomId == GameRoomId.Empty).ToArray());
+    }
+
+    public Task<Image[]> GetBy(IEnumerable<Uri> imageUrls, CancellationToken ct)
+    {
+        var imageUrlsHashSet = new HashSet<Uri>(imageUrls);
+        return Task.FromResult(_images.Values.Where(x => imageUrlsHashSet.Contains(x.Url)).ToArray());
     }
 
     public Task<Image?> GetBy(ImageId imageId, CancellationToken ct = default)

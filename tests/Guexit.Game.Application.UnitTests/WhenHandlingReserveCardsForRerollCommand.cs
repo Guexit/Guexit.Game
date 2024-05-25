@@ -1,6 +1,7 @@
 using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
@@ -42,10 +43,10 @@ public sealed class WhenHandlingReserveCardsForRerollCommand
         await _imageRepository.AddRange(expectedReservedImages);
         await _commandHandler.Handle(new ReserveCardsForReRollCommand(reRollingPlayerId, GameRoomId));
 
-        var reservedImages = gameRoom.CurrentCardReRolls.First();
-        reservedImages.PlayerId.Should().Be(reRollingPlayerId);
-        reservedImages.Status.Should().Be(CardReRollStatus.InProgress);
-        reservedImages.ReservedCards.Select(x => x.Url).Should().BeEquivalentTo(expectedReservedImages.Select(x => x.Url));
+        var cardReRoll = gameRoom.CurrentCardReRolls.First();
+        cardReRoll.PlayerId.Should().Be(reRollingPlayerId);
+        cardReRoll.IsCompleted.Should().BeFalse();
+        cardReRoll.ReservedCards.Select(x => x.Url).Should().BeEquivalentTo(expectedReservedImages.Select(x => x.Url));
     }
     
     [Fact]
@@ -94,7 +95,7 @@ public sealed class WhenHandlingReserveCardsForRerollCommand
     {
         var playerId = new PlayerId("rerollingPlayer");
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [playerId, "player3"])
-            .WithPlayerThatReservedCardsForReRoll(playerId)
+            .WithPlayersThatReservedCardsForReRoll(playerId)
             .Build();
         
         await _imageRepository.AddRange(Enumerable.Range(0, 3).Select(_ => ImageBuilder.CreateValid().Build()));

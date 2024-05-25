@@ -147,9 +147,9 @@ public sealed class GameRoomBuilder
         return this;
     }
 
-    public GameRoomBuilder WithPlayerThatReservedCardsForReRoll(PlayerId playerId)
+    public GameRoomBuilder WithPlayersThatReservedCardsForReRoll(params PlayerId[] playerId)
     {
-        _playersThatReservedCardsForReRoll.Add(playerId);
+        _playersThatReservedCardsForReRoll.AddRange(playerId);
         return this;
     }
 }

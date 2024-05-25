@@ -33,17 +33,19 @@ public static class GameRoomObjectMother
 
     public static GameRoom OneVotePendingToFinish(GameRoomId id, PlayerId creator, PlayerId[] invitedPlayers)
     {
-        var gameRoom = new GameRoom(id, creator, new DateTimeOffset(2024, 1, 1, 1, 2, 3, TimeSpan.Zero));
-
-        foreach (var player in invitedPlayers)
-            gameRoom.Join(player);
-
-        var cards = BuildCards(gameRoom);
-
-        gameRoom.AssignDeck(cards);
-        gameRoom.Start(creator);
+        var gameRoom = GameRoomBuilder.CreateStarted(id, creator, invitedPlayers).Build();
+        
         ConductRounds(gameRoom, roundsToConduct: gameRoom.GetPlayersCount() - 1);
-        ConductLastRoundLeavingOnePlayerWithNoVote(gameRoom);
+        ConductCurrentRoundLeavingOnePlayerWithNoVote(gameRoom);
+
+        return gameRoom;
+    }
+    
+    public static GameRoom OneVotePendingToCompleteFirstRound(GameRoomId id, PlayerId creator, PlayerId[] invitedPlayers)
+    {
+        var gameRoom = GameRoomBuilder.CreateStarted(id, creator, invitedPlayers).Build();
+        
+        ConductCurrentRoundLeavingOnePlayerWithNoVote(gameRoom);
 
         return gameRoom;
     }
@@ -77,7 +79,7 @@ public static class GameRoomObjectMother
         }
     }
 
-    private static void ConductLastRoundLeavingOnePlayerWithNoVote(GameRoom gameRoom)
+    private static void ConductCurrentRoundLeavingOnePlayerWithNoVote(GameRoom gameRoom)
     {
         gameRoom.SubmitStory(
             gameRoom.CurrentStoryTeller.PlayerId,

@@ -60,11 +60,10 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     b.Property<Guid?>("GameRoomId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PlayerId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("PlayerId")
                         .IsRequired()
                         .HasColumnType("text");
 

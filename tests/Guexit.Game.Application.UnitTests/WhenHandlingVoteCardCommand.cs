@@ -1,9 +1,11 @@
 using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
+using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
+using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common.Builders;
 using Guexit.Game.Tests.Common.ObjectMothers;
@@ -15,12 +17,14 @@ public sealed class WhenHandlingVoteCardCommand
     private static readonly GameRoomId GameRoomId = new(Guid.NewGuid());
 
     private readonly IGameRoomRepository _gameRoomRepository;
+    private readonly IImageRepository _imageRepository;
     private readonly VoteCardCommandHandler _commandHandler;
     
     public WhenHandlingVoteCardCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _commandHandler = new VoteCardCommandHandler(_gameRoomRepository);
+        _imageRepository = new FakeInMemoryImageRepository();
+        _commandHandler = new VoteCardCommandHandler(_gameRoomRepository, _imageRepository);
     }
 
     [Fact]
@@ -177,10 +181,83 @@ public sealed class WhenHandlingVoteCardCommand
         gameRoom.CurrentStoryTeller.PlayerId.Should().Be(nextStoryTeller);
         gameRoom.CurrentStoryTeller.Story.Should().Be(StoryTeller.Empty.Story);
         gameRoom.SubmittedCards.Should().BeEmpty();
+        gameRoom.CurrentCardReRolls.Should().BeEmpty();
         gameRoom.PlayerHands.Should().AllSatisfy(x => x.Cards.Should().HaveCount(GameRoom.PlayerHandSize));
+        
         gameRoom.DomainEvents.OfType<NewRoundStarted>().Should().HaveCount(1);
         var newRoundStartedEvent = gameRoom.DomainEvents.OfType<NewRoundStarted>().Single();
         newRoundStartedEvent.GameRoomId.Should().Be(GameRoomId);
+    }
+
+    [Fact]
+    public async Task RaisesReserveCardsForReRollDiscardedIfAnyCardReRollWasNotCompletedAndShiftsToNextRound()
+    {
+        var player1 = new PlayerId("thanos");
+        var player2 = new PlayerId("spiderman");
+        var playerPendingToVote = new PlayerId("ironman");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, [player2, playerPendingToVote])
+            .WithStoryTellerStory("Any Story")
+            .WithGuessingPlayerThatSubmittedCard(player2, playerPendingToVote)
+            .WithVote(votingPlayer: player2, cardSubmittedBy: player1)
+            .WithPlayersThatReservedCardsForReRoll(player2, playerPendingToVote)
+            .Build();
+        await _gameRoomRepository.Add(gameRoom);
+        var notCompletedCardReRolls = gameRoom.CurrentCardReRolls.ToArray(); 
+        
+        var anyCard = gameRoom.SubmittedCards.First(x => x.PlayerId != playerPendingToVote).Card.Id;
+        
+        await _commandHandler.Handle(new VoteCardCommand(playerPendingToVote, GameRoomId, anyCard));
+
+        gameRoom.DomainEvents.OfType<ReserveCardsForReRollDiscarded>().Should().HaveCount(1);
+        var @event = gameRoom.DomainEvents.OfType<ReserveCardsForReRollDiscarded>().First();
+        @event.GameRoomId.Should().Be(GameRoomId);
+        @event.UnusedCardImageUrls.Should()
+            .BeEquivalentTo(notCompletedCardReRolls.SelectMany(x => x.ReservedCards).Select(card => card.Url));
+    }
+    
+    [Fact]
+    public async Task RaisesReserveCardsForReRollDiscardedIfAnyCardReRollWasNotCompletedAndGameIsFinished()
+    {
+        var player1 = new PlayerId("thanos");
+        var player2 = new PlayerId("spiderman");
+        var player3 = new PlayerId("ironman");
+        var gameRoom = GameRoomObjectMother.OneVotePendingToFinish(GameRoomId, player1, [player2, player3]);
+        
+        gameRoom.ReserveCardsForReRoll(player2, Enumerable.Range(0, 3).Select(_ => new CardBuilder().Build()).ToArray());
+        
+        var notCompletedCardReRolls = gameRoom.CurrentCardReRolls.ToArray();
+        
+        await _gameRoomRepository.Add(gameRoom);
+        
+        var playerPendingToVote = gameRoom.GetCurrentGuessingPlayerIds().Except(gameRoom.SubmittedCards.SelectMany(x => x.Voters)).Single();
+        var anyCard = gameRoom.SubmittedCards.First(x => x.PlayerId != playerPendingToVote).Card.Id;
+        await _commandHandler.Handle(new VoteCardCommand(playerPendingToVote, GameRoomId, anyCard));
+
+        gameRoom.DomainEvents.OfType<ReserveCardsForReRollDiscarded>().Should().HaveCount(1);
+        var @event = gameRoom.DomainEvents.OfType<ReserveCardsForReRollDiscarded>().First();
+        @event.GameRoomId.Should().Be(GameRoomId);
+        @event.UnusedCardImageUrls.Should()
+            .BeEquivalentTo(notCompletedCardReRolls.SelectMany(x => x.ReservedCards).Select(card => card.Url));
+    }
+    
+    [Fact]
+    public async Task DoesNotRaiseReserveCardsForReRollDiscardedCardReRollNotCompleted()
+    {
+        var player1 = new PlayerId("thanos");
+        var player2 = new PlayerId("spiderman");
+        var playerPendingToVote = new PlayerId("ironman");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, player1, [player2, playerPendingToVote])
+            .WithStoryTellerStory("Any Story")
+            .WithGuessingPlayerThatSubmittedCard(player2, playerPendingToVote)
+            .WithVote(votingPlayer: player2, cardSubmittedBy: player1)
+            .Build();
+        await _gameRoomRepository.Add(gameRoom);
+        
+        var anyCard = gameRoom.SubmittedCards.First(x => x.PlayerId != playerPendingToVote).Card.Id;
+        
+        await _commandHandler.Handle(new VoteCardCommand(playerPendingToVote, GameRoomId, anyCard));
+
+        gameRoom.DomainEvents.OfType<ReserveCardsForReRollDiscarded>().Should().BeEmpty();
     }
 
     [Fact]

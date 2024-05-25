@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Guexit.Game.Persistence.Npgsql.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20240522152915_RemovesOptimisticConcurrencyVersionFromCardsForReRoll")]
-    partial class RemovesOptimisticConcurrencyVersionFromCardsForReRoll
+    [Migration("20240525110744_AddCardsReRollToGameRoom")]
+    partial class AddCardsReRollToGameRoom
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,11 +63,10 @@ namespace Guexit.Game.Persistence.Npgsql.Migrations
                     b.Property<Guid?>("GameRoomId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PlayerId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("PlayerId")
                         .IsRequired()
                         .HasColumnType("text");
 

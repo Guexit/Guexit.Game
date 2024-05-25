@@ -49,7 +49,7 @@ public sealed class WhenReservingCardsForReRoll : ComponentTest
         
         var cardReRoll = gameRoom.CurrentCardReRolls.Single();
         cardReRoll.PlayerId.Should().Be(reRollingPlayer.Id);
-        cardReRoll.Status.Should().Be(CardReRollStatus.InProgress);
+        cardReRoll.IsCompleted.Should().BeFalse();
         cardReRoll.ReservedCards.Select(x => x.Url).Should().BeEquivalentTo(expectedReservedImages.Select(x => x.Url));
     }
 }

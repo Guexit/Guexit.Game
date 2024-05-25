@@ -1,3 +1,4 @@
+using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
 
 namespace Guexit.Game.Tests.Common.Builders;
@@ -6,8 +7,9 @@ public sealed class ImageBuilder
 {
     private ImageId _id = new(Guid.NewGuid());
     private Uri _url = new("https://example.com/image.png");
-    private Tag[] _tags = Array.Empty<Tag>();
+    private Tag[] _tags = [];
     private DateTimeOffset _createdAt = new(2023, 1, 1, 2, 3, 4, TimeSpan.Zero);
+    private GameRoomId _gameRoomId = GameRoomId.Empty;
 
     public static ImageBuilder CreateValid()
     {
@@ -22,6 +24,9 @@ public sealed class ImageBuilder
     {
         var image = new Image(_id, _url, _tags, _createdAt);
 
+        if (_gameRoomId != GameRoomId.Empty)
+            image.AssignTo(_gameRoomId);
+        
         return image;
     }
 
@@ -41,6 +46,12 @@ public sealed class ImageBuilder
     public ImageBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         _createdAt = createdAt;
+        return this;
+    }
+
+    public ImageBuilder WithGameRoomId(GameRoomId gameRoomId)
+    {
+        _gameRoomId = gameRoomId;
         return this;
     }
 
