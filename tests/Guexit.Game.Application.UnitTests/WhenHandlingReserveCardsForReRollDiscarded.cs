@@ -12,12 +12,12 @@ public sealed class WhenHandlingReserveCardsForReRollDiscarded
     private static readonly GameRoomId AnyGameRoomId = new(Guid.NewGuid());
     
     private readonly IImageRepository _imageRepository;
-    private readonly ReturnUnusedImagesToAvailablePoolOnReserveCardsForReRollDiscarded _event;
+    private readonly ReturnUnusedImagesToAvailablePoolOnReserveCardsForReRollDiscarded _eventHandler;
 
     public WhenHandlingReserveCardsForReRollDiscarded()
     {
         _imageRepository = new FakeInMemoryImageRepository();
-        _event = new ReturnUnusedImagesToAvailablePoolOnReserveCardsForReRollDiscarded(_imageRepository);
+        _eventHandler = new ReturnUnusedImagesToAvailablePoolOnReserveCardsForReRollDiscarded(_imageRepository);
     }
 
     [Fact]
@@ -31,10 +31,11 @@ public sealed class WhenHandlingReserveCardsForReRollDiscarded
             .WithGameRoomId(AnyGameRoomId)
             .WithUrl(new("https://guexit.com/unused-card-reserved-imade-for-re-roll-2"))
             .Build();
+        await _imageRepository.AddRange([image1, image2]);
         var unusedCardImagesUrls = new[] { image1.Url, image2.Url };
         var @event = new ReserveCardsForReRollDiscarded(AnyGameRoomId, unusedCardImagesUrls);
 
-        await _event.Handle(@event);
+        await _eventHandler.Handle(@event);
 
         image1.GameRoomId.Should().Be(GameRoomId.Empty);
         image1.IsAssignedToAGameRoom.Should().BeFalse();

@@ -31,7 +31,7 @@ public sealed class ImageRepository : IImageRepository
         return images;
     }
 
-    public async Task<Image[]> GetBy(IEnumerable<Uri> imageUrls, CancellationToken ct)
+    public async Task<Image[]> GetBy(IEnumerable<Uri> imageUrls, CancellationToken ct = default)
     {
         var images = await _dbContext.Images.Where(x => imageUrls.Contains(x.Url)).ToArrayAsync(ct);
         return images;
