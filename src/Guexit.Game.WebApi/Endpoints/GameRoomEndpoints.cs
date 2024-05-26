@@ -1,5 +1,4 @@
-﻿using Guexit.Game.Application.CommandHandlers;
-using Guexit.Game.Application.Commands;
+﻿using Guexit.Game.Application.Commands;
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.WebApi.Contracts.Requests;
@@ -23,6 +22,7 @@ public static class GameRoomEndpoints
         group.MapPost("/submitted-cards/{cardId:guid}/vote", VoteCard);
         group.MapPost("/create-next", CreateNext).Produces<CreateNextGameRoomResponse>();
         group.MapPost("/reserve-cards-for-re-roll", ReserveCardsForReRoll);
+        group.MapPost("/player-hand/{cardToReRollId}/swap-with/{selectedNewCardId}", SelectCardToReRoll);
 
         group.MapGet("/lobby", GetLobby).Produces<LobbyReadModel>();
         group.MapGet("/board", GetBoard).Produces<BoardReadModel>();
@@ -112,6 +112,18 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         await sender.Send(new ReserveCardsForReRollCommand(authenticatedUserId, gameRoomId), ct);
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> SelectCardToReRoll(
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
+        [FromRoute] Guid gameRoomId,
+        [FromRoute] Guid cardToReRollId,
+        [FromRoute] Guid selectedNewCardId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        await sender.Send(new SelectCardToReRollCommand(authenticatedUserId, gameRoomId, cardToReRollId, selectedNewCardId), ct);
         return Results.Ok();
     }
 

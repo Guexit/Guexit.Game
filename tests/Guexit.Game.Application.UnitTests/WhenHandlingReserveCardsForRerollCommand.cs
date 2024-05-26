@@ -7,11 +7,10 @@ using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common.Builders;
-using Guexit.Game.Tests.Common.ObjectMothers;
 
 namespace Guexit.Game.Application.UnitTests;
 
-public sealed class WhenHandlingReserveCardsForRerollCommand
+public sealed class WhenHandlingReserveCardsForReRollCommand
 {
     private static readonly GameRoomId GameRoomId = new(Guid.NewGuid());
 
@@ -19,7 +18,7 @@ public sealed class WhenHandlingReserveCardsForRerollCommand
     private readonly IImageRepository _imageRepository;
     private readonly ReserveCardsForReRollCommandHandler _commandHandler;
     
-    public WhenHandlingReserveCardsForRerollCommand()
+    public WhenHandlingReserveCardsForReRollCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
         _imageRepository = new FakeInMemoryImageRepository();
@@ -95,7 +94,7 @@ public sealed class WhenHandlingReserveCardsForRerollCommand
     {
         var playerId = new PlayerId("rerollingPlayer");
         var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [playerId, "player3"])
-            .WithPlayersThatReservedCardsForReRoll(playerId)
+            .WithPlayerThatReservedCardsForReRoll(playerId)
             .Build();
         
         await _imageRepository.AddRange(Enumerable.Range(0, 3).Select(_ => ImageBuilder.CreateValid().Build()));
@@ -147,7 +146,6 @@ public sealed class WhenHandlingReserveCardsForRerollCommand
 
         var action = async () => await _commandHandler.Handle(new ReserveCardsForReRollCommand(playerId, GameRoomId));
 
-        await action.Should().ThrowAsync<InvalidOperationForInProgressGame>()
-            .WithMessage($"Player with id {playerId.Value} cannot perform this action because it's not valid for in progress game room with id {GameRoomId.Value}.");
+        await action.Should().ThrowAsync<InvalidOperationForNotInProgressGameException>();
     }
 }

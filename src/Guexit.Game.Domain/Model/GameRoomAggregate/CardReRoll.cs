@@ -8,7 +8,7 @@ public sealed class CardReRoll : Entity<CardReRollId>
     public const int RequiredReservedCardsSize = 3;
 
     public PlayerId PlayerId { get; private init; } = null!;
-    public ICollection<Card> ReservedCards { get; private init; } = new List<Card>();
+    public ICollection<Card> ReservedCards { get; private set; } = new List<Card>();
     public bool IsCompleted { get; private set; }
 
     private CardReRoll()
@@ -22,6 +22,12 @@ public sealed class CardReRoll : Entity<CardReRollId>
         PlayerId = playerId;
         ReservedCards = cards;
         IsCompleted = false;
+    }
+
+    public void Complete()
+    {
+        ReservedCards = [];
+        IsCompleted = true;
     }
 }
 

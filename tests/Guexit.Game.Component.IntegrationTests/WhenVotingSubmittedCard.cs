@@ -50,7 +50,8 @@ public sealed class WhenVotingSubmittedCard : ComponentTest
             .WithStoryTellerStory("Any Story")
             .WithGuessingPlayerThatSubmittedCard(player2, playerPendingToVote)
             .WithVote(votingPlayer: player2, cardSubmittedBy: player1)
-            .WithPlayersThatReservedCardsForReRoll(player2, playerPendingToVote)
+            .WithPlayerThatReservedCardsForReRoll(player2)
+            .WithPlayerThatReservedCardsForReRoll(playerPendingToVote)
             .Build();
         await SaveInRepository(gameRoom);
         
