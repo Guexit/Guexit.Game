@@ -31,7 +31,7 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
             .WithAssignedDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
             .WithStoryTellerStory(submittedStory)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayerIdsThatSubmittedCard)
-            .WithPlayersThatReservedCardsForReRoll(initialStoryTeller)
+            .WithPlayerThatReservedCardsForReRoll(initialStoryTeller)
             .Build());
         await SaveChanges();
 

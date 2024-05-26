@@ -96,7 +96,7 @@ public sealed class WhenHandlingSubmitGuessingPlayerCardCommand
         var action = async () =>
             await _commandHandler.Handle(new SubmitGuessingPlayerCardCommand(guessingPlayerId, gameRoomId, anyCardId));
 
-        await action.Should().ThrowAsync<InvalidOperationForInProgressGame>();
+        await action.Should().ThrowAsync<InvalidOperationForNotInProgressGameException>();
     }
     
     [Fact]

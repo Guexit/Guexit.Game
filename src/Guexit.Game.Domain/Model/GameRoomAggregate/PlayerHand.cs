@@ -32,7 +32,7 @@ public sealed class PlayerHand : Entity<PlayerHandId>
         return card;
     }
 
-    private void RemoveCard(CardId cardId) => Cards.Remove(GetCard(cardId));
+    public void RemoveCard(CardId cardId) => Cards.Remove(GetCard(cardId));
 
     private Card GetCard(CardId cardId)
     {

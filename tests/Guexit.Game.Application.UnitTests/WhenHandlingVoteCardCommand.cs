@@ -5,7 +5,6 @@ using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
-using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common.Builders;
 using Guexit.Game.Tests.Common.ObjectMothers;
@@ -17,14 +16,12 @@ public sealed class WhenHandlingVoteCardCommand
     private static readonly GameRoomId GameRoomId = new(Guid.NewGuid());
 
     private readonly IGameRoomRepository _gameRoomRepository;
-    private readonly IImageRepository _imageRepository;
     private readonly VoteCardCommandHandler _commandHandler;
     
     public WhenHandlingVoteCardCommand()
     {
         _gameRoomRepository = new FakeInMemoryGameRoomRepository();
-        _imageRepository = new FakeInMemoryImageRepository();
-        _commandHandler = new VoteCardCommandHandler(_gameRoomRepository, _imageRepository);
+        _commandHandler = new VoteCardCommandHandler(_gameRoomRepository);
     }
 
     [Fact]
@@ -199,7 +196,8 @@ public sealed class WhenHandlingVoteCardCommand
             .WithStoryTellerStory("Any Story")
             .WithGuessingPlayerThatSubmittedCard(player2, playerPendingToVote)
             .WithVote(votingPlayer: player2, cardSubmittedBy: player1)
-            .WithPlayersThatReservedCardsForReRoll(player2, playerPendingToVote)
+            .WithPlayerThatReservedCardsForReRoll(player2)
+            .WithPlayerThatReservedCardsForReRoll(playerPendingToVote)
             .Build();
         await _gameRoomRepository.Add(gameRoom);
         var notCompletedCardReRolls = gameRoom.CurrentCardReRolls.ToArray(); 
@@ -305,7 +303,7 @@ public sealed class WhenHandlingVoteCardCommand
         var action = async () => 
             await _commandHandler.Handle(new VoteCardCommand(votingPlayerId, gameRoomId, anyCardId));
 
-        await action.Should().ThrowAsync<VoteCardToNotInProgressGameRoomException>();
+        await action.Should().ThrowAsync<InvalidOperationForNotInProgressGameException>();
     }
     
     [Fact]

@@ -90,10 +90,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void SubmitStory(PlayerId storyTellerId, CardId cardId, string story)
     {
+        EnsureGameIsInProgress(storyTellerId);
         EnsurePlayersContains(storyTellerId);
-        
-        if (Status != GameStatus.InProgress)
-            throw new InvalidOperationForInProgressGame(Id, storyTellerId);
 
         if (CurrentStoryTeller.PlayerId != storyTellerId)
             throw new InvalidCardStorySubmissionForNonStoryTellerException(Id, storyTellerId);
@@ -110,9 +108,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void SubmitGuessingPlayerCard(PlayerId guessingPlayerId, CardId cardId)
     {
-        if (Status != GameStatus.InProgress)
-            throw new InvalidOperationForInProgressGame(Id, guessingPlayerId);
-
+        EnsureGameIsInProgress(guessingPlayerId);
         EnsureCurrentGuessingPlayersContains(guessingPlayerId);
 
         if (!CurrentStoryTeller.HasSubmittedCardStory())
@@ -147,8 +143,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void VoteCard(PlayerId votingPlayerId, CardId submittedCardId)
     {
-        if (Status != GameStatus.InProgress)
-            throw new VoteCardToNotInProgressGameRoomException(Id);
+        EnsureGameIsInProgress(votingPlayerId);
 
         if (SubmittedCards.Count < PlayerIds.Count)
             throw new CannotVoteIfAnyPlayerIsPendingToSubmitCardException(Id);
@@ -187,6 +182,12 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         if (!PlayerIds.Contains(playerId))
             throw new PlayerNotInGameRoomException(Id, playerId);
+    }
+
+    private void EnsureGameIsInProgress(PlayerId playerIdExecutingTheAction)
+    {
+        if (Status != GameStatus.InProgress)
+            throw new InvalidOperationForNotInProgressGameException(Id, playerIdExecutingTheAction);
     }
     
     private void EnsureCurrentGuessingPlayersContains(PlayerId playerId)
@@ -265,10 +266,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
 
     public void ReserveCardsForReRoll(PlayerId playerId, Card[] cards)
     {
+        EnsureGameIsInProgress(playerId);
         EnsurePlayersContains(playerId);
-
-        if (Status != GameStatus.InProgress)
-            throw new InvalidOperationForInProgressGame(Id, playerId);
 
         if (CurrentCardReRolls.Any(x => x.PlayerId == playerId))
             throw new OnlyOneReRollAvailablePerRoundException(Id, playerId);
@@ -276,11 +275,28 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         CurrentCardReRolls.Add(new CardReRoll(new(Guid.NewGuid()), playerId, cards));
     }
 
-    public Uri[] GetImageUrlsInNonCompletedCardReRolls()
+    public void SelectCardToReRoll(PlayerId reRollingPlayerId, CardId cardToReRollId, CardId newCardId)
     {
-        var nonCompletedReRolls = CurrentCardReRolls.Where(x => !x.IsCompleted);
-        var imageUrls = nonCompletedReRolls.SelectMany(x => x.ReservedCards).Select(x => x.Url).ToArray();
-        return imageUrls;
+        EnsureGameIsInProgress(reRollingPlayerId);
+        EnsurePlayersContains(reRollingPlayerId);
+        
+        var cardReRoll = CurrentCardReRolls.FirstOrDefault(x => x.PlayerId == reRollingPlayerId)
+            ?? throw new CardReRollNotReservedException(Id, reRollingPlayerId);
+
+        if (cardReRoll.IsCompleted)
+            throw new ReRollAlreadyCompletedThisRoundException(Id, reRollingPlayerId);
+        
+        var newCard = cardReRoll.ReservedCards.FirstOrDefault(x => x.Id == newCardId) 
+            ?? throw new NewCardNotFoundInReservedCardsToReRollException(Id, reRollingPlayerId, newCardId);
+        
+        var reRollingPlayerHand = PlayerHands.First(x => x.PlayerId == reRollingPlayerId);
+        reRollingPlayerHand.RemoveCard(cardToReRollId);
+        reRollingPlayerHand.AddCard(newCard);
+        
+        var discardedCards = cardReRoll.ReservedCards.Where(x => x.Id != newCard.Id).ToArray();
+        AddDomainEvent(new ReserveCardsForReRollDiscarded(Id, discardedCards.Select(x => x.Url).ToArray()));
+        
+        cardReRoll.Complete();
     }
 }
 
