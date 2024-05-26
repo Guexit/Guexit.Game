@@ -32,5 +32,6 @@ internal sealed class ImageMappingOverride : IEntityTypeConfiguration<Image>
         
         builder.HasIndex(x => x.CreatedAt);
         builder.HasIndex(x => x.GameRoomId);
+        builder.HasIndex(x => x.Url);
     }
 }
