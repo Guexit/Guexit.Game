@@ -30,6 +30,7 @@ public static class GameRoomEndpoints
         group.MapGet("/round-summaries/last", GetLastRoundSummary).Produces<RoundSummaryReadModel>();
         group.MapGet("/summary", GetSummary).Produces<GameSummaryReadModel>();
         group.MapGet("/stages/current", GetStage).Produces<GameStageReadModel>();
+        group.MapGet("/cards-for-re-roll", GetCardsForReRoll).Produces<CardReRollReadModel>();
     }
 
     private static async Task<IResult> CreateGameRoom(
@@ -178,6 +179,15 @@ public static class GameRoomEndpoints
     }
 
     private static async Task<IResult> GetStage(
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
+        [FromRoute] Guid gameRoomId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        var readModel = await sender.Send(new CurrentStageQuery(gameRoomId, authenticatedUserId), ct);
+        return Results.Ok(readModel);
+    }
+    private static async Task<IResult> GetCardsForReRoll(
         [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
         [FromServices] ISender sender,
