@@ -34,7 +34,7 @@ public sealed class GameRoomBuilder
         {
             foreach (var (playerId, completed) in _playersThatReservedCardsForReRoll)
             {
-                var cards = Enumerable.Range(0, 3).Select(_ => new CardBuilder().Build()).ToArray();
+                var cards = Enumerable.Range(0, CardReRoll.RequiredReservedCardsSize).Select(_ => new CardBuilder().Build()).ToArray();
                 gameRoom.ReserveCardsForReRoll(playerId, cards);
 
                 if (completed)
