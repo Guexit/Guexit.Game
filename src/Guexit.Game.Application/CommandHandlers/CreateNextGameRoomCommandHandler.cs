@@ -34,12 +34,19 @@ public sealed class CreateNextGameRoomCommandHandler : ICommandHandler<CreateNex
             throw new GameRoomNotFoundException(command.GameRoomId);
 
         if (gameRoom.IsLinkedToNextGameRoom())
-            return gameRoom.NextGameRoomId;
-        
-        var newGameRoom = new GameRoom(_guidProvider.NewGuid(), command.PlayerId, _clock.UtcNow);
-        gameRoom.LinkToNextGameRoom(newGameRoom.Id);
-        
-        await _gameRoomRepository.Add(newGameRoom, ct);
+        {
+            var existingNextGameRoom = await _gameRoomRepository.GetBy(gameRoom.NextGameRoomId, ct)
+                ?? throw new GameRoomNotFoundException(command.GameRoomId);
+
+            existingNextGameRoom.Join(command.PlayerId);
+        }
+        else
+        {
+            var newGameRoom = new GameRoom(_guidProvider.NewGuid(), command.PlayerId, _clock.UtcNow);
+            gameRoom.LinkToNextGameRoom(newGameRoom.Id);
+
+            await _gameRoomRepository.Add(newGameRoom, ct);
+        }
         
         return gameRoom.NextGameRoomId;
     }
