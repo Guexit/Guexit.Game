@@ -66,6 +66,7 @@ public sealed class WhenHandlingCreateNextGameCommand
         var playerId = new PlayerId("player1");
         
         await _playerRepository.Add(new PlayerBuilder().WithId(playerId).Build());
+        await _gameRoomRepository.Add(new GameRoomBuilder().WithId(alreadyLinkedGameRoomId).WithCreator(playerId).WithPlayersThatJoined(["player2", "player3"]).Build());
         await _gameRoomRepository.Add(GameRoomObjectMother.Finished(finishedGameRoomId, playerId, ["player2", "player3"], alreadyLinkedGameRoomId));
 
         var nextGameRoomId = new GameRoomId(Guid.Parse("22403be9-75dd-458a-9e70-16badde8d932"));
@@ -79,6 +80,7 @@ public sealed class WhenHandlingCreateNextGameCommand
 
         var createdNextGameRoo = await _gameRoomRepository.GetBy(nextGameRoomId);
         createdNextGameRoo.Should().BeNull();
+        gameRoom.DomainEvents.OfType<NextGameRoomLinked>().Should().BeEmpty();
     }
 
     [Fact]
@@ -103,7 +105,34 @@ public sealed class WhenHandlingCreateNextGameCommand
         @event.FinishedGameRoomId.Should().Be(finishedGameRoomId);
         @event.NextGameRoomId.Should().Be(nextGameRoomId);
     }
-    
+
+    [Fact]
+    public async Task JoinsPlayerToNextGameIfItWasAlreadyCreated()
+    {
+        var finishedGameRoomId = new GameRoomId(Guid.Parse("12403be9-75dd-458a-9e70-16badde8d931"));
+        var alreadyLinkedGameRoomId = new GameRoomId(Guid.Parse("32403be9-75dd-458a-9e70-16badde8d933"));
+        var player1 = new PlayerBuilder().WithId("player1").Build();
+        var player2 = new PlayerBuilder().WithId("player2").Build();
+        var player3 = new PlayerBuilder().WithId("player3").Build();
+        var finishedGameRoom = GameRoomObjectMother.Finished(finishedGameRoomId, player1.Id, invitedPlayers: [player2.Id, player3.Id], alreadyLinkedGameRoomId);
+        var nextGameRoom = new GameRoomBuilder()
+            .WithId(alreadyLinkedGameRoomId)
+            .WithCreator(player1.Id)
+            .WithPlayersThatJoined(player2.Id)
+            .Build();
+
+        await _playerRepository.Add(player1);
+        await _playerRepository.Add(player2);
+        await _playerRepository.Add(player3);
+        await _gameRoomRepository.Add(finishedGameRoom);
+        
+        await _gameRoomRepository.Add(nextGameRoom);
+
+        await _commandHandler.Handle(new CreateNextGameRoomCommand(player3.Id, finishedGameRoomId));
+
+        nextGameRoom.PlayerIds.Should().Contain(player3.Id);
+    }
+
     [Fact]
     public async Task ThrowsPlayerNotFoundExceptionIfItDoesNotExist()
     {

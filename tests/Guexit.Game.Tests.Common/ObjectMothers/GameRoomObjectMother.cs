@@ -19,7 +19,8 @@ public static class GameRoomObjectMother
     {
         var gameRoom = Finished(id, creator, invitedPlayers);
         gameRoom.LinkToNextGameRoom(nextGameRoomId);
-
+        
+        gameRoom.ClearDomainEvents();
         return gameRoom;
     }
 
@@ -31,6 +32,7 @@ public static class GameRoomObjectMother
         ConductRounds(gameRoom, roundsToConduct: gameRoom.GetPlayersCount() - 1);
         ConductCurrentRoundLeavingOnePlayerWithNoVote(gameRoom);
 
+        gameRoom.ClearDomainEvents();
         return gameRoom;
     }
 
