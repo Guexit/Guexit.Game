@@ -166,6 +166,35 @@ public sealed class WhenHandlingSelectCardToReRollCommand
         @event.UnusedCardImageUrls.Should().BeEquivalentTo(expectedDiscardedCards.Select(x => x.Url));
     }
     
+    
+    [Fact]
+    public async Task CardReRollCompletedIsRaised()
+    {
+        var reRollingPlayerId = new PlayerId("reRollingPlayer");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, reRollingPlayerId, ["player2", "player3"])
+            .WithPlayerThatReservedCardsForReRoll(reRollingPlayerId)
+            .Build();
+
+        var cardToReRoll = gameRoom.PlayerHands.First(x => x.PlayerId == reRollingPlayerId).Cards.First();
+        
+        var cardReRoll = gameRoom.CurrentCardReRolls.First(x => x.PlayerId == reRollingPlayerId);
+        var selectedNewCard = cardReRoll.ReservedCards.First();
+        var expectedDiscardedCards = cardReRoll.ReservedCards.Except([selectedNewCard]);
+        
+        await _gameRoomRepository.Add(gameRoom);
+        
+        await _commandHandler.Handle(new SelectCardToReRollCommand(reRollingPlayerId, GameRoomId, cardToReRoll.Id, selectedNewCard.Id));
+
+        gameRoom.DomainEvents.OfType<CardReRollCompleted>().Should().HaveCount(1);
+        var @event = gameRoom.DomainEvents.OfType<CardReRollCompleted>().First();
+        @event.GameRoomId.Should().Be(GameRoomId);
+        @event.PlayerId.Should().Be(reRollingPlayerId);
+        @event.OldCardId.Should().Be(cardToReRoll.Id);
+        @event.NewCardId.Should().Be(selectedNewCard.Id);
+    }
+    
+
+
     [Fact]
     public async Task ThrowsReRollAlreadyCompletedThisRoundException()
     {

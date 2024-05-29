@@ -4,6 +4,7 @@ using Guexit.Game.Application.Exceptions;
 using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
+using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
 using Guexit.Game.Domain.Model.ImageAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.Tests.Common.Builders;
@@ -46,6 +47,28 @@ public sealed class WhenHandlingReserveCardsForReRollCommand
         cardReRoll.PlayerId.Should().Be(reRollingPlayerId);
         cardReRoll.IsCompleted.Should().BeFalse();
         cardReRoll.ReservedCards.Select(x => x.Url).Should().BeEquivalentTo(expectedReservedImages.Select(x => x.Url));
+    }
+
+    [Fact]
+    public async Task CardReRollReservedEventIsRaised()
+    {
+        var reRollingPlayerId = new PlayerId("rerollingPlayer");
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [reRollingPlayerId, "player3"]).Build();
+        await _gameRoomRepository.Add(gameRoom);
+
+        await _imageRepository.AddRange(new[]
+        {
+            ImageBuilder.CreateValid().Build(),
+            ImageBuilder.CreateValid().Build(),
+            ImageBuilder.CreateValid().Build()
+        });
+        await _commandHandler.Handle(new ReserveCardsForReRollCommand(reRollingPlayerId, GameRoomId));
+
+        gameRoom.DomainEvents.OfType<CardReRollReserved>().Should().HaveCount(1);
+
+        var @event = gameRoom.DomainEvents.OfType<CardReRollReserved>().First();
+        @event.GameRoomId.Should().Be(gameRoom.Id);
+        @event.PlayerId.Should().Be(reRollingPlayerId);
     }
     
     [Fact]

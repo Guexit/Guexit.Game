@@ -273,6 +273,8 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new OnlyOneReRollAvailablePerRoundException(Id, playerId);
         
         CurrentCardReRolls.Add(new CardReRoll(new(Guid.NewGuid()), playerId, cards));
+
+        AddDomainEvent(new CardReRollReserved(Id, playerId));
     }
 
     public void SelectCardToReRoll(PlayerId reRollingPlayerId, CardId cardToReRollId, CardId newCardId)
@@ -297,6 +299,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         AddDomainEvent(new ReserveCardsForReRollDiscarded(Id, discardedCards.Select(x => x.Url).ToArray()));
         
         cardReRoll.Complete();
+        AddDomainEvent(new CardReRollCompleted(Id, reRollingPlayerId, cardToReRollId, newCardId));
     }
 }
 
