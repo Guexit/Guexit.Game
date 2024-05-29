@@ -9,7 +9,7 @@ public sealed class BoardReadModel
     public CardDto? CurrentUserSubmittedCard { get; init; }
     public required bool IsCurrentUserStoryTeller { get; init; }
     public required PlayerDto CurrentPlayer { get; init; }
-
+    public required string CurrentPlayerCardReRollState { get; init; }
     public sealed class CardDto
     {
         public required Guid Id { get; init; }
