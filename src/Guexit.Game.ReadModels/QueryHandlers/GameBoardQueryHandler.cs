@@ -48,6 +48,7 @@ public sealed class GameBoardQueryHandler : IQueryHandler<GameBoardQuery, BoardR
         var currentUserSubmittedCard = GetCurrentUserSubmittedCard(gameRoom, query.PlayerId);
         var guessingPlayers = GetGuessingPlayers(gameRoom, playersInGameRoom);
         var currentUserPlayerHand = GetCurrentUserPlayerHand(gameRoom, query.PlayerId);
+        var currentPlayerCardReRollState = GetCurrentPlayerCardReRollState(gameRoom, query);
 
         var readModel = new BoardReadModel
         {
@@ -68,7 +69,8 @@ public sealed class GameBoardQueryHandler : IQueryHandler<GameBoardQuery, BoardR
                 PlayerId = query.PlayerId.Value,
                 Nickname = playersInGameRoom[query.PlayerId].Nickname.Value,
                 Username = playersInGameRoom[query.PlayerId].Username,
-            }
+            },
+            CurrentPlayerCardReRollState = currentPlayerCardReRollState.Value
         };
         return readModel;
     }
@@ -113,5 +115,11 @@ public sealed class GameBoardQueryHandler : IQueryHandler<GameBoardQuery, BoardR
             }).ToArray();
 
         return cardDtos;
+    }
+
+    private static CardReRollState GetCurrentPlayerCardReRollState(GameRoom gameRoom, GameBoardQuery query)
+    {
+        var currentPlayerCardReRoll = gameRoom.CurrentCardReRolls.FirstOrDefault(x => x.PlayerId == query.PlayerId);
+        return CardReRollState.From(currentPlayerCardReRoll);
     }
 }

@@ -4,7 +4,6 @@ using Guexit.Game.Component.IntegrationTests.Extensions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.PlayerAggregate;
 using Guexit.Game.ReadModels.ReadModels;
-using Guexit.Game.Tests.Common;
 using Guexit.Game.Tests.Common.Builders;
 
 namespace Guexit.Game.Component.IntegrationTests;
@@ -34,36 +33,38 @@ public sealed class WhenQueryingGameBoard : ComponentTest
 
         await response.ShouldHaveSuccessStatusCode();
 
-        var responseContent = await response.Content.ReadFromJsonAsync<BoardReadModel>();
+        var readModel = await response.Content.ReadFromJsonAsync<BoardReadModel>();
 
-        responseContent.Should().NotBeNull();
+        readModel.Should().NotBeNull();
         
-        responseContent!.GameRoomId.Should().Be(gameRoomId);
+        readModel!.GameRoomId.Should().Be(gameRoomId);
 
-        responseContent.CurrentStoryTeller.PlayerId.Should().Be(player1.Id);
-        responseContent.CurrentStoryTeller.Story.Should().Be(story);
-        responseContent.CurrentStoryTeller.Username.Should().Be(player1.Username);
-        responseContent.CurrentStoryTeller.Nickname.Should().Be(player1.Nickname.Value);
-        responseContent.IsCurrentUserStoryTeller.Should().BeTrue();
-        responseContent.CurrentUserSubmittedCard.Should().NotBeNull();
+        readModel.CurrentStoryTeller.PlayerId.Should().Be(player1.Id);
+        readModel.CurrentStoryTeller.Story.Should().Be(story);
+        readModel.CurrentStoryTeller.Username.Should().Be(player1.Username);
+        readModel.CurrentStoryTeller.Nickname.Should().Be(player1.Nickname.Value);
+        readModel.IsCurrentUserStoryTeller.Should().BeTrue();
+        readModel.CurrentUserSubmittedCard.Should().NotBeNull();
 
         var expectedPlayerHand = gameRoom.PlayerHands.Single(x => x.PlayerId == player1.Id)
             .Cards.Select(x => new BoardReadModel.CardDto { Id = x.Id, Url = x.Url });
-        responseContent.PlayerHand.Should().BeEquivalentTo(expectedPlayerHand);
+        readModel.PlayerHand.Should().BeEquivalentTo(expectedPlayerHand);
 
-        responseContent.CurrentPlayer.PlayerId.Should().Be(player1.Id.Value);
-        responseContent.CurrentPlayer.Nickname.Should().Be(player1.Nickname.Value);
-        responseContent.CurrentPlayer.Username.Should().Be(player1.Username);
+        readModel.CurrentPlayer.PlayerId.Should().Be(player1.Id.Value);
+        readModel.CurrentPlayer.Nickname.Should().Be(player1.Nickname.Value);
+        readModel.CurrentPlayer.Username.Should().Be(player1.Username);
         
-        responseContent.GuessingPlayers.Should().HaveCount(2);
+        readModel.GuessingPlayers.Should().HaveCount(2);
 
-        responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).Username.Should().Be(player2.Username);
-        responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).Nickname.Should().Be(player2.Nickname.Value);
-        responseContent.GuessingPlayers.First(x => x.PlayerId == player2.Id).HasSubmittedCardAlready.Should().BeTrue();
+        readModel.GuessingPlayers.First(x => x.PlayerId == player2.Id).Username.Should().Be(player2.Username);
+        readModel.GuessingPlayers.First(x => x.PlayerId == player2.Id).Nickname.Should().Be(player2.Nickname.Value);
+        readModel.GuessingPlayers.First(x => x.PlayerId == player2.Id).HasSubmittedCardAlready.Should().BeTrue();
 
-        responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).Username.Should().Be(player3.Username);
-        responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).Nickname.Should().Be(player3.Nickname.Value);
-        responseContent.GuessingPlayers.First(x => x.PlayerId == player3.Id).HasSubmittedCardAlready.Should().BeFalse();
+        readModel.GuessingPlayers.First(x => x.PlayerId == player3.Id).Username.Should().Be(player3.Username);
+        readModel.GuessingPlayers.First(x => x.PlayerId == player3.Id).Nickname.Should().Be(player3.Nickname.Value);
+        readModel.GuessingPlayers.First(x => x.PlayerId == player3.Id).HasSubmittedCardAlready.Should().BeFalse();
+
+        readModel.CurrentPlayerCardReRollState.Should().Be(CardReRollState.Empty.Value);
     }
 
     [Fact]
@@ -75,7 +76,7 @@ public sealed class WhenQueryingGameBoard : ComponentTest
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{nonExistingGameRoomId.Value}/board", playerId);
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound, because: await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -123,6 +124,56 @@ public sealed class WhenQueryingGameBoard : ComponentTest
 
         using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", playerId1);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest, because: await response.Content.ReadAsStringAsync());
+        await response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task ReturnsCurrentReRollStateAvailableIfCardsWereReservedButItHasNotCompleted()
+    {
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var player1 = new PlayerBuilder().WithId("storyTellerId").WithUsername("gamora@guexit.com").Build();
+        var player2 = new PlayerBuilder().WithId("playerId2").WithUsername("starlord@guexit.com").Build();
+        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("groot@guexit.com").Build();
+
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, player1.Id, [player2.Id, player3.Id])
+            .WithPlayerThatReservedCardsForReRoll(player1.Id)
+            .Build();
+
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(player1, player2, player3);
+
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", player1.Id);
+
+        await response.ShouldHaveSuccessStatusCode();
+
+        var readModel = await response.Content.ReadFromJsonAsync<BoardReadModel>();
+
+        readModel.Should().NotBeNull();
+        readModel!.CurrentPlayerCardReRollState.Should().Be(CardReRollState.Available.Value);
+    }
+
+    [Fact]
+    public async Task ReturnsCurrentReRollStateCompletedIfPlayerAlreadyReRolledACardThisRound()
+    {
+        var gameRoomId = new GameRoomId(Guid.NewGuid());
+        var player1 = new PlayerBuilder().WithId("storyTellerId").WithUsername("gamora@guexit.com").Build();
+        var player2 = new PlayerBuilder().WithId("playerId2").WithUsername("starlord@guexit.com").Build();
+        var player3 = new PlayerBuilder().WithId("playerId3").WithUsername("groot@guexit.com").Build();
+
+        var gameRoom = GameRoomBuilder.CreateStarted(gameRoomId, player1.Id, [player2.Id, player3.Id])
+            .WithPlayerThatReservedCardsForReRoll(player1.Id, completed: true)
+            .Build();
+
+        await SaveInRepository(gameRoom);
+        await SaveInRepository(player1, player2, player3);
+
+        using var response = await Send(HttpMethod.Get, $"/game-rooms/{gameRoom.Id.Value}/board", player1.Id);
+
+        await response.ShouldHaveSuccessStatusCode();
+
+        var readModel = await response.Content.ReadFromJsonAsync<BoardReadModel>();
+
+        readModel.Should().NotBeNull();
+        readModel!.CurrentPlayerCardReRollState.Should().Be(CardReRollState.Completed.Value);
     }
 }
