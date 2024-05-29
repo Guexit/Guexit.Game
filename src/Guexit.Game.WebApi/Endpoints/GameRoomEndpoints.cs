@@ -193,7 +193,7 @@ public static class GameRoomEndpoints
         [FromServices] ISender sender,
         CancellationToken ct)
     {
-        var readModel = await sender.Send(new CurrentStageQuery(gameRoomId, authenticatedUserId), ct);
+        var readModel = await sender.Send(new CardReRollQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
 }
