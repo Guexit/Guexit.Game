@@ -3,7 +3,7 @@ name: Deploy Container App
 on:
   workflow_dispatch:
   push:
-    branches: [ ci-123-deployment-on-release ]
+    branches: [ ci/123-deployment-on-release ]
 
 
 jobs:
