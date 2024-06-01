@@ -27,4 +27,4 @@ jobs:
         with:
           containerAppName: guexit-prod-game
           resourceGroup: guexit-prod
-          imageToDeploy: ghcr.io/guexit/guexit-game:1.17.0
+          imageToDeploy: ghcr.io/guexit/guexit-game:1.16.0
