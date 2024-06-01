@@ -21,11 +21,11 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS_GUEXIT_PRD }}
-    
-      # - name: Build and deploy Container App
-      #   uses: azure/container-apps-deploy-action@v1
-      #   with:
-      #     acrName: myregistry
-      #     containerAppName: my-container-app
-      #     resourceGroup: my-rg
-      #     imageToDeploy: myregistry.azurecr.io/app:${{ github.sha }}
+          
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: ghcr.io/guexit
+          containerAppName: guexit-prod-game
+          resourceGroup: guexit-prod
+          imageToDeploy: guexit-game:1.17.0
