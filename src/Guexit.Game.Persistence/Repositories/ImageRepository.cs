@@ -22,12 +22,14 @@ public sealed class ImageRepository : IImageRepository
     public async Task<Image[]> GetAvailableImages(int limit, CancellationToken ct = default)
     {
         FormattableString imagesWithRowLockQuery = $"""
-            SELECT *, xmin FROM public."Images" i WHERE i."GameRoomId" = {GameRoomId.Empty.Value} 
-            FOR UPDATE SKIP LOCKED LIMIT {limit}
+            SELECT *, xmin FROM public."Images" i 
+            WHERE i."GameRoomId" = {GameRoomId.Empty.Value} 
+            ORDER BY RANDOM()
+            LIMIT {limit}
+            FOR UPDATE SKIP LOCKED
             """;
 
-        var images = await _dbContext.Images.FromSqlInterpolated(imagesWithRowLockQuery)
-            .ToArrayAsync(ct);
+        var images = await _dbContext.Images.FromSqlInterpolated(imagesWithRowLockQuery).ToArrayAsync(ct);
         return images;
     }
 
