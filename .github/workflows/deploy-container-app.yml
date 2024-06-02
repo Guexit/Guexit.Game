@@ -9,7 +9,7 @@ on:
 jobs:
   deploy-container-app:
     name: Deploy Container App
-    uses: Guexit/Guexit.Infrastructure/.github/templates/deploy-container-app.yml@ci/14-deploy-container-app-to-azure
+    uses: Guexit/Guexit.Infrastructure/.github/workflows/templates/deploy-container-app.yml@ci/14-deploy-container-app-to-azure
     with:
       IMAGE_TO_DEPLOY_NAME: guexit-game:1.16.0
       CONTAINER_APP_NAME: guexit-prod-game
