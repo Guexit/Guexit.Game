@@ -67,3 +67,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+  deploy-container-app:
+    name: Deploy Container App
+    needs: publish-artifact
+    uses: Guexit/Guexit.Infrastructure/.github/workflows/deploy-container-app-template.yml@main
+    with:
+      IMAGE_TO_DEPLOY_NAME: guexit-game:${{ needs.publish-artifact.outputs.new-version }}
+      CONTAINER_APP_NAME: guexit-prod-game
+    secrets:
+      AZURE_CREDENTIALS_GUEXIT_PRD: ${{ secrets.AZURE_CREDENTIALS_GUEXIT_PRD }}
+        
+
