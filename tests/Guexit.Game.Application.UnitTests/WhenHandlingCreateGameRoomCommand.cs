@@ -40,6 +40,7 @@ public sealed class WhenHandlingCreateGameRoomCommand
         gameRoom.PlayerIds.Single().Should().Be(playerId);
         gameRoom.CreatedAt.Should().Be(createdAt);
         gameRoom.RequiredMinPlayers.Should().Be(RequiredMinPlayers.Default);
+        gameRoom.IsPublic.Should().BeFalse();
     }
 
     [Fact]

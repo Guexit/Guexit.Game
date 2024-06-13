@@ -24,6 +24,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public ICollection<FinishedRound> FinishedRounds { get; private init; } = new List<FinishedRound>();
     public ICollection<CardReRoll> CurrentCardReRolls { get; private init; } = new List<CardReRoll>();
     public GameRoomId NextGameRoomId { get; private set; } = GameRoomId.Empty;
+    public bool IsPublic { get; private set; }
 
     public IReadOnlySet<PlayerId> GetCurrentGuessingPlayerIds() => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
     public int GetPlayersCount() => PlayerIds.Count;
@@ -78,7 +79,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new InsufficientPlayersToStartGameException(Id, PlayerIds.Count, RequiredMinPlayers);
 
         if (CreatedBy != playerId)
-            throw new GameStartPermissionDeniedException(Id, playerId);
+            throw new GamePermissionDeniedException(Id, playerId);
         
         DealInitialPlayerHands();
         
@@ -300,6 +301,34 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         
         cardReRoll.Complete();
         AddDomainEvent(new CardReRollCompleted(Id, reRollingPlayerId, cardToReRollId, newCardId));
+    }
+
+    public void MarkAsPublic(PlayerId playerId)
+    {
+        EnsurePlayersContains(playerId);
+
+        if (CreatedBy != playerId)
+            throw new GamePermissionDeniedException(Id, playerId);
+
+        if (IsPublic)
+            return;
+
+        IsPublic = true;
+        AddDomainEvent(new GameRoomMarkedAsPublic(Id));
+    }
+
+    public void MarkAsPrivate(PlayerId playerId)
+    {
+        EnsurePlayersContains(playerId);
+
+        if (CreatedBy != playerId)
+            throw new GamePermissionDeniedException(Id, playerId);
+
+        if (!IsPublic)
+            return;
+
+        IsPublic = false;
+        AddDomainEvent(new GameRoomMarkedAsPrivate(Id));
     }
 }
 

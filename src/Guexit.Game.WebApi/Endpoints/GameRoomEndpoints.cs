@@ -16,6 +16,8 @@ public static class GameRoomEndpoints
 
         group.MapPost("", CreateGameRoom);
         group.MapPost("/join", JoinGameRoom);
+        group.MapPost("/mark-as-public", MarkAsPublic);
+        group.MapPost("/mark-as-private", MarkAsPrivate);
         group.MapPost("/start", StartGame);
         group.MapPost("/storyteller/submit-card-story", SubmitStoryTellerCardStory);
         group.MapPost("/guessing-player/submit-card", SubmitGuessingPlayerCard);
@@ -33,6 +35,7 @@ public static class GameRoomEndpoints
         group.MapGet("/cards-for-re-roll", GetCardsForReRoll).Produces<CardReRollReadModel>();
     }
 
+    
     private static async Task<IResult> CreateGameRoom(
         [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
@@ -50,6 +53,26 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         await sender.Send(new JoinGameRoomCommand(authenticatedUserId, gameRoomId), ct);
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> MarkAsPublic(
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
+        [FromRoute] Guid gameRoomId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        await sender.Send(new MarkGameRoomAsPublicCommand(authenticatedUserId, gameRoomId), ct);
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> MarkAsPrivate(
+        [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
+        [FromRoute] Guid gameRoomId,
+        [FromServices] ISender sender,
+        CancellationToken ct)
+    {
+        await sender.Send(new MarkGameRoomAsPrivateCommand(authenticatedUserId, gameRoomId), ct);
         return Results.Ok();
     }
 
