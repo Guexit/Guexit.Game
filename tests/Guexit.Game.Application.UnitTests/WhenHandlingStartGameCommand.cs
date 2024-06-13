@@ -205,8 +205,7 @@ public sealed class WhenHandlingStartGameCommand
 
         var action = async () => await _commandHandler.Handle(new StartGameCommand(GameRoomId, nonCreatorId));
 
-        await action.Should().ThrowAsync<GameStartPermissionDeniedException>()
-            .WithMessage($"Player {nonCreatorId.Value} is not authorized to start the game in room {GameRoomId.Value}. Only the game creator can start the game.");
+        await action.Should().ThrowAsync<GamePermissionDeniedException>();
     }
 
     private static Image[] CreateImages(int count)

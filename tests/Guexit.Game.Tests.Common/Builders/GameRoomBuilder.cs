@@ -16,6 +16,7 @@ public sealed class GameRoomBuilder
     private IEnumerable<PlayerId> _guessingPlayersThatSubmittedCard = Enumerable.Empty<PlayerId>();
     private List<(PlayerId VotingPlayerId, PlayerId VotedCardSubmitter)> _votes = [];
     private List<(PlayerId, bool)> _playersThatReservedCardsForReRoll = new();
+    private bool _isPublic;
 
     public GameRoom Build()
     {
@@ -24,13 +25,16 @@ public sealed class GameRoomBuilder
         foreach (var player in _playersThatJoined)
             gameRoom.Join(player);
 
-        if (_cards.Any())
+        if (_isPublic)
+            gameRoom.MarkAsPublic(_creatorId);
+
+        if (_cards.Length > 0)
             gameRoom.AssignDeck(_cards.Select(x => x.Build()).ToArray());
 
         if (_isStarted)
             gameRoom.Start(_creatorId);
 
-        if (_playersThatReservedCardsForReRoll.Any())
+        if (_playersThatReservedCardsForReRoll.Count > 0)
         {
             foreach (var (playerId, completed) in _playersThatReservedCardsForReRoll)
             {
@@ -95,6 +99,9 @@ public sealed class GameRoomBuilder
         return this;
     }
 
+    //public GameRoomBuilder WithPlayersThatJoined(params string[] playersThatJoined) 
+    //    => WithPlayersThatJoined(playersThatJoined.Select(x => new PlayerId(x)).ToArray());
+
     public GameRoomBuilder WithPlayersThatJoined(params PlayerId[] playersThatJoined)
     {
         ArgumentNullException.ThrowIfNull(playersThatJoined);
@@ -156,6 +163,12 @@ public sealed class GameRoomBuilder
     public GameRoomBuilder WithPlayerThatReservedCardsForReRoll(PlayerId playerId, bool completed = false)
     {
         _playersThatReservedCardsForReRoll.Add((playerId, completed));
+        return this;
+    }
+
+    public GameRoomBuilder WithIsPublic(bool isPublic)
+    {
+        _isPublic = isPublic;
         return this;
     }
 }

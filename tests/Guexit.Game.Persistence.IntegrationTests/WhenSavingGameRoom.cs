@@ -22,13 +22,8 @@ public sealed class WhenSavingGameRoom : DatabaseMappingIntegrationTest
         var submittedStory = "Some story";
         var guessingPlayerIdsThatSubmittedCard = new PlayerId[] { "invitedPlayer1", "invitedPlayer2" };
 
-        await repository.Add(new GameRoomBuilder()
-            .WithId(gameRoomId)
-            .WithCreator(initialStoryTeller)
-            .WithPlayersThatJoined("invitedPlayer1", "invitedPlayer2", "invitedPlayer3")
+        await repository.Add(GameRoomBuilder.CreateStarted(gameRoomId, initialStoryTeller, ["invitedPlayer1", "invitedPlayer2", "invitedPlayer3"])
             .WithCreatedAt(createdAt)
-            .Started()
-            .WithAssignedDeck(Enumerable.Range(0, 100).Select(x => new CardBuilder().WithUrl(new Uri($"https://pablocompany/{x}"))).ToArray())
             .WithStoryTellerStory(submittedStory)
             .WithGuessingPlayerThatSubmittedCard(guessingPlayerIdsThatSubmittedCard)
             .WithPlayerThatReservedCardsForReRoll(initialStoryTeller)

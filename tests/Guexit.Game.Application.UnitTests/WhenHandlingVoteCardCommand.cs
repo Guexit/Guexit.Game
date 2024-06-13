@@ -1,7 +1,6 @@
 using Guexit.Game.Application.CommandHandlers;
 using Guexit.Game.Application.Commands;
 using Guexit.Game.Application.Exceptions;
-using Guexit.Game.Application.UnitTests.Repositories;
 using Guexit.Game.Domain.Exceptions;
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Domain.Model.GameRoomAggregate.Events;
@@ -93,8 +92,7 @@ public sealed class WhenHandlingVoteCardCommand
     public async Task GuessingPlayerVotedEventIsRaised()
     {
         var votingPlayerId = new PlayerId("votingPlayer");
-        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, new PlayerId("player3")
-            ])
+        var gameRoom = GameRoomBuilder.CreateStarted(GameRoomId, "storyTellerId", [votingPlayerId, new PlayerId("player3")])
             .WithStoryTellerStory("Any story")
             .WithGuessingPlayerThatSubmittedCard(votingPlayerId, "player3")
             .Build();
