@@ -307,6 +307,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     {
         EnsurePlayersContains(playerId);
 
+        if (Status != GameStatus.NotStarted)
+            throw new InvalidOperationForStartedGameException(Id, playerId);
+
         if (CreatedBy != playerId)
             throw new GamePermissionDeniedException(Id, playerId);
 
@@ -320,6 +323,9 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public void MarkAsPrivate(PlayerId playerId)
     {
         EnsurePlayersContains(playerId);
+
+        if (Status != GameStatus.NotStarted)
+            throw new InvalidOperationForStartedGameException(Id, playerId);
 
         if (CreatedBy != playerId)
             throw new GamePermissionDeniedException(Id, playerId);

@@ -48,7 +48,8 @@ public sealed class GameLobbyQueryHandler : IQueryHandler<GameLobbyQuery, LobbyR
             RequiredMinPlayers = gameRoom.RequiredMinPlayers.Count,
             CanStartGame = gameRoom.RequiredMinPlayers.Count <= playersInGame.Count && gameRoom.CreatedBy == query.PlayerId,
             Creator = new LobbyPlayerDto { Id = creator.Id, Username = creator.Username, Nickname = creator.Nickname.Value },
-            GameStatus = gameRoom.Status.Value
+            GameStatus = gameRoom.Status.Value,
+            IsPublic = gameRoom.IsPublic
         };
     }
 }

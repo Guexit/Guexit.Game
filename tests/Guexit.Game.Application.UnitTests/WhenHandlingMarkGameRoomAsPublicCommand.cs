@@ -67,6 +67,19 @@ public sealed class WhenHandlingMarkGameRoomAsPublicCommand
     }
 
     [Fact]
+    public async Task ThrowsInvalidOperationForNotInProgressGameException()
+    {
+        var creator = new PlayerId("player1");
+        await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, creator, ["player2", "player3"])
+            .Build());
+
+        var action = async () =>
+            await _commandHandler.Handle(new MarkGameRoomAsPublicCommand(creator, GameRoomId));
+
+        await action.Should().ThrowAsync<InvalidOperationForStartedGameException>();
+    }
+    
+    [Fact]
     public async Task GameRoomIsMarkedAsPublic()
     {
         var creatorPlayerId = new PlayerId("player1");
