@@ -66,6 +66,19 @@ public sealed class WhenHandlingMarkGameRoomAsPrivateCommand
     }
 
     [Fact]
+    public async Task ThrowsInvalidOperationForNotInProgressGameException()
+    {
+        var creator = new PlayerId("player1");
+        await _gameRoomRepository.Add(GameRoomBuilder.CreateStarted(GameRoomId, creator, ["player2", "player3"])
+            .Build());
+
+        var action = async () =>
+            await _commandHandler.Handle(new MarkGameRoomAsPrivateCommand(creator, GameRoomId));
+
+        await action.Should().ThrowAsync<InvalidOperationForStartedGameException>();
+    }
+
+    [Fact]
     public async Task GameRoomIsMarkedAsPrivate()
     {
         var creatorPlayerId = new PlayerId("player1");

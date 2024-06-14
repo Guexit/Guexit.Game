@@ -23,6 +23,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
             .WithId(gameRoomId)
             .WithCreator(creatorId)
             .WithPlayersThatJoined("player2", "player3")
+            .WithIsPublic(false)
             .Build());
         await SaveInRepository(
         [
@@ -44,6 +45,7 @@ public sealed class WhenQueryingGameLobby : ComponentTest
         lobbyReadModel.Players.Select(x => x.Username).Should().BeEquivalentTo(creatorUsername, "hulk@guexit.com", "ironman@guexit.com");
         lobbyReadModel.Players.Select(x => x.Nickname).Should().BeEquivalentTo("thanos", "hulk", "ironman");
         lobbyReadModel.GameStatus.Should().Be(GameStatus.NotStarted.Value);
+        lobbyReadModel.IsPublic.Should().BeFalse();
     }
     
     [Fact]
