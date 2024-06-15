@@ -7,6 +7,7 @@ using Guexit.Game.ReadModels.ReadOnlyRepositories;
 
 namespace Guexit.Game.ReadModels.QueryHandlers;
 
+
 public sealed class CardReRollQuery : IQuery<CardReRollReadModel>
 {
     public GameRoomId GameRoomId { get; }

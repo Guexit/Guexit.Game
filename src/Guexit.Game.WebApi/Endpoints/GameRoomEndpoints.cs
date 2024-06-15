@@ -1,4 +1,5 @@
 ﻿using Guexit.Game.Application.Commands;
+using Guexit.Game.ReadModels;
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
 using Guexit.Game.WebApi.Contracts.Requests;
@@ -12,6 +13,8 @@ public static class GameRoomEndpoints
 {
     public static void MapGameRoomEndpoints(this IEndpointRouteBuilder app)
     {
+        app.MapGet("game-rooms/available", GetAvailableGameRooms).Produces<PaginatedCollection<AvailableGameRoomReadModel>>();
+        
         var group = app.MapGroup("game-rooms/{gameRoomId:guid}").WithOpenApi();
 
         group.MapPost("", CreateGameRoom);
@@ -210,6 +213,7 @@ public static class GameRoomEndpoints
         var readModel = await sender.Send(new CurrentStageQuery(gameRoomId, authenticatedUserId), ct);
         return Results.Ok(readModel);
     }
+    
     private static async Task<IResult> GetCardsForReRoll(
         [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,
         [FromRoute] Guid gameRoomId,
@@ -217,6 +221,17 @@ public static class GameRoomEndpoints
         CancellationToken ct)
     {
         var readModel = await sender.Send(new CardReRollQuery(gameRoomId, authenticatedUserId), ct);
+        return Results.Ok(readModel);
+    }
+    
+    private static async Task<IResult> GetAvailableGameRooms(
+        [FromServices] ISender sender,
+        CancellationToken ct,
+        [FromQuery] int pageSize = 100,
+        [FromQuery] int pageNumber = 1)
+    {
+        var readModel = await sender.Send(
+            new AvailableGameRoomsQuery(new PaginationSettings(pageSize, pageNumber)), ct);
         return Results.Ok(readModel);
     }
 }
