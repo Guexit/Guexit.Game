@@ -7,12 +7,12 @@ public sealed class GameStatus : ValueObject
     public static readonly GameStatus NotStarted = new("NotStarted");
     public static readonly GameStatus InProgress = new("InProgress");
     public static readonly GameStatus Finished = new("Finished");
-    private static readonly FrozenDictionary<string, GameStatus> AllStatusByValue = FrozenDictionary.ToFrozenDictionary(new[]
+    private static readonly FrozenDictionary<string, GameStatus> AllStatusByValue = new[]
     {
         KeyValuePair.Create(NotStarted.Value, NotStarted), 
         KeyValuePair.Create(InProgress.Value, InProgress), 
         KeyValuePair.Create(Finished.Value, Finished)
-    });
+    }.ToFrozenDictionary();
 
     public string Value { get; }
 

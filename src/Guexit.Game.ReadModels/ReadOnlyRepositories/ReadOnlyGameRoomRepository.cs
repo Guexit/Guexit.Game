@@ -1,5 +1,6 @@
 using Guexit.Game.Domain.Model.GameRoomAggregate;
 using Guexit.Game.Persistence;
+using Guexit.Game.ReadModels.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Guexit.Game.ReadModels.ReadOnlyRepositories;
@@ -19,5 +20,14 @@ public sealed class ReadOnlyGameRoomRepository
             .AsSplitQuery()
             .SingleOrDefaultAsync(x => x.Id == id, ct);
         return gameRoom;
+    }
+
+    public async Task<PaginatedCollection<GameRoom>> GetAvailable(PaginationSettings paginationSettings, CancellationToken ct = default)
+    {
+        var availableGameRooms = await _dbContext.GameRooms
+            .Where(x => x.Status == GameStatus.NotStarted && x.IsPublic)
+            .PaginateAsync(paginationSettings, ct);
+        
+        return availableGameRooms;
     }
 }
