@@ -27,7 +27,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
     public bool IsPublic { get; private set; }
 
     public IReadOnlySet<PlayerId> GetCurrentGuessingPlayerIds() => PlayerIds.Where(x => x != CurrentStoryTeller.PlayerId).ToHashSet();
-    public int PlayerCount => PlayerIds.Count;
+    public int GetPlayerCount() => PlayerIds.Count;
 
     private GameRoom()
     {
@@ -42,14 +42,14 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
         PlayerIds.Add(creatorId);
     }
 
-    public int GetRequiredNumberOfCardsInDeck() => DeckSizeService.Calculate(PlayerCount, desiredRounds: 1);
+    public int GetRequiredNumberOfCardsInDeck() => DeckSizeService.Calculate(GetPlayerCount(), desiredRounds: 1);
 
     public void Join(PlayerId playerId)
     {
         if (PlayerIds.Contains(playerId))
             return;
         
-        if (PlayerCount >= MaximumPlayers)
+        if (GetPlayerCount() >= MaximumPlayers)
             throw new CannotJoinFullGameRoomException(playerId, Id);
 
         if (Status != GameStatus.NotStarted)
@@ -197,7 +197,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
             throw new PlayerNotFoundInCurrentGuessingPlayersException(playerId);
     }
 
-    private bool HaveAllPlayersVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == PlayerCount - 1;
+    private bool HaveAllPlayersVoted() => SubmittedCards.SelectMany(x => x.Voters).Count() == GetPlayerCount() - 1;
 
     private void CompleteCurrentRound()
     {
@@ -212,7 +212,7 @@ public sealed class GameRoom : AggregateRoot<GameRoomId>
                 AddDomainEvent(new ReserveCardsForReRollDiscarded(Id, unusedReservedCardImageUrls));
         }
         
-        var gameHasFinished = FinishedRounds.Count == PlayerCount;
+        var gameHasFinished = FinishedRounds.Count == GetPlayerCount();
         if (gameHasFinished)
         {
             Status = GameStatus.Finished;

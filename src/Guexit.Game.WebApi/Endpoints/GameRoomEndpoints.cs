@@ -38,7 +38,6 @@ public static class GameRoomEndpoints
         group.MapGet("/stages/current", GetStage).Produces<GameStageReadModel>();
         group.MapGet("/cards-for-re-roll", GetCardsForReRoll).Produces<CardReRollReadModel>();
     }
-
     
     private static async Task<IResult> CreateGameRoom(
         [FromHeader(Name = GuexitHttpHeaders.AuthenticatedUserId)] string authenticatedUserId,

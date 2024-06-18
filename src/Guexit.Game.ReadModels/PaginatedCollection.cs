@@ -12,8 +12,8 @@ public sealed class PaginatedCollection<T>
     {
         ArgumentNullException.ThrowIfNull(items);
         ArgumentOutOfRangeException.ThrowIfNegative(totalItemCount);
-        ArgumentOutOfRangeException.ThrowIfNegative(pageSize);
-        ArgumentOutOfRangeException.ThrowIfNegative(pageNumber);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageSize);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageNumber);
         
         Items = items;
         TotalItemCount = totalItemCount;

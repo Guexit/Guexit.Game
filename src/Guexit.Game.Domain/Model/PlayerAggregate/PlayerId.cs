@@ -4,7 +4,7 @@ public class PlayerId : ValueObject
 {
     internal static readonly PlayerId Empty = new("Empty");
 
-    public string Value { get; private init; }
+    public string Value { get; private init; } = null!;
 
     public PlayerId()
     {
