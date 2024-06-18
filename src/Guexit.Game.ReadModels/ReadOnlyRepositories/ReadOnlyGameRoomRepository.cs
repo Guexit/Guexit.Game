@@ -27,6 +27,7 @@ public sealed class ReadOnlyGameRoomRepository
         var availableGameRooms = await _dbContext.GameRooms.AsNoTracking()
             .AsSplitQuery()
             .Where(x => x.Status == GameStatus.NotStarted && x.IsPublic && x.PlayerIds.Count < GameRoom.MaximumPlayers)
+            .OrderByDescending(x => x.CreatedAt)
             .PaginateAsync(paginationSettings, ct);
         
         return availableGameRooms;

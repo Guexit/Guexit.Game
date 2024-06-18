@@ -64,5 +64,6 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
 
         builder.HasIndex(x => x.NextGameRoomId);
         builder.HasIndex(x => x.IsPublic);
+        builder.HasIndex(x => x.CreatedAt);
     }
 }
