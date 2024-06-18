@@ -1,4 +1,5 @@
-﻿using Guexit.Game.Application.Commands;
+﻿using System.ComponentModel.DataAnnotations;
+using Guexit.Game.Application.Commands;
 using Guexit.Game.ReadModels;
 using Guexit.Game.ReadModels.QueryHandlers;
 using Guexit.Game.ReadModels.ReadModels;
@@ -227,8 +228,8 @@ public static class GameRoomEndpoints
     private static async Task<IResult> GetAvailableGameRooms(
         [FromServices] ISender sender,
         CancellationToken ct,
-        [FromQuery] int pageSize = 100,
-        [FromQuery] int pageNumber = 1)
+        [FromQuery] [Range(1, int.MaxValue)] int pageSize = 100,
+        [FromQuery] [Range(1, int.MaxValue)] int pageNumber = 1)
     {
         var readModel = await sender.Send(
             new AvailableGameRoomsQuery(new PaginationSettings(pageSize, pageNumber)), ct);

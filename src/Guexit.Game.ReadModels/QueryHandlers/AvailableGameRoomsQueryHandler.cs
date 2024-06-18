@@ -31,7 +31,7 @@ public sealed class AvailableGameRoomsQueryHandler : IQueryHandler<AvailableGame
             GameRoomId = g.Id,
             RequiredMinPlayers = g.RequiredMinPlayers.Count,
             CreatedAt = g.CreatedAt,
-            CurrentPlayerCount = g.GetPlayersCount()
+            CurrentPlayerCount = g.PlayerCount
         }).ToArray();
         
         return new PaginatedCollection<AvailableGameRoomReadModel>(

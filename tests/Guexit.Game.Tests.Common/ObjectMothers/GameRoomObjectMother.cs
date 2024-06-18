@@ -10,7 +10,7 @@ public static class GameRoomObjectMother
     {
         var gameRoom = GameRoomBuilder.CreateStarted(id, creator, invitedPlayers).Build();
         
-        ConductRounds(gameRoom, roundsToConduct: gameRoom.GetPlayersCount());
+        ConductRounds(gameRoom, roundsToConduct: gameRoom.PlayerCount);
 
         return gameRoom;
     }
@@ -29,7 +29,7 @@ public static class GameRoomObjectMother
     {
         var gameRoom = GameRoomBuilder.CreateStarted(id, creator, invitedPlayers).Build();
         
-        ConductRounds(gameRoom, roundsToConduct: gameRoom.GetPlayersCount() - 1);
+        ConductRounds(gameRoom, roundsToConduct: gameRoom.PlayerCount - 1);
         ConductCurrentRoundLeavingOnePlayerWithNoVote(gameRoom);
 
         gameRoom.ClearDomainEvents();
