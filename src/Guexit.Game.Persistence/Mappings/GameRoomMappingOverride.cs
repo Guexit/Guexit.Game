@@ -18,10 +18,16 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
 
         builder.Property(x => x.CreatedBy).HasConversion(to => to.Value, from => new PlayerId(from)).IsRequired();
         
-        builder.Property(x => x.PlayerIds)
-            .HasConversion<PlayerIdsToCommaSeparatedTextCollectionValueConverter>()
-            .Metadata
-            .SetValueComparer(new PlayerIdsCommaSeparatedTextCollectionValueComparer());
+        builder.OwnsMany(x => x.PlayerIds, b =>
+        {
+            b.ToTable("GameRoomPlayers");
+            
+            b.WithOwner().HasForeignKey("GameRoomId");
+            b.Property(x => x.Value).HasColumnName("PlayerId").IsRequired();
+            b.HasKey("GameRoomId", "Value");
+
+            b.HasIndex("Value");
+        });
 
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.RequiredMinPlayers)
@@ -43,7 +49,7 @@ internal sealed class GameRoomMappingOverride : IEntityTypeConfiguration<GameRoo
             .HasDefaultValue(GameRoomId.Empty);
 
         builder.Property(x => x.IsPublic).IsRequired();
-        
+
         builder.HasMany(x => x.PlayerHands).WithOne().HasForeignKey(x => x.GameRoomId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.Deck).WithOne().HasForeignKey("GameRoomId").OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x => x.SubmittedCards).WithOne().HasForeignKey(x => x.GameRoomId).OnDelete(DeleteBehavior.Cascade);

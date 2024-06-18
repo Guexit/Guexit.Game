@@ -6,6 +6,11 @@ public class PlayerId : ValueObject
 
     public string Value { get; private init; }
 
+    public PlayerId()
+    {
+        // EF required parameterless ctor
+    }
+    
     public PlayerId(string value)
     {
         ArgumentException.ThrowIfNullOrEmpty(value);

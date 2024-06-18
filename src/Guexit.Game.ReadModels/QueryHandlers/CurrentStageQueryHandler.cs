@@ -73,7 +73,7 @@ public sealed class BoardSpecification : IGameStageSpecification
 
     public bool IsSatisfiedBy(GameRoom gameRoom)
     {
-        return gameRoom.Status == GameStatus.InProgress && gameRoom.SubmittedCards.Count != gameRoom.GetPlayersCount();
+        return gameRoom.Status == GameStatus.InProgress && gameRoom.SubmittedCards.Count != gameRoom.PlayerCount;
     }
 }   
 
@@ -83,7 +83,7 @@ public sealed class VotingSpecification : IGameStageSpecification
 
     public bool IsSatisfiedBy(GameRoom gameRoom)
     {
-        return gameRoom.Status == GameStatus.InProgress && gameRoom.SubmittedCards.Count == gameRoom.GetPlayersCount();
+        return gameRoom.Status == GameStatus.InProgress && gameRoom.SubmittedCards.Count == gameRoom.PlayerCount;
     }
 }  
 

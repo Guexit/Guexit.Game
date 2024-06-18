@@ -24,8 +24,9 @@ public sealed class ReadOnlyGameRoomRepository
 
     public async Task<PaginatedCollection<GameRoom>> GetAvailable(PaginationSettings paginationSettings, CancellationToken ct = default)
     {
-        var availableGameRooms = await _dbContext.GameRooms
-            .Where(x => x.Status == GameStatus.NotStarted && x.IsPublic)
+        var availableGameRooms = await _dbContext.GameRooms.AsNoTracking()
+            .AsSplitQuery()
+            .Where(x => x.Status == GameStatus.NotStarted && x.IsPublic && x.PlayerIds.Count < GameRoom.MaximumPlayers)
             .PaginateAsync(paginationSettings, ct);
         
         return availableGameRooms;
