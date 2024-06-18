@@ -63,11 +63,11 @@ public sealed class WhenQueryingAvailableGameRooms : ComponentTest
 
         room1.RequiredMinPlayers.Should().Be(gameRoom1.RequiredMinPlayers.Count);
         room1.CreatedAt.Should().Be(gameRoom1.CreatedAt);
-        room1.CurrentPlayerCount.Should().Be(gameRoom1.PlayerCount);
+        room1.CurrentPlayerCount.Should().Be(gameRoom1.GetPlayerCount());
         
         room2.RequiredMinPlayers.Should().Be(gameRoom2.RequiredMinPlayers.Count);
         room2.CreatedAt.Should().Be(gameRoom2.CreatedAt);
-        room2.CurrentPlayerCount.Should().Be(gameRoom2.PlayerCount);
+        room2.CurrentPlayerCount.Should().Be(gameRoom2.GetPlayerCount());
     }
     
     [Fact]
