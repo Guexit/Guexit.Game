@@ -9,13 +9,3 @@ public sealed class GameRoomMarkedAsPublic : IDomainEvent
         GameRoomId = gameRoomId.Value;
     }
 }
-
-public sealed class GameRoomMarkedAsPrivate : IDomainEvent
-{
-    public Guid GameRoomId { get; }
-
-    public GameRoomMarkedAsPrivate(GameRoomId gameRoomId)
-    {
-        GameRoomId = gameRoomId.Value;
-    }
-}
