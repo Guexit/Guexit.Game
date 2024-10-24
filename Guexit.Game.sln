@@ -44,6 +44,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{DEB95F5E-B403-42CD-83D7-F3017D32F7FA}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\run-tests.yml = .github\workflows\run-tests.yml
+		.github\workflows\publish-artifact.yml = .github\workflows\publish-artifact.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{FD420F3F-18DB-4ACC-89E9-6FCA5C481AB2}"
